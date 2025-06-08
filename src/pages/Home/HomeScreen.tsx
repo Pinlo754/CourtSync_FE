@@ -3,6 +3,10 @@ import { useNavigate } from "react-router-dom";
 import avatar from "../../assets/avatar.png";
 import banner from "../../assets/banner.jpg";
 import court1 from "../../assets/court1.jpg";
+import court2 from "../../assets/court2.jpg";
+import court3 from "../../assets/court3.jpg";
+import logo from "../../assets/logo.png"
+import Footer from "../../components/footer";
 const Home = () => {
   const navigate = useNavigate();
   const [filters, setFilters] = useState<string[]>([]);
@@ -19,16 +23,19 @@ const Home = () => {
 
   const [price, setPrice] = useState(50000);
   return (
+    <div>
     <div className="px-16 bg-blue-100 pb-16">
       <div className="flex h-20 w-full justify-between">
-        <div className="flex justify-center items-center text-3xl font-bold font-montserrat text-center h-full">
-          <p>CourtSync</p>
+        <div className="flex justify-center items-center h-full">
+          <img src={logo}
+          className="rounded-full ml-2 mt-4 h-[160px]"/>
         </div>
         <div className="flex justify-between items-center text-2xl text-center h-full gap-6">
-          <button>Menu1</button>
-          <button>Menu2</button>
-          <button>Menu3</button>
-          <button className="flex ml-8">
+          <button>Find court</button>
+          <div className="w-[2px] h-[20%] bg-[black]"/>
+          <button>Booking history</button>
+          <div className="w-[1px] h-[20%] bg-[black]"/>
+          <button className="flex">
             <p className="flex justify-center items-center">Profile</p>
             <img
               src={avatar}
@@ -52,7 +59,7 @@ const Home = () => {
             <br />
             Court
           </p>
-          <button className="absolute right-[23%] top-[60%] w-[10%] px-4 py-2 bg-green-500 text-white rounded-2xl hover:bg-green-600">
+          <button className="absolute right-[23%] top-[60%] w-[10%] px-4 py-2 bg-green-500 text-white font-bold rounded-2xl hover:bg-green-600">
             Book Now
           </button>
         </div>
@@ -60,7 +67,7 @@ const Home = () => {
 
       <div>
         <p className="text-2xl font-bold mt-12">Available courts</p>
-        <div className="flex gap-4 mt-4 mb-8">
+        {/*<div className="flex gap-4 mt-4 mb-8">
           <select className="border border-gray-300 rounded-[20px] h-[40px] px-4 py-2 text-gray-700">
             <option value="">filter</option>
             <option value="option1">filter1</option>
@@ -75,8 +82,9 @@ const Home = () => {
             <option value="">filter</option>
             <option value="option1">filter1</option>
             <option value="option2">filter2</option>
-          </select>
+          </select>          
         </div>
+        */}
 
         <div className="flex">
           <div className="flex flex-wrap gap-8 w-[60%]">
@@ -101,6 +109,43 @@ const Home = () => {
 
             <div className="bg-white rounded-2xl p-4 shadow-md w-[250px] h-[380px]">
               <img
+                src={court2}
+                alt="Court"
+                className="w-full h-[150px] object-cover rounded-t-2xl"
+              />
+              <h3 className="text-xl font-semibold mt-2">
+                Sân cầu lông Bằng Tâm
+              </h3>
+              <p className="text-gray-600 mt-2">Thủ Đức, Hồ Chí Minh</p>
+              <p className="text-gray-600 mt-2">Price: 80.000đ/hour</p>
+              <button
+                onClick={() => navigate("/booking")}
+                className="mt-12 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
+              >
+                Book Now
+              </button>
+            </div>
+
+            <div className="bg-white rounded-2xl p-4 shadow-md w-[250px] h-[380px]">
+              <img
+                src={court3}
+                alt="Court"
+                className="w-full h-[150px] object-cover rounded-t-2xl"
+              />
+              <h3 className="text-xl font-semibold mt-2">
+                Sân cầu lông Bằng Tâm
+              </h3>
+              <p className="text-gray-600 mt-2">Thủ Đức, Hồ Chí Minh</p>
+              <p className="text-gray-600 mt-2">Price: 80.000đ/hour</p>
+              <button
+                onClick={() => navigate("/booking")}
+                className="mt-12 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
+              >
+                Book Now
+              </button>
+            </div>
+            <div className="bg-white rounded-2xl p-4 shadow-md w-[250px] h-[380px]">
+              <img
                 src={court1}
                 alt="Court"
                 className="w-full h-[150px] object-cover rounded-t-2xl"
@@ -136,6 +181,25 @@ const Home = () => {
                 Book Now
               </button>
             </div>
+
+            <div className="bg-white rounded-2xl p-4 shadow-md w-[250px] h-[380px]">
+              <img
+                src={court1}
+                alt="Court"
+                className="w-full h-[150px] object-cover rounded-t-2xl"
+              />
+              <h3 className="text-xl font-semibold mt-2">
+                Sân cầu lông Bằng Tâm
+              </h3>
+              <p className="text-gray-600 mt-2">Thủ Đức, Hồ Chí Minh</p>
+              <p className="text-gray-600 mt-2">Price: 80.000đ/hour</p>
+              <button
+                onClick={() => navigate("/booking")}
+                className="mt-12 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
+              >
+                Book Now
+              </button>
+            </div>            
           </div>
 
           <div className="w-[40%] bg-gray-100 h-[380px] rounded-2xl p-4 shadow-md">
@@ -185,6 +249,8 @@ const Home = () => {
           </div>
         </div>
       </div>
+     </div>             
+      <Footer />
     </div>
   );
 };
