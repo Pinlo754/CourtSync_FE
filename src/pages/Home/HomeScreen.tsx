@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import avatar from "../../assets/avatar.png";
 import banner from "../../assets/banner.jpg";
 import court1 from "../../assets/court1.jpg";
 import court2 from "../../assets/court2.jpg";
 import court3 from "../../assets/court3.jpg";
-import logo from "../../assets/logo.png"
-import Footer from "../../components/footer";
+import Footer from "../../components/sections/footer";
+import Header from "../../components/sections/Header";
+
 const Home = () => {
   const navigate = useNavigate();
   const [filters, setFilters] = useState<string[]>([]);
@@ -25,26 +25,7 @@ const Home = () => {
   return (
     <div>
     <div className="px-16 bg-blue-100 pb-16">
-      <div className="flex h-20 w-full justify-between">
-        <div className="flex justify-center items-center h-full">
-          <img src={logo}
-          className="rounded-full ml-2 mt-4 h-[160px]"/>
-        </div>
-        <div className="flex justify-between items-center text-2xl text-center h-full gap-6">
-          <button>Find court</button>
-          <div className="w-[2px] h-[20%] bg-[black]"/>
-          <button>Booking history</button>
-          <div className="w-[1px] h-[20%] bg-[black]"/>
-          <button className="flex">
-            <p className="flex justify-center items-center">Profile</p>
-            <img
-              src={avatar}
-              alt="profile"
-              className="rounded-full ml-2 h-[40px]"
-            />
-          </button>
-        </div>
-      </div>
+      <Header />
 
       <div className="mt-8 flex flex-col items-center justify-center">
         <div className="w-full relative">
