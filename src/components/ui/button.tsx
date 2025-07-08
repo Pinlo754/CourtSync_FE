@@ -24,7 +24,7 @@ export const Button: React.FC<ButtonProps> = ({
   className = ""
 }) => {
   const baseClasses = "w-full py-2.5 px-4 rounded-xl font-semibold text-sm shadow-lg transform transition-all duration-300 flex items-center justify-center space-x-2 group disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none";
-
+  
   const variantClasses = {
     primary: "bg-gradient-to-r from-mint-500 to-blue-500 text-white shadow-mint-500/25 hover:shadow-xl hover:shadow-mint-500/30 hover:scale-[1.02]",
     secondary: "bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-slate-700/50 hover:text-white"
