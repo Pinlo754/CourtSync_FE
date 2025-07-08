@@ -3,7 +3,7 @@ import { AxiosInstance } from "axios";
 import { handleApiError } from "./errorHandler";
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_Backend_URL,
+  baseURL: process.env.REACT_APP_API_BASE_URL,
   withCredentials: true,
   timeout: 60000,
   headers: {
