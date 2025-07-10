@@ -11,6 +11,7 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 //const defaultHeaders = { ...axiosInstance.defaults.headers.common };
+console.log("API BASE URL: ", process.env.REACT_APP_API_BASE_URL);
 
 axiosInstance.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {

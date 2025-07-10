@@ -17,9 +17,10 @@ export interface LoginRequest {
 export interface SignUpRequest {
   email: string;
   password: string;
+  confirmPassword: string;
   firstName: string;
   lastName: string;
-  phone?: string;
+  phone: string;
 }
 
 // Auth API Response Types

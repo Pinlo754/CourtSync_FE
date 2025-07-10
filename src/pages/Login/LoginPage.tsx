@@ -10,7 +10,7 @@ export const LoginPage: React.FC = () => {
       <BackgroundEffects />
 
       {/* Main Container - Centered Layout */}
-      <div className="min-h-screen flex items-center justify-center px-4 py-8">
+      <div className="min-h-screen flex items-center justify-center px-4 py-4">
         <div className="w-full max-w-7xl flex items-center justify-center gap-8 lg:gap-16">
           {/* Left Side - Hero Section */}
           <HeroSection />

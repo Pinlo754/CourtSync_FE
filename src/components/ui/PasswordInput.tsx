@@ -39,9 +39,10 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
         <motion.button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-mint-400 transition-colors"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-mint-400 transition-colors flex items-center justify-center w-4 h-4"
+          whileHover={{ opacity: 0.8 }}
+          // whileTap={{ scale: 0.95 }}
+          transition={{ duration: 0.1 }}
         >
           <AnimatePresence mode="wait">
             {showPassword ? (
@@ -51,6 +52,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
                 animate={{ opacity: 1, rotate: 0 }}
                 exit={{ opacity: 0, rotate: 90 }}
                 transition={{ duration: 0.2 }}
+                className="flex items-center justify-center"
               >
                 <EyeOff className="w-4 h-4" />
               </motion.div>
@@ -61,6 +63,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
                 animate={{ opacity: 1, rotate: 0 }}
                 exit={{ opacity: 0, rotate: 90 }}
                 transition={{ duration: 0.2 }}
+                className="flex items-center justify-center"
               >
                 <Eye className="w-4 h-4" />
               </motion.div>

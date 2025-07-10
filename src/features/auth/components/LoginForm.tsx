@@ -8,37 +8,96 @@ import { ErrorMessage } from '../../../components/ui/ErrorMessage';
 import { AuthToggle } from './AuthToggle';
 import { SignUpFields } from './SignUpFields';
 import { LoginRequest, SignUpRequest } from '../types';
-import { loginUser } from '../../../api/auth/authApi';
+import { loginUser, signUpUser } from '../../../api/auth/authApi';
 import { Navigate, useNavigate } from 'react-router-dom';
 
-interface FormData {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-}
 
 export const LoginForm: React.FC = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<FormData>({
-
+  const [loginData, setLoginData] = useState<LoginRequest>({
+    email: '',
+    password: ''
+  });
+  const [signupData, setSignupData] = useState<SignUpRequest>({
     email: '',
     password: '',
+    confirmPassword: '',
     firstName: '',
     lastName: '',
     phone: ''
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    if (isSignUp) {
+      setSignupData({
+        ...signupData,
+        [e.target.name]: e.target.value
+      });
+    } else {
+      setLoginData({
+        ...loginData,
+        [e.target.name]: e.target.value
+      });
+    }
     if (error) setError('');
+  };
+
+
+  const validateForm = (): boolean => {
+    const currentData = isSignUp ? signupData : loginData;
+    if (!currentData.email || !currentData.password) {
+      setError('Please fill in all required fields');
+      return false;
+    }
+    if (isSignUp && (!signupData.firstName || !signupData.lastName)) {
+      setError('Please fill in all required fields');
+      return false;
+    }
+    return true;
+  };
+
+  const handleLogin = async (): Promise<void> => {
+    const response = await loginUser(loginData);
+    sessionStorage.setItem('accessToken', response.token);
+    sessionStorage.setItem('loggedUser', JSON.stringify(response.user));
+    navigate('/');
+  };
+
+  const handleSignup = async (): Promise<void> => {
+    const { confirmPassword, ...tempConfirmPassword } = signupData;
+    const response = await signUpUser(signupData);
+  };
+
+  const handleError = (error: any): void => {
+    console.error('Auth error:', error);
+    const errors = error.response.data.errors;
+    // console.log(error.response.data.errors);
+    if (error.response?.status === 400) {
+      const data = error.response.data;
+      // Đọc kĩ để hiểu 
+      if (data?.errors && typeof data.errors === 'object') {
+        // Lấy lỗi đầu tiên từ object errors
+        const errorValues = Object.values(data.errors);
+        if (errorValues.length > 0 && Array.isArray(errorValues[0])) {
+          setError(errorValues[0][0]);
+        } else {
+          setError('Invalid input'); // fallback
+        }
+      } else if (data?.message) {
+        // Trường hợp backend trả về message riêng
+        setError(data.message);
+      } else {
+        setError('Invalid request');
+      }
+    } else if (error.message?.includes('Network Error')) {
+      setError('Unable to connect to server. Please try again later.');
+    } else {
+      setError(isSignUp ? 'Signup failed. Please try again.' : 'Login failed. Please try again.');
+    }
+
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,53 +106,18 @@ export const LoginForm: React.FC = () => {
     setError('');
 
     try {
-      // Validation
-      if (!formData.email || !formData.password) {
-        setError('Please fill in all required fields');
+      if (!validateForm()) {
         setIsLoading(false);
         return;
       }
 
       if (isSignUp) {
-        if (!formData.firstName || !formData.lastName) {
-          setError('Please fill in all required fields');
-          setIsLoading(false);
-          return;
-        }
-        // TODO: Implement signup API call
-        setError('Signup functionality will be implemented later');
-        setIsLoading(false);
-        return;
-      }
-
-      // Login API call
-      const credentials: LoginRequest = {
-        email: formData.email,
-        password: formData.password
-      };
-
-      const response = await loginUser(credentials);
-
-      // Store user data and token
-      localStorage.setItem('loggedUser', JSON.stringify(response));
-
-      // Handle successful login
-      console.log('Login successful:', response);
-      // TODO: Redirect to dashboard or update app state
-      navigate('/');
-
-    } catch (error: any) {
-      console.error('Login error:', error);
-
-      if (error.response?.status === 401) {
-        setError('Invalid email or password');
-      } else if (error.response?.status === 400) {
-        setError('Please check your input');
-      } else if (error.message?.includes('Network Error')) {
-        setError('Unable to connect to server. Please try again later.');
+        await handleSignup();
       } else {
-        setError('Login failed. Please try again.');
+        await handleLogin();
       }
+    } catch (error: any) {
+      handleError(error);
     } finally {
       setIsLoading(false);
     }
@@ -109,7 +133,7 @@ export const LoginForm: React.FC = () => {
       <div className="w-full">
         {/* Form Container */}
         <motion.div
-          className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 border border-white/20 shadow-2xl shadow-black/20 max-h-[85vh] overflow-y-auto"
+          className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 border border-white/20 shadow-2xl shadow-black/20 max-h-[95vh] overflow-y-auto"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.5 }}
@@ -140,7 +164,7 @@ export const LoginForm: React.FC = () => {
             {/* Sign Up Fields */}
             <SignUpFields
               isSignUp={isSignUp}
-              formData={formData}
+              formData={signupData}
               onChange={handleInputChange}
             />
 
@@ -153,7 +177,7 @@ export const LoginForm: React.FC = () => {
               <Input
                 type="email"
                 name="email"
-                value={formData.email}
+                value={isSignUp ? signupData.email : loginData.email}
                 onChange={handleInputChange}
                 placeholder="Enter your email"
                 label="Email Address"
@@ -169,12 +193,27 @@ export const LoginForm: React.FC = () => {
             >
               <PasswordInput
                 name="password"
-                value={formData.password}
+                value={isSignUp ? signupData.password : loginData.password}
                 onChange={handleInputChange}
                 placeholder="Enter your password"
                 label="Password"
               />
             </motion.div>
+            {isSignUp && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.4 }}
+              >
+                <PasswordInput
+                  name="confirmPassword"
+                  value={signupData.confirmPassword}
+                  onChange={handleInputChange}
+                  placeholder="Confirm your password"
+                  label="Confirm Password"
+                />
+              </motion.div>
+            )}
 
             {/* Forgot Password (Sign In Only) */}
             {!isSignUp && (
@@ -197,7 +236,7 @@ export const LoginForm: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: isSignUp ? 1.3 : 1.2 }}
+              transition={{ duration: 0.4, delay: isSignUp ? 1.4 : 1.2 }}
             >
               <Button
                 type="submit"
@@ -214,7 +253,7 @@ export const LoginForm: React.FC = () => {
             className="mt-4 text-center space-y-1"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.4, delay: isSignUp ? 1.4 : 1.3 }}
+            transition={{ duration: 0.4, delay: isSignUp ? 1.5 : 1.3 }}
           >
             <p className="text-slate-400 text-xs">
               {isSignUp ? 'Already have an account?' : "Don't have an account?"}
