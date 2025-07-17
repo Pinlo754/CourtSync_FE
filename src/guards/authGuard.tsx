@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "../components/ui/card";
-import { Button } from "../components/ui/button";
+import { Button } from "../components/ui/Button";
 import { useAuthContext } from "../features/auth/hooks/useAuthContext";
 
 interface AuthGuardProps {
@@ -18,7 +18,7 @@ export const AuthGuard = ({ children }: AuthGuardProps) => {
           <CardContent className="p-6">
             <h2 className="text-2xl font-bold mb-4">Access Restricted</h2>
             <p className="mb-4">You need to be logged in to view this page.</p>
-            <Button asChild>
+            <Button>
               <Link to="/">Go back to Home</Link>
             </Button>
           </CardContent>

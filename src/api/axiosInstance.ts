@@ -3,7 +3,7 @@ import { AxiosInstance } from "axios";
 import { handleApiError } from "./errorHandler";
 
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_Backend_URL,
+  baseURL: process.env.REACT_APP_API_BASE_URL,
   withCredentials: true,
   timeout: 60000,
   headers: {
@@ -11,6 +11,7 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 //const defaultHeaders = { ...axiosInstance.defaults.headers.common };
+console.log("API BASE URL: ", process.env.REACT_APP_API_BASE_URL);
 
 axiosInstance.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
