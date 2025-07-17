@@ -5,18 +5,21 @@ import { Input } from '../../../components/ui/Input';
 import { PasswordInput } from '../../../components/ui/PasswordInput';
 import { Button } from '../../../components/ui/Button';
 import { ErrorMessage } from '../../../components/ui/ErrorMessage';
+import { SuccessMessage } from '../../../components/ui/SuccessMessage';
 import { AuthToggle } from './AuthToggle';
 import { SignUpFields } from './SignUpFields';
 import { LoginRequest, SignUpRequest } from '../types';
 import { loginUser, signUpUser } from '../../../api/auth/authApi';
 import { Navigate, useNavigate } from 'react-router-dom';
-
+import { ForgotPasswordModal } from './ForgetPasswordModal';
 
 export const LoginForm: React.FC = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [loginData, setLoginData] = useState<LoginRequest>({
     email: '',
     password: ''
@@ -43,6 +46,7 @@ export const LoginForm: React.FC = () => {
       });
     }
     if (error) setError('');
+    if (successMessage) setSuccessMessage('');
   };
 
 
@@ -67,22 +71,36 @@ export const LoginForm: React.FC = () => {
   };
 
   const handleSignup = async (): Promise<void> => {
-    const { confirmPassword, ...tempConfirmPassword } = signupData;
     const response = await signUpUser(signupData);
+    // Hiển thị thông báo thành công
+    setSuccessMessage('Account created successfully! Please sign in with your credentials.');
+    // Clear signup form data
+    setSignupData({
+      email: '',
+      password: '',
+      confirmPassword: '',
+      firstName: '',
+      lastName: '',
+      phone: ''
+    });
+    // Chuyển về form login sau 2 giây
+    setTimeout(() => {
+      setIsSignUp(false);
+    }, 2000);
   };
 
   const handleError = (error: any): void => {
     console.error('Auth error:', error);
-    const errors = error.response.data.errors;
-    // console.log(error.response.data.errors);
+
     if (error.response?.status === 400) {
       const data = error.response.data;
-      // Đọc kĩ để hiểu 
+
       if (data?.errors && typeof data.errors === 'object') {
         // Lấy lỗi đầu tiên từ object errors
         const errorValues = Object.values(data.errors);
-        if (errorValues.length > 0 && Array.isArray(errorValues[0])) {
-          setError(errorValues[0][0]);
+
+        if (errorValues.length > 0 && Array.isArray(errorValues[1])) {
+          setError(errorValues[1][0]);
         } else {
           setError('Invalid input'); // fallback
         }
@@ -97,13 +115,13 @@ export const LoginForm: React.FC = () => {
     } else {
       setError(isSignUp ? 'Signup failed. Please try again.' : 'Login failed. Please try again.');
     }
-
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setSuccessMessage('');
 
     try {
       if (!validateForm()) {
@@ -154,10 +172,17 @@ export const LoginForm: React.FC = () => {
           </motion.div>
 
           {/* Toggle Buttons */}
-          <AuthToggle isSignUp={isSignUp} onToggle={setIsSignUp} />
+          <AuthToggle isSignUp={isSignUp} onToggle={(value) => {
+            setIsSignUp(value);
+            setError('');
+            setSuccessMessage('');
+          }} />
 
           {/* Error Message */}
           <ErrorMessage message={error} show={!!error} />
+
+          {/* Success Message */}
+          <SuccessMessage message={successMessage} show={!!successMessage} />
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-3">
@@ -221,11 +246,11 @@ export const LoginForm: React.FC = () => {
                 className="text-right"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 0.4, delay: 1.1 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
               >
                 <a
-                  href="#"
-                  className="text-xs text-mint-400 hover:text-mint-300 transition-colors hover:underline"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="text-xs text-mint-400 hover:text-mint-300 transition-colors hover:cursor-pointer underline"
                 >
                   Forgot password?
                 </a>
@@ -259,14 +284,21 @@ export const LoginForm: React.FC = () => {
               {isSignUp ? 'Already have an account?' : "Don't have an account?"}
             </p>
             <button
-              onClick={() => setIsSignUp(!isSignUp)}
+              onClick={() => {
+                setIsSignUp(!isSignUp);
+                setError('');
+                setSuccessMessage('');
+              }}
               className="text-mint-400 hover:text-mint-300 transition-colors font-medium text-xs hover:underline"
             >
               {isSignUp ? 'Sign in here' : 'Create an account'}
             </button>
           </motion.div>
         </motion.div>
-      </div>
+        <ForgotPasswordModal
+          isOpen={showForgotPassword}
+          onClose={() => setShowForgotPassword(false)}
+        />      </div>
     </motion.div>
   );
 };
