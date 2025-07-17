@@ -10,7 +10,7 @@ import avatar from "../../assets/avatar.png";
 const Header = () => {
   return (
     // Container chính của header với chiều cao cố định và căn chỉnh các phần tử
-    <div className="flex h-20 w-full justify-between">
+    <div className="flex h-20 w-full justify-between pb-1">
       {/* Phần chứa logo bên trái */}
       <div className="flex justify-center items-center h-full">
         <Link to="/">
