@@ -4,6 +4,7 @@ import About from "../pages/About/AboutScreen";
 import NotFound from "../pages/NotFound/NotFoundScreen";
 import ProfileScreen from "../pages/Profile/ProfileScreen";
 import { LoginPage } from "../pages/Login/LoginPage";
+import { AdminPage } from "../pages/Admin/AdminPage";
 const routers = createBrowserRouter([
   {
     path: "/",
@@ -25,6 +26,10 @@ const routers = createBrowserRouter([
     path: "/login",
     element: <LoginPage/>,
   }, 
+  {
+    path: "/admin",
+    element: <AdminPage/>,
+  },
 ]);
 
 export default routers;

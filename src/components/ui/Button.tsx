@@ -9,7 +9,7 @@ interface ButtonProps {
   loading?: boolean;
   children: React.ReactNode;
   icon?: LucideIcon;
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'danger';
   className?: string;
 }
 
@@ -27,7 +27,8 @@ export const Button: React.FC<ButtonProps> = ({
   
   const variantClasses = {
     primary: "bg-gradient-to-r from-mint-500 to-blue-500 text-white shadow-mint-500/25 hover:shadow-xl hover:shadow-mint-500/30 hover:scale-[1.02]",
-    secondary: "bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-slate-700/50 hover:text-white"
+    secondary: "bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-slate-700/50 hover:text-white",
+    danger: "bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-red-600 hover:text-white"
   };
 
   return (
