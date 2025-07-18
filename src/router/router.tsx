@@ -3,7 +3,7 @@ import Home from "../pages/Home/HomeScreen";
 import About from "../pages/About/AboutScreen";
 import NotFound from "../pages/NotFound/NotFoundScreen";
 import ProfileScreen from "../pages/Profile/ProfileScreen";
-import {LoginPage} from "../pages/Login/LoginPage";
+import { LoginPage } from "../pages/Login/LoginPage";
 const routers = createBrowserRouter([
   {
     path: "/",

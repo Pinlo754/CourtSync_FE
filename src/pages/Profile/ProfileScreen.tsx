@@ -1,5 +1,5 @@
 "use client";
-import { Button } from "../../components/ui/button";
+import { Button } from "../../components/ui/Button";
 import {
   Card,
   CardContent,
@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../../components/ui/card";
-import { Input } from "../../components/ui/input";
+import { Input } from "../../components/ui/Input";
 import { Label } from "../../components/ui/label";
 import {
   Select,
@@ -97,7 +97,6 @@ export default function ProfilePage() {
               </AvatarFallback>
             </Avatar>
             <Button
-              size="sm"
               className="absolute bottom-0 right-0 rounded-full w-10 h-10 p-0 bg-white text-blue-600 hover:bg-gray-100"
             >
               <Camera className="h-4 w-4" />
@@ -240,7 +239,7 @@ export default function ProfilePage() {
                 </div>
                 <Button
                   onClick={handlePasswordUpdate}
-                  variant="outline"
+                  variant="secondary"
                   className="w-full md:w-auto bg-transparent"
                 >
                   <Lock className="h-4 w-4 mr-2" />
@@ -396,8 +395,7 @@ export default function ProfilePage() {
                     be certain.
                   </p>
                   <Button
-                    variant="destructive"
-                    size="sm"
+                    variant="secondary"
                     className="text-[red]"
                   >
                     <Trash2 className="h-4 w-4 mr-2 text-[red]" />
@@ -476,8 +474,7 @@ export default function ProfilePage() {
                   ))}
                 </div>
                 <Button
-                  variant="outline"
-                  size="sm"
+                  variant="secondary"
                   className="w-full mt-4 bg-transparent"
                 >
                   View All Activity
@@ -522,8 +519,7 @@ export default function ProfilePage() {
                   ))}
                 </div>
                 <Button
-                  variant="outline"
-                  size="sm"
+                  variant="secondary"
                   className="w-full mt-4 bg-transparent"
                 >
                   Manage Favorites

@@ -1,5 +1,5 @@
 import Header from "../../components/sections/Header"
-import { Button } from "../../components/ui/button"
+import { Button } from "../../components/ui/Button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card"
 import { Users, Target, Heart, Award, MapPin, Phone, Mail, Star } from "lucide-react"
 
@@ -74,13 +74,12 @@ export default function AboutPage() {
           </p>
           <div className="flex justify-center space-x-4">
             <a href="/courts">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+              <Button className="bg-white text-blue-600 hover:bg-gray-100">
                 Start Booking
               </Button>
             </a>
             <Button
-              size="lg"
-              variant="outline"
+              variant="secondary"
               className="border-white text-white hover:bg-white hover:text-blue-600 bg-transparent"
             >
               Contact Us
@@ -266,7 +265,7 @@ export default function AboutPage() {
             Join thousands of players who trust CourtBook for their badminton court bookings.
           </p>
           <a href="/courts">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+            <Button className="bg-white text-blue-600 hover:bg-gray-100">
               Find Courts Near You
             </Button>
           </a>
