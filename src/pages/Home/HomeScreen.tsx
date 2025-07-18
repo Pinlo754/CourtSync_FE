@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Button } from "../../components/ui/button"
+import { Button } from "../../components/ui/Button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../components/ui/card"
-import { Input } from "../../components/ui/input"
+import { Input } from "../../components/ui/Input"
 import { Label } from "../../components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select"
 import { Checkbox } from "../../components/ui/checkbox"
@@ -294,7 +294,7 @@ export default function HomePage() {
                   Court
                 </h1>
                 <a href="/courts">
-                  <Button size="lg" className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-2xl">
+                  <Button className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-2xl">
                     Đặt sân ngay
                   </Button>
                 </a>
@@ -332,7 +332,7 @@ export default function HomePage() {
             </Select>
 
             {/* Filter Toggle */}
-            <Button variant="outline" onClick={() => setShowFilters(!showFilters)} className="h-12 px-6 bg-transparent">
+            <Button onClick={() => setShowFilters(!showFilters)} className="h-12 px-6 bg-transparent ">
               <SlidersHorizontal className="h-4 w-4 mr-2" />
               Bộ lọc
               {(selectedDistricts.length > 0 ||
@@ -356,7 +356,7 @@ export default function HomePage() {
               searchTerm ||
               priceRange[0] > 0 ||
               priceRange[1] < 200000) && (
-              <Button variant="ghost" onClick={clearAllFilters} className="text-blue-600">
+              <Button variant="secondary" onClick={clearAllFilters} className="text-blue-600">
                 <X className="h-4 w-4 mr-1" />
                 Xóa bộ lọc
               </Button>
@@ -494,7 +494,7 @@ export default function HomePage() {
 
                       <div className="flex space-x-2">
                         <a href={`/courts/${court.id}`} className="flex-1">
-                          <Button variant="outline" className="w-full bg-transparent">
+                          <Button variant="secondary" className="w-full bg-transparent">
                             Xem chi tiết
                           </Button>
                         </a>
