@@ -3,8 +3,7 @@ import Home from "../pages/Home/HomeScreen";
 import About from "../pages/About/AboutScreen";
 import NotFound from "../pages/NotFound/NotFoundScreen";
 import ProfileScreen from "../pages/Profile/ProfileScreen";
-import RegisterPage from "../pages/Register/Register";
-import LoginPage from "../pages/Login/Login";
+import {LoginPage} from "../pages/Login/LoginPage";
 const routers = createBrowserRouter([
   {
     path: "/",
@@ -21,10 +20,6 @@ const routers = createBrowserRouter([
   {
     path: "/profile",
     element: <ProfileScreen/>,
-  },
-  {
-    path: "/register",
-    element: <RegisterPage/>,
   },
   {
     path: "/login",
