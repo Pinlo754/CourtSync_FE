@@ -9,17 +9,20 @@ import { SuccessMessage } from '../../../components/ui/SuccessMessage';
 import { AuthToggle } from './AuthToggle';
 import { SignUpFields } from './SignUpFields';
 import { LoginRequest, SignUpRequest } from '../types';
-import { loginUser, signUpUser } from '../../../api/auth/authApi';
+import { signUpUser } from '../../../api/auth/authApi';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { ForgotPasswordModal } from './ForgetPasswordModal';
+import { useAuthContext } from '../hooks/useAuthContext';
 
 export const LoginForm: React.FC = () => {
   const [isSignUp, setIsSignUp] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+
+  // Sử dụng Zustand store
+  const { login, isLoading, loginMessage, success: authSuccess } = useAuthContext();
   const [loginData, setLoginData] = useState<LoginRequest>({
     email: '',
     password: ''
@@ -64,17 +67,13 @@ export const LoginForm: React.FC = () => {
   };
 
   const handleLogin = async (): Promise<void> => {
-    const response = await loginUser(loginData);
-    sessionStorage.setItem('accessToken', response.token);
-    sessionStorage.setItem('loggedUser', JSON.stringify(response.user));
+    await login(loginData);
     navigate('/');
   };
 
   const handleSignup = async (): Promise<void> => {
     const response = await signUpUser(signupData);
-    // Hiển thị thông báo thành công
     setSuccessMessage('Account created successfully! Please sign in with your credentials.');
-    // Clear signup form data
     setSignupData({
       email: '',
       password: '',
@@ -119,13 +118,11 @@ export const LoginForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     setError('');
     setSuccessMessage('');
 
     try {
       if (!validateForm()) {
-        setIsLoading(false);
         return;
       }
 
@@ -136,8 +133,6 @@ export const LoginForm: React.FC = () => {
       }
     } catch (error: any) {
       handleError(error);
-    } finally {
-      setIsLoading(false);
     }
   };
 

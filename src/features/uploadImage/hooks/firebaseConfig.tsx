@@ -18,7 +18,7 @@ const validateFirebaseConfig = () => {
   ];
 
   const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
-  
+
   if (missingVars.length > 0) {
     console.warn('Missing Firebase environment variables:', missingVars);
     console.warn('Firebase features will be disabled. Please set the required environment variables.');
@@ -51,7 +51,7 @@ const initializeFirebase = () => {
 
     // Initialize Firebase app
     firebaseApp = initializeApp(firebaseConfig);
-    
+
     // Initialize Firebase Storage
     storageInstance = getStorage(firebaseApp);
 

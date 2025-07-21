@@ -7,6 +7,10 @@ import { LoginPage } from "../pages/Login/LoginPage";
 import { AdminPage } from "../pages/Admin/AdminPage";
 import { StaffPage } from "../pages/Staff/StaffPage";
 import TestPage from "../pages/Test/TestPage";
+import { FacilityOwnerDashboard } from "../pages/FacilityManagement/FacilityOwnerDashBoard";
+import { AuthGuard } from "../guards/authGuard";
+import { UserRole } from "../types/role";
+import { FacilityDetailPage } from "../pages/FacilityManagement/FacilityDetailPage";
 
 const routers = createBrowserRouter([
   {
@@ -23,24 +27,40 @@ const routers = createBrowserRouter([
   },
   {
     path: "/profile",
-    element: <ProfileScreen/>,
+    element: <ProfileScreen />,
   },
   {
     path: "/login",
-    element: <LoginPage/>,
-  }, 
+    element: <LoginPage />,
+  },
   {
     path: "/admin",
-    element: <AdminPage/>,
+    element: <AdminPage />,
   },
   {
     path: "/staff",
-    element: <StaffPage/>,
+    element: <StaffPage />,
   },
   {
     path: "/test",
-    element: <TestPage/>,
+    element: <TestPage />,
   },
+  {
+    path: "/facility-management",
+    element: (
+      <AuthGuard requiredRole={UserRole.FACILITY_OWNER}>
+        <FacilityOwnerDashboard />
+      </AuthGuard>
+    ),
+  },
+  {
+    path: "/facility-detail/:id",
+    element: (
+      <AuthGuard requiredRole={UserRole.FACILITY_OWNER}>
+        <FacilityDetailPage />
+      </AuthGuard>
+    ),
+  }
 ]);
 
 export default routers;
