@@ -11,19 +11,35 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 //const defaultHeaders = { ...axiosInstance.defaults.headers.common };
-console.log("API BASE URL: ", process.env.REACT_APP_API_BASE_URL);
+// console.log("API BASE URL: ", process.env.REACT_APP_API_BASE_URL);
 
 axiosInstance.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
-    const storedUser = localStorage.getItem("loggedUser");
+    const storedToken = sessionStorage.getItem("accessToken");
 
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      const token = parsedUser.token;
+    if (storedToken) {
+      try {
+        const parsedToken = JSON.parse(storedToken);
 
-      if (token) {
-        config.headers["Authorization"] = `Bearer ${token}`;
+        let token: string = '';
+        if (typeof parsedToken === 'string') {
+          token = parsedToken;
+        } else if (parsedToken && typeof parsedToken.token === 'string') {
+          token = parsedToken.token;
+        }
+
+        if (token) {
+          config.headers["Authorization"] = `Bearer ${token}`;
+          console.log('Added auth header:', `Bearer ${token.substring(0, 20)}...`); // Debug log
+        }
+      } catch (error) {
+        console.error('Error parsing access token:', error);
+        // Clear invalid token
+        sessionStorage.removeItem("accessToken");
+        sessionStorage.removeItem("loggedUser");
       }
+    } else {
+      console.log('No access token found in sessionStorage'); // Debug log
     }
 
     return config;
