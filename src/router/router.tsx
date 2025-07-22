@@ -35,11 +35,19 @@ const routers = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <AdminPage />,
+    element: (
+      <AuthGuard requiredRole={UserRole.ADMIN}>
+        <AdminPage />
+      </AuthGuard>
+    ),
   },
   {
     path: "/staff",
-    element: <StaffPage />,
+    element: (
+      <AuthGuard requiredRole={UserRole.FACILITY_STAFF}>
+        <StaffPage />
+      </AuthGuard>
+    ),
   },
   {
     path: "/test",

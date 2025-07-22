@@ -3,6 +3,7 @@ import { StaffSidebarOption } from '../types';
 import StaffSidebar from '../../../components/sections/StaffSidebar';
 import { ReportIssueForm } from '../../staffReport/components/ReportIssueForm';
 import CheckinCustomer from '../../staffCheckin/components/CheckinCustomer';
+import { BookingStaffForm } from '../../staffBooking/components/BookingStaffForm';
 
 
 export const StaffContent: React.FC = () => {
@@ -25,6 +26,7 @@ export const StaffContent: React.FC = () => {
         {/* Hiển thị nội dung tương ứng với lựa chọn */}
         {selectedOption === 'check-in-customer' && <CheckinCustomer />}
         {selectedOption === 'report-issue' && <ReportIssueForm />}
+        {selectedOption === 'create-booking' && <BookingStaffForm />}
       </div>
     </div>
   );
