@@ -7,6 +7,13 @@ import { LoginPage } from "../pages/Login/LoginPage";
 import { CourtBooking } from "../pages/Booking/CourtBooking";
 import { BookingConfirmation } from "../pages/BookingConfirmation/BookingConfirmation";
 import PaymentResponsePage from "../pages/Payment/PaymentInfomation";
+import { AdminPage } from "../pages/Admin/AdminPage";
+import { StaffPage } from "../pages/Staff/StaffPage";
+import TestPage from "../pages/Test/TestPage";
+import { FacilityOwnerDashboard } from "../pages/FacilityManagement/FacilityOwnerDashBoard";
+import { AuthGuard } from "../guards/authGuard";
+import { UserRole } from "../types/role";
+import { FacilityDetailPage } from "../pages/FacilityManagement/FacilityDetailPage";
 
 const routers = createBrowserRouter([
   {
@@ -41,6 +48,42 @@ const routers = createBrowserRouter([
     path: "*",
     element: <NotFound />,
   },
+  {
+    path: "/admin",
+    element: (
+      <AuthGuard requiredRole={UserRole.ADMIN}>
+        <AdminPage />
+      </AuthGuard>
+    ),
+  },
+  {
+    path: "/staff",
+    element: (
+      <AuthGuard requiredRole={UserRole.FACILITY_STAFF}>
+        <StaffPage />
+      </AuthGuard>
+    ),
+  },
+  {
+    path: "/test",
+    element: <TestPage />,
+  },
+  {
+    path: "/facility-management",
+    element: (
+      <AuthGuard requiredRole={UserRole.FACILITY_OWNER}>
+        <FacilityOwnerDashboard />
+      </AuthGuard>
+    ),
+  },
+  {
+    path: "/facility-detail/:id",
+    element: (
+      <AuthGuard requiredRole={UserRole.FACILITY_OWNER}>
+        <FacilityDetailPage />
+      </AuthGuard>
+    ),
+  }
 ]);
 
 export default routers;

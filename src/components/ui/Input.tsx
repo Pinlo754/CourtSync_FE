@@ -1,5 +1,6 @@
 import React from "react";
 import { LucideIcon } from "lucide-react";
+import { twMerge } from "tailwind-merge";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   id?: string;
@@ -11,6 +12,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   icon?: LucideIcon;
   className?: string;
+  labelClassName?: string;
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -22,10 +24,11 @@ export const Input: React.FC<InputProps> = ({
   label,
   icon: Icon,
   className = "",
+  labelClassName = "",
 }) => {
   return (
     <div className={`group ${className}`}>
-      <label className="block text-xs font-medium text-slate-300 mb-1">
+      <label className={twMerge("block text-xs font-medium text-slate-300 mb-1",labelClassName)}>
         {label}
       </label>
       <div className="relative">

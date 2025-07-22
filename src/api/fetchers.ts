@@ -14,3 +14,6 @@ export const putData = (url: string, data: any) =>
 
 export const deleteData = (url: string) =>
   axiosInstance.delete(url).then((res) => res.data);
+
+export const patchData = (url:string,data:any) =>
+  axiosInstance.patch(url,data).then((res) => res.data);

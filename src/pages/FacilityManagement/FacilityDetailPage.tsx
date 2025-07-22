@@ -1,0 +1,597 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useParams } from 'react-router-dom';
+import {
+    ArrowLeft,
+    Building2,
+    MapPin,
+    Phone,
+    Mail,
+    Clock,
+    Edit3,
+    Save,
+    X,
+    Calendar,
+
+    Users,
+    BarChart3,
+    Settings,
+    ChevronRight,
+    Star,
+    Zap,
+    TrendingUp,
+    Activity,
+    Plus,
+    Trash2,
+    Eye,
+    EyeOff,
+    Gamepad2
+} from 'lucide-react';
+import { DashboardLayout } from '../../components/layout/DashboardLayout';
+import { Button } from '../../components/ui/Button';
+import { ErrorMessage } from '../../components/ui/ErrorMessage';
+import { CourtCard } from '../../components/courts/CourtCard';
+import { AddCourtModal } from '../../components/courts/AddCourtModal';
+import { getCourtsByFacilityId, Court, CourtPricing } from '../../api/facility/facilityApi';
+
+interface FacilityDetail {
+    $id: string;
+    facilityId: number;
+    facilityName: string;
+    description: string;
+    contactPhone: string;
+    contactEmail: string;
+    openingTime: string;
+    closingTime: string;
+    address: string;
+    ward: string;
+    district: string;
+    city: string;
+    latitude: number;
+    longtitude: number;
+    facilityStatus: string;
+    ownerId: number;
+    staffId: number;
+}
+
+export const FacilityDetailPage: React.FC = () => {
+    const { id: facilityId } = useParams<{ id: string }>();
+
+    const [facility, setFacility] = useState<FacilityDetail>({
+        $id: "2",
+        facilityId: parseInt(facilityId || '1'),
+        facilityName: "CapPT",
+        description: "Facility1",
+        contactPhone: "0862414845",
+        contactEmail: "phatasdasd0197@gmail.com",
+        openingTime: "07:00:00",
+        closingTime: "23:00:00",
+        address: "329",
+        ward: "Hoa Minh",
+        district: "Chau Thanh",
+        city: "Tra Vinh",
+        latitude: 0,
+        longtitude: 0,
+        facilityStatus: "1",
+        ownerId: 2,
+        staffId: 3
+    });
+
+    const [isEditing, setIsEditing] = useState(false);
+    const [editData, setEditData] = useState({
+        description: facility.description,
+        openingTime: facility.openingTime.slice(0, 5),
+        closingTime: facility.closingTime.slice(0, 5)
+    });
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [activeTab, setActiveTab] = useState('courts');
+
+    // Courts management state
+    const [courts, setCourts] = useState<Court[]>([]);
+    const [courtsLoading, setCourtsLoading] = useState(false);
+    const [courtsError, setCourtsError] = useState('');
+    const [showAddCourtModal, setShowAddCourtModal] = useState(false);
+    const [editingCourt, setEditingCourt] = useState<Court | null>(null);
+
+    // Load courts function
+    const loadCourts = async () => {
+        if (!facilityId) return;
+
+        setCourtsLoading(true);
+        setCourtsError('');
+        try {
+            const courtsData = await getCourtsByFacilityId(parseInt(facilityId));
+            setCourts(courtsData);
+            console.log('Loaded courts:', courtsData);
+        } catch (error) {
+            console.error('Error loading courts:', error);
+            setCourtsError('Unable to load courts list. Please try again.');
+        } finally {
+            setCourtsLoading(false);
+        }
+    };
+
+    // Load courts data on component mount
+    useEffect(() => {
+        loadCourts();
+    }, [facilityId]);
+
+
+
+    const tabs = [
+        { id: 'courts', label: 'Courts Management', icon: Building2 },
+        { id: 'details', label: 'Details', icon: Settings },
+    ];
+
+    const handleEditChange = (field: string, value: string) => {
+        setEditData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+        if (error) setError('');
+    };
+
+    const handleSave = async () => {
+        if (!editData.description.trim()) {
+            setError('Description cannot be empty');
+            return;
+        }
+
+        if (!editData.openingTime || !editData.closingTime) {
+            setError('Please set both opening and closing times');
+            return;
+        }
+
+        const openTime = new Date(`2000-01-01T${editData.openingTime}:00`);
+        const closeTime = new Date(`2000-01-01T${editData.closingTime}:00`);
+
+        if (openTime >= closeTime) {
+            setError('Opening time must be before closing time');
+            return;
+        }
+
+        setIsLoading(true);
+        setError('');
+
+        setTimeout(() => {
+            setFacility(prev => ({
+                ...prev,
+                description: editData.description,
+                openingTime: `${editData.openingTime}:00`,
+                closingTime: `${editData.closingTime}:00`
+            }));
+            setIsLoading(false);
+            setIsEditing(false);
+        }, 1500);
+    };
+
+    const handleCancel = () => {
+        setEditData({
+            description: facility.description,
+            openingTime: facility.openingTime.slice(0, 5),
+            closingTime: facility.closingTime.slice(0, 5)
+        });
+        setError('');
+        setIsEditing(false);
+    };
+
+    const formatTime = (time: string) => {
+        return time.slice(0, 5);
+    };
+
+    // Handle court added successfully
+    const handleCourtAdded = () => {
+        loadCourts(); // Reload courts list
+    };
+
+
+
+    return (
+        <DashboardLayout>
+            <div className="space-y-6">
+                {/* Redesigned Compact Header */}
+                <motion.div
+                    className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-800/90 via-slate-700/80 to-slate-800/90 border border-slate-600/50"
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6 }}
+                >
+                    {/* Background Pattern */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-mint-500/5 via-transparent to-blue-500/5"></div>
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-radial from-mint-400/10 to-transparent rounded-full blur-3xl"></div>
+
+                    <div className="relative p-6">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                                <motion.button
+                                    onClick={() => window.history.back()}
+                                    className="p-2 text-slate-400 hover:text-white transition-colors rounded-xl hover:bg-slate-700/50 backdrop-blur-sm"
+                                    whileHover={{ x: -3, scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                >
+                                    <ArrowLeft className="w-5 h-5" />
+                                </motion.button>
+
+                                <div className="flex items-center space-x-8">
+                                    {/* Facility Name and Status - Redesigned */}
+                                    <div className="flex items-center space-x-4">
+                                        <div className="w-14 h-14 bg-gradient-to-br from-mint-500/30 to-blue-500/20 rounded-2xl flex items-center justify-center">
+                                            <Building2 className="w-7 h-7 text-mint-400" />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <div className="flex items-center space-x-3">
+                                                <h1 className="text-2xl font-bold text-white">{facility.facilityName}</h1>
+                                                <motion.div
+                                                    className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center space-x-2 ${facility.facilityStatus === '1'
+                                                        ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                                        : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                                                        }`}
+                                                    initial={{ scale: 0 }}
+                                                    animate={{ scale: 1 }}
+                                                    transition={{ delay: 0.3, type: "spring" }}
+                                                >
+                                                    <div className={`w-2 h-2 rounded-full ${facility.facilityStatus === '1' ? 'bg-green-400' : 'bg-red-400'} animate-pulse`}></div>
+                                                    <span>{facility.facilityStatus === '1' ? 'Active' : 'Inactive'}</span>
+                                                </motion.div>
+                                            </div>
+                                            <p className="text-slate-400 text-sm">Facility ID: #{facility.facilityId}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Facility Info Cards - Improved */}
+                                    <div className="flex items-center space-x-3">
+                                        <div className="bg-slate-700/40 backdrop-blur-sm rounded-xl px-4 py-3 border border-slate-600/50 min-w-[100px]">
+                                            <div className="text-center">
+                                                <p className="text-xs text-slate-400 mb-1">Location</p>
+                                                <p className="text-sm font-semibold text-white">{facility.city}</p>
+                                            </div>
+                                        </div>
+                                        <div className="bg-slate-700/40 backdrop-blur-sm rounded-xl px-4 py-3 border border-slate-600/50 min-w-[120px]">
+                                            <div className="text-center">
+                                                <p className="text-xs text-slate-400 mb-1">Operating Hours</p>
+                                                <p className="text-sm font-semibold text-white">{formatTime(facility.openingTime)} - {formatTime(facility.closingTime)}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+
+                {/* Tab Navigation */}
+                <motion.div
+                    className="flex space-x-1 bg-slate-800/50 backdrop-blur-xl rounded-2xl p-2 border border-slate-700/50"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                >
+                    {tabs.map((tab) => (
+                        <motion.button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`flex-1 flex items-center justify-center space-x-2 py-3 px-6 rounded-xl font-medium text-sm transition-all duration-300 ${activeTab === tab.id
+                                ? 'bg-gradient-to-r from-mint-500 to-blue-500 text-white shadow-lg shadow-mint-500/25'
+                                : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                                }`}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                        >
+                            <tab.icon className="w-4 h-4" />
+                            <span>{tab.label}</span>
+                        </motion.button>
+                    ))}
+                </motion.div>
+
+                {/* Tab Content */}
+                <AnimatePresence mode="wait">
+                    {activeTab === 'courts' && (
+                        <motion.div
+                            key="courts"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.3 }}
+                            className="space-y-6"
+                        >
+                            {/* Header with Add Court Button */}
+                            <div className="flex items-center justify-between bg-gradient-to-br from-slate-800/60 to-slate-700/40 backdrop-blur-xl rounded-2xl p-6 border border-slate-600/50">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-12 h-12 bg-gradient-to-br from-mint-500/30 to-blue-500/20 rounded-xl flex items-center justify-center">
+                                        <Building2 className="w-6 h-6 text-mint-400" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-white">Courts Management</h2>
+                                        <p className="text-slate-400">Manage all courts in this facility</p>
+                                    </div>
+                                </div>
+
+                                <motion.div
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.2 }}
+                                >
+                                    <Button
+                                        onClick={() => setShowAddCourtModal(true)}
+                                        icon={Plus}
+                                        className="bg-gradient-to-r from-mint-500/20 to-blue-500/20 border border-mint-500/30 hover:from-mint-500/30 hover:to-blue-500/30 px-4 py-2 text-sm"
+                                    >
+                                        Add New Court
+                                    </Button>
+                                </motion.div>
+                            </div>
+
+                            {/* Error Message for Courts */}
+                            <ErrorMessage message={courtsError} show={!!courtsError} />
+
+                            {/* Loading State */}
+                            {courtsLoading && (
+                                <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/40 backdrop-blur-xl rounded-2xl p-12 border border-slate-600/50 text-center">
+                                    <div className="animate-spin w-12 h-12 border-4 border-mint-500/30 border-t-mint-500 rounded-full mx-auto mb-4"></div>
+                                    <p className="text-slate-400">Loading courts...</p>
+                                </div>
+                            )}
+
+                            {/* Courts Grid */}
+                            {!courtsLoading && !courtsError && (
+                                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                                    {courts.map((court, index) => (
+                                        <CourtCard
+                                            key={court.id}
+                                            court={court}
+                                            index={index}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Empty State */}
+                            {!courtsLoading && !courtsError && courts.length === 0 && (
+                                <motion.div
+                                    className="bg-gradient-to-br from-slate-800/60 to-slate-700/40 backdrop-blur-xl rounded-2xl p-12 border border-slate-600/50 text-center"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                >
+                                    <Building2 className="w-16 h-16 text-slate-400 mx-auto mb-4" />
+                                    <h3 className="text-xl font-semibold text-white mb-2">No Courts Yet</h3>
+                                    <p className="text-slate-400 mb-6">Start by adding your first court to this facility</p>
+                                    <Button
+                                        onClick={() => setShowAddCourtModal(true)}
+                                        icon={Plus}
+                                        className="bg-gradient-to-r from-mint-500 to-blue-500 hover:from-mint-600 hover:to-blue-600 text-white border-0 shadow-lg shadow-mint-500/25"
+                                    >
+                                        Add New Court
+                                    </Button>
+                                </motion.div>
+                            )}
+                        </motion.div>
+                    )}
+
+                    {activeTab === 'details' && (
+                        <motion.div
+                            key="details"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.3 }}
+                            className="space-y-6"
+                        >
+                            {/* Header with Edit Button */}
+                            <div className="flex items-center justify-between bg-gradient-to-br from-slate-800/60 to-slate-700/40 backdrop-blur-xl rounded-2xl p-6 border border-slate-600/50">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-12 h-12 bg-gradient-to-br from-mint-500/30 to-blue-500/20 rounded-xl flex items-center justify-center">
+                                        <Building2 className="w-6 h-6 text-mint-400" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-white">Facility Information</h2>
+                                        <p className="text-slate-400">Manage your facility details</p>
+                                    </div>
+                                </div>
+
+                                {!isEditing ? (
+                                    <motion.div
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: 0.2 }}
+                                    >
+                                        <Button
+                                            onClick={() => setIsEditing(true)}
+                                            icon={Edit3}
+                                            className="bg-gradient-to-r from-mint-500/20 to-blue-500/20 border border-mint-500/30 hover:from-mint-500/30 hover:to-blue-500/30 px-4 py-2 text-sm"
+                                        >
+                                            Edit Facility
+                                        </Button>
+                                    </motion.div>
+                                ) : (
+                                    <motion.div
+                                        className="flex space-x-3"
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                    >
+                                        <Button
+                                            onClick={handleCancel}
+                                            variant="secondary"
+                                            icon={X}
+                                            className="px-4 py-2 text-sm font-medium bg-slate-700/50 border border-slate-600/50 hover:bg-slate-600/50 hover:border-slate-500/50 text-slate-300 hover:text-white transition-all duration-300 whitespace-nowrap"
+                                        >
+                                            Cancel
+                                        </Button>
+                                        <Button
+                                            onClick={handleSave}
+                                            loading={isLoading}
+                                            icon={Save}
+                                            className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-mint-500 to-blue-500 hover:from-mint-600 hover:to-blue-600 text-white border-0 shadow-lg shadow-mint-500/25 whitespace-nowrap"
+                                        >
+                                            Save Changes
+                                        </Button>
+                                    </motion.div>
+                                )}
+                            </div>
+
+                            <ErrorMessage message={error} show={!!error} />
+
+                            {/* Organized Information Sections */}
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                                {/* Basic Information */}
+                                <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/40 backdrop-blur-xl rounded-2xl p-6 border border-slate-600/50 space-y-6">
+                                    <h3 className="flex items-center space-x-2 text-xl font-semibold text-white border-b border-slate-600/50 pb-3">
+                                        <Edit3 className="w-5 h-5 text-mint-400" />
+                                        <span>Basic Information</span>
+                                    </h3>
+
+                                    {/* Description */}
+                                    <div className="space-y-3">
+                                        <label className="text-sm font-medium text-slate-300">Description</label>
+                                        {isEditing ? (
+                                            <textarea
+                                                value={editData.description}
+                                                onChange={(e) => handleEditChange('description', e.target.value)}
+                                                className="w-full p-4 bg-slate-700/50 border-2 border-slate-600/50 rounded-xl focus:border-mint-500 focus:outline-none transition-all duration-300 text-white text-sm placeholder-slate-500 resize-none h-32"
+                                                placeholder="Enter facility description..."
+                                            />
+                                        ) : (
+                                            <div className="p-4 bg-slate-700/30 rounded-xl border border-slate-600/50">
+                                                <p className="text-white leading-relaxed">{facility.description}</p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Operating Hours */}
+                                    <div className="space-y-3">
+                                        <label className="text-sm font-medium text-slate-300">Operating Hours</label>
+                                        {isEditing ? (
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-xs font-medium text-slate-400 mb-2">Opening Time</label>
+                                                    <input
+                                                        type="time"
+                                                        value={editData.openingTime}
+                                                        onChange={(e) => handleEditChange('openingTime', e.target.value)}
+                                                        className="w-full p-3 bg-slate-700/50 border-2 border-slate-600/50 rounded-xl focus:border-mint-500 focus:outline-none transition-all duration-300 text-white"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-medium text-slate-400 mb-2">Closing Time</label>
+                                                    <input
+                                                        type="time"
+                                                        value={editData.closingTime}
+                                                        onChange={(e) => handleEditChange('closingTime', e.target.value)}
+                                                        className="w-full p-3 bg-slate-700/50 border-2 border-slate-600/50 rounded-xl focus:border-mint-500 focus:outline-none transition-all duration-300 text-white"
+                                                    />
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="p-4 bg-slate-700/30 rounded-xl border border-slate-600/50">
+                                                <div className="flex items-center justify-center space-x-8">
+                                                    <div className="flex items-center space-x-3">
+                                                        <div className="w-10 h-10 bg-mint-500/20 rounded-lg flex items-center justify-center">
+                                                            <Clock className="w-5 h-5 text-mint-400" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-xs text-slate-400">Opens</p>
+                                                            <p className="text-white font-semibold">{formatTime(facility.openingTime)}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="w-12 h-0.5 bg-gradient-to-r from-mint-400 to-blue-400 rounded-full"></div>
+                                                    <div className="flex items-center space-x-3">
+                                                        <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                                            <Clock className="w-5 h-5 text-blue-400" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-xs text-slate-400">Closes</p>
+                                                            <p className="text-white font-semibold">{formatTime(facility.closingTime)}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Contact & Location Information */}
+                                <div className="space-y-6">
+                                    {/* Contact Information */}
+                                    <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/40 backdrop-blur-xl rounded-2xl p-6 border border-slate-600/50 space-y-4">
+                                        <h3 className="flex items-center space-x-2 text-lg font-semibold text-white border-b border-slate-600/50 pb-3">
+                                            <Phone className="w-5 h-5 text-mint-400" />
+                                            <span>Contact Information</span>
+                                        </h3>
+
+                                        <div className="space-y-3">
+                                            <div className="p-4 bg-slate-700/30 rounded-xl border border-slate-600/50">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                                                        <Phone className="w-5 h-5 text-green-400" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs text-slate-400">Phone</p>
+                                                        <p className="text-white font-medium">{facility.contactPhone}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="p-4 bg-slate-700/30 rounded-xl border border-slate-600/50">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                                        <Mail className="w-5 h-5 text-blue-400" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs text-slate-400">Email</p>
+                                                        <p className="text-white font-medium text-sm break-all">{facility.contactEmail}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Location Information */}
+                                    <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/40 backdrop-blur-xl rounded-2xl p-6 border border-slate-600/50 space-y-4">
+                                        <h3 className="flex items-center space-x-2 text-lg font-semibold text-white border-b border-slate-600/50 pb-3">
+                                            <MapPin className="w-5 h-5 text-mint-400" />
+                                            <span>Location</span>
+                                        </h3>
+
+                                        <div className="p-4 bg-slate-700/30 rounded-xl border border-slate-600/50">
+                                            <div className="flex items-start space-x-3">
+                                                <div className="w-10 h-10 bg-mint-500/20 rounded-lg flex items-center justify-center mt-1">
+                                                    <MapPin className="w-5 h-5 text-mint-400" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <p className="text-white font-medium">{facility.address}</p>
+                                                    <p className="text-slate-300 text-sm">
+                                                        {facility.ward}, {facility.district}
+                                                    </p>
+                                                    <p className="text-slate-300 text-sm font-medium">
+                                                        {facility.city}
+                                                    </p>
+                                                    {(facility.latitude !== 0 || facility.longtitude !== 0) && (
+                                                        <p className="text-slate-400 text-xs">
+                                                            📍 {facility.latitude}, {facility.longtitude}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+
+
+                </AnimatePresence>
+            </div>
+
+            {/* Add Court Modal */}
+            <AddCourtModal
+                isOpen={showAddCourtModal}
+                onClose={() => setShowAddCourtModal(false)}
+                facilityId={parseInt(facilityId || '0')}
+                onCourtAdded={handleCourtAdded}
+                facilityOpeningTime={facility.openingTime}
+                facilityClosingTime={facility.closingTime}
+            />
+        </DashboardLayout>
+    );
+};
