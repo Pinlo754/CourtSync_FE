@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { LucideIcon } from 'lucide-react';
+import { type LucideIcon } from 'lucide-react';
 
 interface ButtonProps {
   type?: 'button' | 'submit';
@@ -9,7 +9,7 @@ interface ButtonProps {
   loading?: boolean;
   children: React.ReactNode;
   icon?: LucideIcon;
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'outline';
   className?: string;
 }
 
@@ -27,7 +27,8 @@ export const Button: React.FC<ButtonProps> = ({
   
   const variantClasses = {
     primary: "bg-gradient-to-r from-mint-500 to-blue-500 text-white shadow-mint-500/25 hover:shadow-xl hover:shadow-mint-500/30 hover:scale-[1.02]",
-    secondary: "bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-slate-700/50 hover:text-white"
+    secondary: "bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-slate-700/50 hover:text-white",
+    outline: "bg-transparent text-mint-500 border-2 border-mint-500 hover:bg-mint-500 hover:text-white shadow-mint-500/10 hover:shadow-mint-500/20"
   };
 
   return (

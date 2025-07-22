@@ -1,32 +1,33 @@
 import { useState, useEffect } from "react";
 import { Calendar, DollarSign, Heart, MapPin, Star } from "lucide-react";
+import { BookingHistoryItem } from "../../types/booking";
 const useProfile = () => {
-    interface UserProfile {
-      id: string;
-      email: string;
-      full_name: string;
-      phone: string;
-      date_of_birth: string;
-      avatar_url: string;
-      created_at: string;
-    }
-    
-    interface UserStats {
-      totalBookings: number;
-      favoriteCourts: number;
-      totalSpent: number;
-      memberSince: string;
-    }
-    
-    interface RecentActivity {
-      id: string;
-      type: string;
-      description: string;
-      timestamp: string;
-      icon: any;
-    }
+  interface UserProfile {
+    id: string;
+    email: string;
+    full_name: string;
+    phone: string;
+    date_of_birth: string;
+    avatar_url: string;
+    created_at: string;
+  }
 
-    const [user, setUser] = useState<UserProfile | null>(null);
+  interface UserStats {
+    totalBookings: number;
+    favoriteCourts: number;
+    totalSpent: number;
+    memberSince: string;
+  }
+
+  interface RecentActivity {
+    id: string;
+    type: string;
+    description: string;
+    timestamp: string;
+    icon: any;
+  }
+
+  const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
@@ -217,6 +218,76 @@ const useProfile = () => {
       alert("Password updated successfully!");
     }, 1000);
   };
+
+  const [bookings, setBookings] = useState<BookingHistoryItem[]>([]);
+  const [selectedBooking, setSelectedBooking] = useState<BookingHistoryItem | null>(null)
+   const [showDetailModal, setShowDetailModal] = useState(false)
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const res = await fetch(
+          "https://localhost:7255/api/Booking/UserViewBooking",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI0IiwiZW1haWwiOiJ1c2VyQGdtYWlsLmNvbSIsIkZpcnN0TmFtZSI6InN0cmluZyIsImxhc3ROYW1lIjoic3RyaW5nIiwicm9sZSI6IjQiLCJUb2tlbklkIjoiMzU3MGYyMWEtMjYxMy00NDE4LTliOTMtMGFkOWU1MWU1OTZlIiwibmJmIjoxNzUzMjAwMDAxLCJleHAiOjE3NTcwODgwMDEsImlhdCI6MTc1MzIwMDAwMX0.l4byFFO-LBQzf8rMIZxY_g2GwbNKslG6-wDeF6DsV8Q"}`,
+            },
+          }
+        );
+        const data = await res.json();
+        console.log(data);
+        const mapped: BookingHistoryItem[] = data["$values"].map(
+          (item: any) => ({
+            bookingId: item.bookingId,
+            courtId: item.courtId,
+            facilityId: item.facilityId,
+            bookingStatus: item.bookingStatus,
+            checkinStatus: item.checkinStatus,
+            cHeckinDate: item.cHeckingDate,
+            startTime: {
+              $id: item.startTime?.$id || "",
+              $values: item.startTime?.$values || [],
+            },
+            endTime: {
+              $id: item.endTime?.$id || "",
+              $values: item.endTime?.$values || [],
+            },
+            totalPrice: item.totalPrice,
+            note: item.note,
+            bookingDate: item.bookingDate,
+            transactionId: item.transactionId,
+            transactionStatus: item.transactionStatus,
+            transactionType: item.transactionType,
+            transactionDate: item.transactionDate,
+          })
+        );
+        console.log("Mapped:", mapped)
+        setBookings(mapped);
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu đặt sân:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+    
+  }, []);
+
+  useEffect(() => {
+  console.log("Booking đã cập nhật:", bookings)
+}, [bookings])
+
+  const handleViewDetails = (booking: BookingHistoryItem) => {
+    setSelectedBooking(booking)
+    setShowDetailModal(true)
+  }
+
+  const handleCloseModal = () => {
+    setShowDetailModal(false)
+    setSelectedBooking(null)
+  }
   return {
     user,
     loading,
@@ -239,7 +310,13 @@ const useProfile = () => {
     userStats,
     mockUserProfile,
     Calendar,
-    DollarSign
-  }
+    DollarSign,
+    bookings,
+    handleViewDetails,
+    handleCloseModal,
+    selectedBooking,
+    setSelectedBooking,
+    showDetailModal
+  };
 };
 export default useProfile;
