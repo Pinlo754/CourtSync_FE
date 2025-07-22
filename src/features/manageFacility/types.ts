@@ -12,6 +12,10 @@ export interface Facility {
     contactPhone: string;
     contactEmail: string;
     totalCourt: number;
+    status: string;
+}
+export interface ApproveRejectFacility {
+    facilityId: number;
 }
 
 

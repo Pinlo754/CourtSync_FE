@@ -24,18 +24,20 @@ const initialForm: CreateBookingStaff = {
 
 export const BookingStaffForm: React.FC = () => {
   const [form, setForm] = useState<CreateBookingStaff>(initialForm);
-  const [facilityId, setFacilityId] = useState<string>("");
+  const [facilityId, setFacilityId] = useState<number>(0);
   const [courts, setCourts] = useState<Court[]>([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
-  const { createBooking, getCourtsByFacilityId } = useBookingStaff();
+  const { createBooking, getCourtsByFacilityId, getFacilityIdByStaffId } = useBookingStaff();
 
   // Lấy danh sách courts khi facilityId thay đổi
   useEffect(() => {
     const fetchCourts = async () => {
+      const facilityId = await getFacilityIdByStaffId();
+      setFacilityId(facilityId);
       if (facilityId) {
-        await getCourtsByFacilityId(Number(facilityId))
+        await getCourtsByFacilityId(facilityId)
           .then((data) => {
             const apiCourts = data.$values || data || [];
             const mappedCourts = apiCourts.map((id: number) => ({
@@ -51,14 +53,6 @@ export const BookingStaffForm: React.FC = () => {
     };
     fetchCourts();
   }, [facilityId]);
-
-  // Xử lý thay đổi facilityId
-  const handleFacilityIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFacilityId(e.target.value);
-    setForm((prev) => ({ ...prev, courtId: 0 })); // reset courtId khi đổi facility
-    setError("");
-    setSuccess("");
-  };
 
   const handleFacilityIdBlur = () => {
     if (facilityId && Number(facilityId) > 0) {
@@ -202,17 +196,7 @@ export const BookingStaffForm: React.FC = () => {
             Create booking
           </h1>
           <form onSubmit={handleSubmit} className="space-y-6">
-            <Input
-              label="Facility ID"
-              name="facilityId"
-              type="number"
-              value={facilityId}
-              onChange={handleFacilityIdChange}
-              onBlur={handleFacilityIdBlur}
-              placeholder="Enter facility id"
-              icon={Calendar}
-              labelClassName="text-slate-800 text-md font-bold"
-            />
+            
             <div>
               <label className="text-slate-800 text-md font-bold block mb-2">
                 Court
