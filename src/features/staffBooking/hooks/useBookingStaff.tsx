@@ -1,6 +1,4 @@
-import { postData} from '../../../api/fetchers';
-import { Court } from '../type';
-
+import { fetcher, postData} from '../../../api/fetchers';
 
 
 export const useBookingStaff = () => {
@@ -14,6 +12,16 @@ export const useBookingStaff = () => {
     }
   };
 
+  const getFacilityIdByStaffId = async () => {
+    try {
+      const response = await fetcher("/Facilities/GetFacilityByStaffId");
+      return Number(response) || 0;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   // Lấy danh sách courts theo facilityId
   const getCourtsByFacilityId = async (facilityId: number) => {
     try {
@@ -25,6 +33,7 @@ export const useBookingStaff = () => {
       throw error;
     }
   };
+  
 
-  return { createBooking, getCourtsByFacilityId };
+  return { createBooking, getCourtsByFacilityId, getFacilityIdByStaffId };
 }; 

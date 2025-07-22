@@ -17,7 +17,7 @@ import { Facility } from "../types";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/Button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { UseGetAllFacility, UseSuspendFacility } from "../hooks/useManageFacility";
+import { UseGetAllFacility, UseApproveFacility, UseRejectFacility, UseToggleFacility } from "../hooks/useManageFacility";
 import { ErrorMessage } from "../../../components/ui/ErrorMessage";
 
 export const ManageFacility = () => {
@@ -28,30 +28,42 @@ export const ManageFacility = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [showError, setShowError] = useState(false);
 
-  useEffect(() => {
-    const fetchFacilities = async () => {
-      try {
-        const data = await UseGetAllFacility();
-        // Nếu thành công
-        const mapped = (data?.$values ?? []).map((item: any) => ({
-          id: String(item.facilityId),
-          name: item.facilityName,
-          contactPhone: item.contactPhone,
-          contactEmail: item.contactEmail,
-          totalCourt: item.totalCourts,
-        }));
-        setFacilities(mapped);
-        setShowError(false);
-      } catch (error: any) {
-        if (error.response && error.response.status === 400) {
-          setErrorMessage(error.response.data?.message || "Lỗi dữ liệu từ server!");
-        } else {
-          setErrorMessage("Có lỗi xảy ra khi kết nối server!");
-        }
-        setShowError(true);
-        setFacilities([]);
+  // Đặt fetchFacilities ra ngoài useEffect để có thể gọi lại
+  const fetchFacilities = async () => {
+    try {
+      const data = await UseGetAllFacility();
+      // Nếu thành công
+      const mapped = (data?.$values ?? []).map((item: any) => ({
+        id: String(item.facilityId),
+        name: item.facilityName,
+        contactPhone: item.contactPhone,
+        contactEmail: item.contactEmail,
+        totalCourt: item.totalCourts,
+        status:
+          item.facilityStatus === "1"
+            ? "Available"
+            : item.facilityStatus === "0"
+            ? "Pending"
+            : item.facilityStatus === "2"
+            ? "Rejected"
+            : item.facilityStatus === "3"
+            ? "Unavailable"
+            : "Unknown",
+      }));
+      setFacilities(mapped);
+      setShowError(false);
+    } catch (error: any) {
+      if (error.response && error.response.status === 400) {
+        setErrorMessage(error.response.data?.message || "Server data error!");
+      } else {
+        setErrorMessage("An error occurred while connecting to the server!");
       }
-    };
+      setShowError(true);
+      setFacilities([]);
+    }
+  };
+
+  useEffect(() => {
     fetchFacilities();
   }, []);
 
@@ -59,22 +71,57 @@ export const ManageFacility = () => {
     setPageNumber(newPage);
   };
 
-  const handleDetailClick = (facility: Facility) => {
-    alert(`Detail of facility: ${facility.name}`);
+  const handleApproveClick = async (facility: Facility) => {
+    if (window.confirm(`Are you sure you want to approve facility: ${facility.name}?`)) {
+      try {
+        const response = await UseApproveFacility({ facilityId: Number(facility.id) });
+        if (response) {
+          alert("Facility approved successfully!");
+          fetchFacilities();
+        } else {
+          setErrorMessage("Facility approval failed");
+          setShowError(true);
+        }
+      } catch (error) {
+        setErrorMessage("An error occurred while connecting to the server!");
+        setShowError(true);
+        console.error(error);
+      }
+    }
   };
 
-  const handleSuspendClick = async (facility: Facility) => {
+  const handleRejectClick = async (facility: Facility) => {
+    if (window.confirm(`Are you sure you want to reject facility: ${facility.name}?`)) {
+      try {
+        const response = await UseRejectFacility({ facilityId: Number(facility.id) });
+        if (response) {
+          alert("Facility rejected successfully!");
+          fetchFacilities();
+        } else {
+          setErrorMessage("Facility rejection failed");
+          setShowError(true);
+        }
+      } catch (error) {
+        setErrorMessage("An error occurred while connecting to the server!");
+        setShowError(true);
+        console.error(error);
+      }
+    }
+  };
+
+  const handleToggleClick = async (facility: Facility) => {
     try {
-      const response = await UseSuspendFacility(facility.id);
-      if (response.status === 200) {
-        alert("Suspend facility successfully");
+      const response = await UseToggleFacility(Number(facility.id));
+      if (response) {
+        alert("Change facility status successfully");
         setShowError(false);
+        fetchFacilities();
       } else {
-        setErrorMessage("Suspend facility failed");
+        setErrorMessage("Change facility status failed");
         setShowError(true);
       }
     } catch (error) {
-      setErrorMessage("Có lỗi xảy ra khi kết nối server!");
+      setErrorMessage("An error occurred while connecting to the server!");
       setShowError(true);
       console.error(error);
     }
@@ -89,7 +136,7 @@ export const ManageFacility = () => {
     <div className="container mx-auto py-8 px-4">
       <Card className="bg-blue-300/20 shadow-lg">
         <CardHeader className="bg-primary/5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <CardTitle className="text-2xl font-bold text-primary">Quản lý Facility</CardTitle>
+          <CardTitle className="text-2xl font-bold text-primary">Facility Management</CardTitle>
         </CardHeader>
         <CardContent className="mt-6">
           <ErrorMessage message={errorMessage} show={showError} />
@@ -109,6 +156,7 @@ export const ManageFacility = () => {
                   <TableHead className="font-semibold">Contact Phone</TableHead>
                   <TableHead className="font-semibold">Contact Email</TableHead>
                   <TableHead className="font-semibold">Total Court</TableHead>
+                  <TableHead className="font-semibold">Status</TableHead>
                   <TableHead className="font-semibold">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -127,20 +175,31 @@ export const ManageFacility = () => {
                     <TableCell>{facility.contactPhone}</TableCell>
                     <TableCell>{facility.contactEmail}</TableCell>
                     <TableCell>{facility.totalCourt}</TableCell>
+                    <TableCell>{facility.status}</TableCell>
                     <TableCell className="flex space-x-2">
                       <Button
-                        variant="primary"
-                        onClick={() => handleDetailClick(facility)}
+                        variant={facility.status === "Pending" ? "primary" : "disabled"}
+                        onClick={() => handleApproveClick(facility)}
                         className="cursor-pointer"
+                        disabled={facility.status !== "Pending"}
                       >
-                        Detail
+                        Approve
                       </Button>
                       <Button
-                        variant="danger"
-                        onClick={() => handleSuspendClick(facility)}
+                        variant={facility.status === "Pending" ? "danger" : "disabled"}
+                        onClick={() => handleRejectClick(facility)}
                         className="cursor-pointer"
+                        disabled={facility.status !== "Pending"}
                       >
-                        Suspend
+                        Reject
+                      </Button>
+                      <Button
+                        variant={facility.status === "Available" ? "danger" : "primary"}
+                        onClick={() => handleToggleClick(facility)}
+                        className="cursor-pointer"
+                        disabled={facility.status === "Pending" || facility.status === "Rejected"}
+                      >
+                        {facility.status === "Available" ? "Suspend" : "Activate"}
                       </Button>
                     </TableCell>
                   </TableRow>

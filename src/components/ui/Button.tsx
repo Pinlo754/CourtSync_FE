@@ -9,7 +9,7 @@ interface ButtonProps {
   loading?: boolean;
   children: React.ReactNode;
   icon?: LucideIcon;
-  variant?: 'primary' | 'secondary' | 'danger' | 'adding' | 'custom' | 'page' | 'detail';
+  variant?: 'primary' | 'secondary' | 'danger' | 'adding' | 'custom' | 'page' | 'detail' | 'disabled';
   className?: string;
 }
 
@@ -32,6 +32,7 @@ export const Button: React.FC<ButtonProps> = ({
     detail: "bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-mint-500/50 hover:text-slate-600",
     adding: "bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-gradient-to-r hover:from-blue-600 hover:to-mint-500 hover:text-white",
     danger: "bg-slate-800/50 text-slate-300 border border-slate-700/50 hover:bg-gradient-to-r hover:from-red-600 hover:to-red-300 hover:text-white",
+    disabled: "bg-slate-800/50 text-slate-300 border border-slate-700/50",
     custom: className
   };
 
