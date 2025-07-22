@@ -37,9 +37,12 @@ import {
   Trash2,
   Camera,
   Save,
+  History,
 } from "lucide-react";
 import Header from "../../components/sections/Header";
 import useProfile from "./useProfile";
+import { BookingHistoryCard } from "../../components/ui/booking-history-card";
+import { BookingDetailModal } from "../../components/ui/booking-detail-modal";
 export default function ProfilePage() {
   const {
     user,
@@ -58,6 +61,12 @@ export default function ProfilePage() {
     handlePasswordChange,
     handleSaveProfile,
     handlePasswordUpdate,
+    bookings,
+    handleViewDetails,
+    handleCloseModal,
+    selectedBooking,
+    setSelectedBooking,
+    showDetailModal
   } = useProfile();
   if (!user) {
     return (
@@ -96,9 +105,7 @@ export default function ProfilePage() {
                   .join("")}
               </AvatarFallback>
             </Avatar>
-            <Button
-              className="absolute bottom-0 right-0 rounded-full w-10 h-10 p-0 bg-white text-blue-600 hover:bg-gray-100"
-            >
+            <Button className="absolute bottom-0 right-0 rounded-full w-10 h-10 p-0 bg-white text-blue-600 hover:bg-gray-100">
               <Camera className="h-4 w-4" />
             </Button>
           </div>
@@ -185,6 +192,32 @@ export default function ProfilePage() {
                     </>
                   )}
                 </Button>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <History className="h-5 w-5 mr-2" />
+                  Lịch sử đặt sân
+                </CardTitle>
+                <CardDescription>
+                  Lịch sử đặt sân của bản thân và thông tin chi tiết
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4 h-[1000px] overflow-y-scroll scrollbar-hide">
+                {bookings.map((booking) => (
+                  <>
+                  <BookingHistoryCard
+                    key={booking.bookingId}
+                    booking={booking}
+                    onViewDetails={handleViewDetails}
+                  />
+                   {selectedBooking && (
+        <BookingDetailModal booking={selectedBooking} onClose={handleCloseModal} open={showDetailModal} />
+      )}
+                  </>
+                ))}
               </CardContent>
             </Card>
 
@@ -394,10 +427,7 @@ export default function ProfilePage() {
                     Once you delete your account, there is no going back. Please
                     be certain.
                   </p>
-                  <Button
-                    variant="secondary"
-                    className="text-[red]"
-                  >
+                  <Button variant="secondary" className="text-[red]">
                     <Trash2 className="h-4 w-4 mr-2 text-[red]" />
                     Delete Account
                   </Button>
