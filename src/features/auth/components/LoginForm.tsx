@@ -8,10 +8,11 @@ import { ErrorMessage } from '../../../components/ui/ErrorMessage';
 import { SuccessMessage } from '../../../components/ui/SuccessMessage';
 import { AuthToggle } from './AuthToggle';
 import { SignUpFields } from './SignUpFields';
-import { LoginRequest, SignUpRequest } from '../types';
-import { signUpUser } from '../../../api/auth/authApi';
+import { LoginRequest, SignUpRequest, SendRegistrationOTPRequest } from '../types';
+import { sendRegistrationOTP } from '../../../api/auth/authApi';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { ForgotPasswordModal } from './ForgetPasswordModal';
+import { RegistrationOTPModal } from './RegistrationOTPModal';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { UserRole } from '../../../types/role';
 
@@ -21,6 +22,8 @@ export const LoginForm: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showRegistrationOTP, setShowRegistrationOTP] = useState(false);
+  const [signupLoading, setSignupLoading] = useState(false);
 
   // Sử dụng Zustand store
   const { login, isLoading, loginMessage, success: authSuccess } = useAuthContext();
@@ -60,8 +63,12 @@ export const LoginForm: React.FC = () => {
       setError('Please fill in all required fields');
       return false;
     }
-    if (isSignUp && (!signupData.firstName || !signupData.lastName)) {
+    if (isSignUp && (!signupData.firstName || !signupData.lastName || !signupData.confirmPassword)) {
       setError('Please fill in all required fields');
+      return false;
+    }
+    if (isSignUp && signupData.password !== signupData.confirmPassword) {
+      setError('Passwords do not match');
       return false;
     }
     return true;
@@ -90,8 +97,33 @@ export const LoginForm: React.FC = () => {
   };
 
   const handleSignup = async (): Promise<void> => {
-    const response = await signUpUser(signupData);
-    setSuccessMessage('Account created successfully! Please sign in with your credentials.');
+    try {
+      setSignupLoading(true);
+      // Show OTP modal immediately for a smoother experience
+      setShowRegistrationOTP(true);
+      
+      // Send registration data to get OTP in the background
+      await sendRegistrationOTP(signupData);
+      setSignupLoading(false);
+    } catch (error: any) {
+      setSignupLoading(false);
+      setShowRegistrationOTP(false);
+      
+      // More specific error handling
+      if (error.message?.includes('Network Error')) {
+        setError('Unable to connect to server. Please check your internet connection and try again.');
+      } else if (error.response?.status === 409) {
+        setError('This email is already registered. Please use a different email address.');
+      } else if (error.response?.data?.message) {
+        setError(error.response.data.message);
+      } else {
+        setError('Registration failed. Please try again later.');
+      }
+    }
+  };
+
+  const handleVerificationSuccess = (): void => {
+    setSuccessMessage('Account created and verified successfully! Please sign in with your credentials.');
     setSignupData({
       email: '',
       password: '',
@@ -100,10 +132,8 @@ export const LoginForm: React.FC = () => {
       lastName: '',
       phone: ''
     });
-    // Chuyển về form login sau 2 giây
-    setTimeout(() => {
-      setIsSignUp(false);
-    }, 2000);
+    // Switch to login form after successful verification
+    setIsSignUp(false);
   };
 
   const handleError = (error: any): void => {
@@ -278,7 +308,7 @@ export const LoginForm: React.FC = () => {
             >
               <Button
                 type="submit"
-                loading={isLoading}
+                loading={isSignUp ? signupLoading : isLoading}
                 icon={ArrowRight}
               >
                 {isSignUp ? 'Sign Up' : 'Sign In'}
@@ -308,10 +338,24 @@ export const LoginForm: React.FC = () => {
             </button>
           </motion.div>
         </motion.div>
+        
+        {/* Modals */}
         <ForgotPasswordModal
           isOpen={showForgotPassword}
           onClose={() => setShowForgotPassword(false)}
-        />      </div>
+        />
+        
+        <RegistrationOTPModal
+          isOpen={showRegistrationOTP}
+          onClose={() => {
+            setShowRegistrationOTP(false);
+            // If the modal is closed without verification, reset the loading state
+            setSignupLoading(false);
+          }}
+          registrationData={signupData}
+          onVerificationSuccess={handleVerificationSuccess}
+        />
+      </div>
     </motion.div>
   );
 };

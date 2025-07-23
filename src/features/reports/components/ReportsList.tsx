@@ -86,63 +86,9 @@ export const ReportsList: React.FC<ReportsListProps> = ({ onSelectReport }) => {
     );
   }
 
-  // For demo purposes - sample data
-  const sampleReports: CourtReport[] = [
-    {
-      courtReportId: '1',
-      createdBy: 'John Doe',
-      createdDate: '2023-11-15T09:30:00',
-      description: 'Court surface needs repair',
-      courtReportStatus: CourtReportStatus.PENDING,
-      courtId: 'C001',
-      courtName: 'Tennis Court 1',
-      facilityId: '1',
-      facilityName: 'Sports Center Alpha',
-      estimateTime: '2 days',
-      maintainDate: '2023-11-20T10:00:00'
-    },
-    {
-      courtReportId: '2',
-      createdBy: 'Jane Smith',
-      createdDate: '2023-11-14T14:15:00',
-      description: 'Net replacement required',
-      courtReportStatus: CourtReportStatus.IN_PROGRESS,
-      courtId: 'C002',
-      courtName: 'Basketball Court 2',
-      facilityId: '1',
-      facilityName: 'Sports Center Alpha',
-      estimateTime: '1 day',
-      maintainDate: '2023-11-16T09:00:00'
-    },
-    {
-      courtReportId: '3',
-      createdBy: 'Mike Johnson',
-      createdDate: '2023-11-10T11:45:00',
-      description: 'Lighting system malfunction',
-      courtReportStatus: CourtReportStatus.COMPLETED,
-      courtId: 'C003',
-      courtName: 'Football Field 1',
-      facilityId: '2',
-      facilityName: 'Sports Center Beta',
-      estimateTime: '3 days',
-      maintainDate: '2023-11-13T13:30:00'
-    },
-    {
-      courtReportId: '4',
-      createdBy: 'Sarah Williams',
-      createdDate: '2023-11-12T16:20:00',
-      description: 'Seating area damage',
-      courtReportStatus: CourtReportStatus.CANCELLED,
-      courtId: 'C001',
-      courtName: 'Tennis Court 1',
-      facilityId: '1',
-      facilityName: 'Sports Center Alpha',
-      estimateTime: '4 days',
-      maintainDate: null
-    }
-  ];
 
-  const displayReports = reports.length > 0 ? reports : sampleReports;
+
+  const displayReports = reports.length > 0 ? reports : [];
 
   return (
     <div className="space-y-6">

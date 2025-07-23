@@ -248,11 +248,11 @@ export const FacilityDetailPage: React.FC = () => {
     const formatUserStatus = (status: string) => {
         switch (status) {
             case '0':
-                return { label: 'Active', color: 'green' };
-            case '1':
                 return { label: 'Inactive', color: 'red' };
+            case '1':
+                return { label: 'Active', color: 'green' };
             default:
-                return { label: 'Unknown', color: 'gray' };
+                return { label: 'Deleted', color: 'gray' };
         }
     };
 
@@ -686,7 +686,7 @@ export const FacilityDetailPage: React.FC = () => {
                                                 <h4 className="text-xl font-semibold text-white">{staffInfo.firstName} {staffInfo.lastName}</h4>
                                                 <div className="flex items-center space-x-2 mt-1">
                                                     <span className="text-sm text-slate-400">{formatRole(staffInfo.role)}</span>
-                                                    <div className={`px-2 py-0.5 rounded-md text-xs font-medium ${staffInfo.userStatus === '0' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
+                                                    <div className={`px-2 py-0.5 rounded-md text-xs font-medium ${staffInfo.userStatus === '0' ?  'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-green-500/20 text-green-400 border border-green-500/30'}`}>
                                                         {formatUserStatus(staffInfo.userStatus).label}
                                                     </div>
                                                 </div>
@@ -747,7 +747,7 @@ export const FacilityDetailPage: React.FC = () => {
                                                     </div>
                                                     <div>
                                                         <p className="text-xs text-slate-400">Status</p>
-                                                        <p className={`font-medium ${staffInfo.userStatus === '0' ? 'text-green-400' : 'text-red-400'}`}>
+                                                        <p className={`font-medium ${staffInfo.userStatus === '0' ?  'text-red-400' : 'text-green-400'}`}> 
                                                             {formatUserStatus(staffInfo.userStatus).label}
                                                         </p>
                                                     </div>

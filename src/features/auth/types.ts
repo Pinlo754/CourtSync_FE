@@ -23,6 +23,29 @@ export interface SignUpRequest {
   phone: string;
 }
 
+// Registration OTP Types
+export interface SendRegistrationOTPRequest {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+}
+
+export interface SendRegistrationOTPResponse {
+  message: string;
+}
+
+export interface VerifyRegistrationOTPRequest {
+  email: string;
+  otp: string;
+}
+
+export interface VerifyRegistrationOTPResponse {
+  message: string;
+}
+
 // Reset Password Types
 export interface ForgotPasswordRequest {
   email: string;
