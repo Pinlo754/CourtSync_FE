@@ -13,6 +13,7 @@ import { signUpUser } from '../../../api/auth/authApi';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { ForgotPasswordModal } from './ForgetPasswordModal';
 import { useAuthContext } from '../hooks/useAuthContext';
+import { UserRole } from '../../../types/role';
 
 export const LoginForm: React.FC = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -68,7 +69,24 @@ export const LoginForm: React.FC = () => {
 
   const handleLogin = async (): Promise<void> => {
     await login(loginData);
-    navigate('/');
+    const loggedUser = JSON.parse(sessionStorage.getItem('loggedUser') || '{}');
+    switch (loggedUser?.role) {
+      case String(UserRole.FACILITY_STAFF):
+        navigate('/staff');
+        return;
+      case String(UserRole.FACILITY_OWNER):
+        navigate('/facility-management');
+        return;
+      case String(UserRole.ADMIN):
+        navigate('/admin');
+        return;
+      case String(UserRole.CUSTOMER):
+        navigate('/');
+        return;
+      default:
+        navigate('/');
+        return;
+    }
   };
 
   const handleSignup = async (): Promise<void> => {

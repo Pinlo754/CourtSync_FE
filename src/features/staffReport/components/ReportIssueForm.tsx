@@ -4,7 +4,7 @@ import { UseUploadFirebase } from "../../uploadImage/hooks/useUploadFirebase";
 import { ReportIssueRequest } from "../types";
 import {
   Select,
-  SelectTrigger,
+   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
@@ -23,7 +23,7 @@ import { ErrorMessage } from "../../../components/ui/ErrorMessage";
 
 const initialForm: ReportIssueRequest = {
   courtId: 0,
-  issueDescription: "",
+  description: "",
   imageUrl: "",
 };
 
@@ -51,9 +51,9 @@ export const ReportIssueForm = () => {
         await getCourtsByFacilityId(facilityId)
           .then((data) => {
             const apiCourts = data.$values || data || [];
-            const mappedCourts = apiCourts.map((id: number) => ({
-              courtId: id,
-              courtName: `Court ${id}`,
+            const mappedCourts = apiCourts.map((court: any) => ({
+              courtId: court.courtId,
+              courtName: `Court ${court.courtName}`,
             }));
             setCourts(mappedCourts);
           })
@@ -75,7 +75,7 @@ export const ReportIssueForm = () => {
   const handleIssueDescriptionChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
-    setForm((prev) => ({ ...prev, issueDescription: e.target.value }));
+    setForm((prev) => ({ ...prev, description: e.target.value }));
     setError("");
     setSuccess("");
   };
@@ -162,7 +162,7 @@ export const ReportIssueForm = () => {
       return false;
     }
 
-    if (!form.issueDescription.trim()) {
+    if (!form.description.trim()) {
       setError("Issue description is required");
       return false;
     }
@@ -198,7 +198,8 @@ export const ReportIssueForm = () => {
         setSuccessMessage("Uploading image...");
         try {
           imageUrl = await uploadImage(selectedImage);
-          setSuccessMessage("Image uploaded successfully! Creating court...");
+          setForm((prev) => ({ ...prev, imageUrl: imageUrl }));
+          console.log(imageUrl);
         } catch (uploadError: any) {
           console.error("Image upload failed:", uploadError);
           setError(
@@ -208,8 +209,9 @@ export const ReportIssueForm = () => {
         }
       }
 
-      // Report issue
-      const result = await reportIssue(form);
+      const submitForm = { ...form, imageUrl };
+    // Report issue
+    const result = await reportIssue(submitForm);
 
       if (result) {
         setSuccessMessage("Reported successfully!");
@@ -287,7 +289,7 @@ export const ReportIssueForm = () => {
                 className="w-full h-56 p-4 bg-white border-2 border-slate-600/50 rounded-xl focus:border-mint-500 focus:outline-none transition-all duration-300 text-slate-700 placeholder-slate-500"
                 placeholder="Enter issue description..."
                 onChange={handleIssueDescriptionChange}
-                value={form.issueDescription}
+                value={form.description}
                 required
               />
             </div>

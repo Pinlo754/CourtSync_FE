@@ -1,6 +1,6 @@
 export interface ReportIssueRequest {
     courtId: number;
-    issueDescription: string;
+    description: string;
     imageUrl: string;
 }
 export interface ReportIssueForm {
