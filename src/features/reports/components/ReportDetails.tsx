@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
-import { CourtReport, CourtReportStatus } from '../../staffReport/types';
+import React, { useState, useEffect } from 'react';
+import { CourtReport, CourtReportStatus, ReportImage } from '../../staffReport/types';
 import { Badge } from '../../../components/ui/badge';
-import { format, parseISO, addDays } from 'date-fns';
-import { approveCourtReport, ApproveCourtReportRequest } from '../../../api/facility/facilityApi';
+import { format, parseISO, addDays, parse } from 'date-fns';
+import { 
+  approveCourtReport, 
+  ApproveCourtReportRequest, 
+  getBookingTimesByDate, 
+  GetBookingTimeRequest, 
+  CourtBookingTime 
+} from '../../../api/facility/facilityApi';
 import { motion } from 'framer-motion';
 
 interface ReportDetailsProps {
@@ -13,13 +19,88 @@ interface ReportDetailsProps {
 export const ReportDetails: React.FC<ReportDetailsProps> = ({ report, onReportUpdated }) => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [maintainDate, setMaintainDate] = useState<string>(
-    report.maintainDate || new Date().toISOString().split('T')[0]
+    report.maintainDate ? new Date(report.maintainDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
   );
+  const [maintainTime, setMaintainTime] = useState<string>("10:00");
   const [estimatedTime, setEstimatedTime] = useState<number>(
     report.estimateTime ? parseInt(report.estimateTime) : 1
   );
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [bookingTimes, setBookingTimes] = useState<CourtBookingTime[]>([]);
+  const [isLoadingBookings, setIsLoadingBookings] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  console.log("courtReport", report);
+
+  // Format image URL based on the format
+  const formatImageUrl = (imageData: string): string => {
+    // Kiểm tra nếu đã là URL đầy đủ (bắt đầu bằng http hoặc https)
+    if (imageData.startsWith('http://') || imageData.startsWith('https://')) {
+      return imageData;
+    }
+    
+    // Kiểm tra nếu là dữ liệu Base64 đã có tiền tố
+    if (imageData.startsWith('data:image')) {
+      return imageData;
+    }
+    
+    // Thêm tiền tố Base64 nếu có vẻ là dữ liệu Base64
+    if (imageData.length > 100) {
+      return `data:image/jpeg;base64,${imageData}`;
+    }
+    
+    // Nếu là URL tương đối, thêm URL gốc
+    return `${process.env.REACT_APP_API_URL || 'https://localhost:7255'}/${imageData}`;
+  };
+
+  // Get image URLs from report
+  const getReportImageUrls = (): string[] => {
+    try {
+      if (!report.reportImages) {
+        console.log("No reportImages found");
+        return [];
+      }
+      
+      console.log("Report images:", report.reportImages);
+      
+      if (report.reportImages.$values && Array.isArray(report.reportImages.$values)) {
+        console.log("Found reportImages.$values:", report.reportImages.$values);
+        return report.reportImages.$values.map(img => formatImageUrl(img));
+      }
+      
+      return [];
+    } catch (error) {
+      console.error("Error extracting image URLs:", error);
+      return [];
+    }
+  };
+  
+  const imageUrls = getReportImageUrls();
+
+  // Fetch booking times when date changes
+  useEffect(() => {
+    const fetchBookingTimes = async () => {
+      if (!report.facilityId) return;
+      
+      setIsLoadingBookings(true);
+      try {
+        const request: GetBookingTimeRequest = {
+          facilityId: parseInt(report.facilityId),
+          bookingDate: maintainDate
+        };
+        
+        const data = await getBookingTimesByDate(request);
+        setBookingTimes(data);
+      } catch (err) {
+        console.error('Error fetching booking times:', err);
+      } finally {
+        setIsLoadingBookings(false);
+      }
+    };
+    
+    fetchBookingTimes();
+  }, [maintainDate, report.facilityId]);
 
   const getStatusBadgeColor = (status: CourtReportStatus) => {
     switch (status) {
@@ -67,8 +148,9 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report, onReportUp
       setSuccess(null);
 
       // Format the date and time for the API
+      const [hours, minutes] = maintainTime.split(':').map(Number);
       const maintainDateTime = new Date(maintainDate);
-      maintainDateTime.setHours(10, 0, 0); // Set default time to 10:00 AM
+      maintainDateTime.setHours(hours, minutes, 0);
       
       const approveData: ApproveCourtReportRequest = {
         courtReportId: parseInt(report.courtReportId),
@@ -93,17 +175,34 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report, onReportUp
 
   const canApprove = report.courtReportStatus === CourtReportStatus.PENDING;
   
+  // Format time for display
+  const formatTime = (timeString: string) => {
+    try {
+      const date = new Date(timeString);
+      return format(date, 'HH:mm');
+    } catch (error) {
+      return timeString;
+    }
+  };
+  
   // Calculate estimated completion date
   const getEstimatedCompletionDate = () => {
     if (!maintainDate) return 'Not available';
     try {
+      const [hours, minutes] = maintainTime.split(':').map(Number);
       const startDate = new Date(maintainDate);
+      startDate.setHours(hours, minutes, 0);
       const endDate = addDays(startDate, estimatedTime);
-      return format(endDate, 'dd/MM/yyyy');
+      return format(endDate, 'dd/MM/yyyy HH:mm');
     } catch (error) {
       return 'Invalid date';
     }
   };
+
+  // Find bookings for the current court
+  const currentCourtBookings = bookingTimes.find(
+    booking => booking.courtId === parseInt(report.courtId)
+  );
 
   return (
     <motion.div 
@@ -112,6 +211,33 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report, onReportUp
       transition={{ duration: 0.5 }}
       className="space-y-6"
     >
+      {/* Image Modal */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div 
+            className="relative max-w-4xl max-h-[90vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img 
+              src={selectedImage} 
+              alt="Report image full view" 
+              className="w-full h-full object-contain"
+            />
+            <button 
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-4 right-4 bg-slate-800/80 text-white rounded-full p-2 hover:bg-slate-700 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header Card */}
       <motion.div 
         className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 overflow-hidden"
@@ -230,6 +356,40 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report, onReportUp
             </div>
           </div>
 
+          {/* Report Images */}
+          {imageUrls.length > 0 && (
+            <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 overflow-hidden">
+              <div className="p-4 border-b border-slate-700/50">
+                <h3 className="text-lg font-semibold text-white">Report Images ({imageUrls.length})</h3>
+              </div>
+              <div className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {imageUrls.map((imageUrl, index) => (
+                    <motion.div 
+                      key={index}
+                      className="relative overflow-hidden rounded-lg aspect-video bg-slate-900/50 cursor-pointer"
+                      whileHover={{ scale: 1.02 }}
+                      transition={{ duration: 0.2 }}
+                      onClick={() => setSelectedImage(imageUrl)}
+                    >
+                      <img 
+                        src={imageUrl} 
+                        alt={`Report image ${index + 1}`}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity flex items-end">
+                        <div className="p-3 w-full">
+                          <p className="text-white text-sm font-medium">Click to enlarge</p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Maintenance Schedule Card */}
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 overflow-hidden">
             <div className="p-4 border-b border-slate-700/50">
@@ -284,7 +444,7 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report, onReportUp
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                   <div>
                     <label className="block text-sm font-medium text-slate-400 mb-2">
                       Maintenance Date
@@ -299,7 +459,18 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report, onReportUp
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-400 mb-2">
-                      Estimated Time (days)
+                      Maintenance Time
+                    </label>
+                    <input
+                      type="time"
+                      value={maintainTime}
+                      onChange={(e) => setMaintainTime(e.target.value)}
+                      className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg p-3 text-white focus:border-mint-500 focus:outline-none transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-400 mb-2">
+                      Estimated Time (hours)
                     </label>
                     <input
                       type="number"
@@ -309,6 +480,75 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report, onReportUp
                       min="1"
                     />
                   </div>
+                </div>
+
+                {/* Booking Times Display */}
+                <div className="bg-slate-700/30 rounded-lg p-4 mb-6">
+                  <div className="flex items-center mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p className="text-blue-400 font-medium">Existing Bookings on {format(new Date(maintainDate), 'dd/MM/yyyy')}</p>
+                  </div>
+                  
+                  {isLoadingBookings ? (
+                    <div className="flex justify-center py-4">
+                      <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-400"></div>
+                    </div>
+                  ) : (
+                    <div>
+                      {bookingTimes.length === 0 ? (
+                        <p className="text-slate-400 text-center py-2">No booking data available</p>
+                      ) : (
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-3 gap-2 text-sm font-medium text-slate-300 border-b border-slate-600/50 pb-2">
+                            <div>Court</div>
+                            <div>Start Time</div>
+                            <div>End Time</div>
+                          </div>
+                          
+                          {bookingTimes.map((courtBooking) => {
+                            // Skip courts with no bookings
+                            if (courtBooking.startTimes.$values.length === 0) return null;
+                            
+                            return courtBooking.startTimes.$values.map((startTime, index) => {
+                              const endTime = courtBooking.endTimes.$values[index] || '';
+                              const isCurrentCourt = courtBooking.courtId === parseInt(report.courtId);
+                              
+                              return (
+                                <div 
+                                  key={`${courtBooking.courtId}-${index}`}
+                                  className={`grid grid-cols-3 gap-2 text-sm py-1 ${isCurrentCourt ? 'text-yellow-300' : 'text-slate-300'}`}
+                                >
+                                  <div className="flex items-center">
+                                    {isCurrentCourt && (
+                                      <span className="w-2 h-2 bg-yellow-400 rounded-full mr-2"></span>
+                                    )}
+                                    Court {courtBooking.courtId}
+                                  </div>
+                                  <div>{formatTime(startTime)}</div>
+                                  <div>{formatTime(endTime)}</div>
+                                </div>
+                              );
+                            });
+                          }).filter(Boolean)}
+                          
+                          {bookingTimes.every(court => court.startTimes.$values.length === 0) && (
+                            <p className="text-green-400 text-center py-2">No bookings for this date</p>
+                          )}
+                        </div>
+                      )}
+                      
+                      {currentCourtBookings && currentCourtBookings.startTimes.$values.length > 0 && (
+                        <div className="mt-3 p-2 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
+                          <p className="text-yellow-400 text-sm">
+                            <span className="font-medium">Note:</span> There are existing bookings for this court. 
+                            Consider scheduling maintenance during non-booked hours.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="bg-slate-700/30 rounded-lg p-4 mb-6">
@@ -321,11 +561,11 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report, onReportUp
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     <div>
                       <p className="text-slate-400">Start Date:</p>
-                      <p className="text-white">{format(new Date(maintainDate), 'dd/MM/yyyy')}</p>
+                      <p className="text-white">{format(new Date(maintainDate), 'dd/MM/yyyy')} at {maintainTime}</p>
                     </div>
                     <div>
                       <p className="text-slate-400">Duration:</p>
-                      <p className="text-white">{estimatedTime} {estimatedTime === 1 ? 'day' : 'days'}</p>
+                      <p className="text-white">{estimatedTime} {estimatedTime === 1 ? 'hour' : 'hours'}</p>
                     </div>
                     <div>
                       <p className="text-slate-400">Estimated Completion:</p>

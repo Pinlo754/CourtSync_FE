@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     X,
@@ -93,6 +93,49 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
             price: 350000
         }
     ]);
+
+    useEffect(() => {
+        if (isOpen) {
+            setPriceConfigs([
+                {
+                    id: 'weekday_morning',
+                    label: 'Weekday Morning',
+                    icon: Sunrise,
+                    dayType: '1',
+                    defaultStartTime: facilityOpeningTime,
+                    defaultEndTime: '12:00:00',
+                    price: 200000
+                },
+                {
+                    id: 'weekday_afternoon',
+                    label: 'Weekday Afternoon',
+                    icon: Sun,
+                    dayType: '1',
+                    defaultStartTime: '12:00:00',
+                    defaultEndTime: facilityClosingTime,
+                    price: 250000
+                },
+                {
+                    id: 'weekend_morning',
+                    label: 'Weekend/Holiday Morning',
+                    icon: Sunrise,
+                    dayType: '2',
+                    defaultStartTime: facilityOpeningTime,
+                    defaultEndTime: '12:00:00',
+                    price: 300000
+                },
+                {
+                    id: 'weekend_afternoon',
+                    label: 'Weekend/Holiday Afternoon',
+                    icon: Sunset,
+                    dayType: '2',
+                    defaultStartTime: '12:00:00',
+                    defaultEndTime: facilityClosingTime,
+                    price: 350000
+                }
+            ]);
+        }
+    }, [facilityOpeningTime, facilityClosingTime, isOpen]);
 
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat('vi-VN', {

@@ -15,7 +15,11 @@ import {
     VerifyOTPByPhoneRequest,
     VerifyOTPByPhoneResponse,
     ResetPasswordByPhoneRequest,
-    ResetPasswordByPhoneResponse
+    ResetPasswordByPhoneResponse,
+    SendRegistrationOTPRequest,
+    SendRegistrationOTPResponse,
+    VerifyRegistrationOTPRequest,
+    VerifyRegistrationOTPResponse
 } from "../../features/auth/types";
 
 // Auth API functions
@@ -24,6 +28,13 @@ export const loginUser = (credentials: LoginRequest): Promise<LoginResponse> =>
 
 export const signUpUser = (userData: SignUpRequest): Promise<SignUpResponse> =>
     axiosInstance.post('/Users/MemberRegister', userData).then((res) => res.data);
+
+// Registration OTP API functions
+export const sendRegistrationOTP = (userData: SendRegistrationOTPRequest): Promise<SendRegistrationOTPResponse> =>
+    axiosInstance.post('/Users/SendRegistrationOTP', userData).then((res) => res.data);
+
+export const verifyRegistrationOTP = (verifyData: VerifyRegistrationOTPRequest): Promise<VerifyRegistrationOTPResponse> =>
+    axiosInstance.post('/Users/VerifyRegistrationOTP', verifyData).then((res) => res.data);
 
 export const logoutUser = (): Promise<void> =>
     axiosInstance.post('/Users/Logout').then((res) => res.data);

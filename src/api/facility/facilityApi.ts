@@ -366,7 +366,8 @@ export const getCourtReports = async (): Promise<CourtReportListResponse> => {
       facilityId: item.facilityId.toString(),
       facilityName: item.facilityName,
       estimateTime: item.estimateTime || 'Not specified',
-      maintainDate: item.maintainDate || null
+      maintainDate: item.maintainDate || null,
+      reportImages: item.reportImages || null
     }));
     
     return {
@@ -408,6 +409,53 @@ export const approveCourtReport = async (data: ApproveCourtReportRequest): Promi
     const response = await axiosInstance.post('/CourtReport/ApproveCourtReport', data);
     return response.data;
   } catch (error) {
+    handleApiError(error as AxiosError);
+    throw error;
+  }
+}; 
+
+// Interface for booking time request
+export interface GetBookingTimeRequest {
+  facilityId: number;
+  bookingDate: string;
+}
+
+// Interface for booking time response
+export interface CourtBookingTime {
+  courtId: number;
+  startTimes: {
+    $id: string;
+    $values: string[];
+  };
+  endTimes: {
+    $id: string;
+    $values: string[];
+  };
+}
+
+export interface GetBookingTimeResponse {
+  $id: string;
+  $values: CourtBookingTime[];
+}
+
+// Function to get booking times for a facility on a specific date
+export const getBookingTimesByDate = async (request: GetBookingTimeRequest): Promise<CourtBookingTime[]> => {
+  try {
+    const response = await axiosInstance.post<GetBookingTimeResponse>('/Facilities/GetBookingTime', request);
+    
+    if (!response.data || !response.data.$values) {
+      console.error('Invalid booking times response structure:', response.data);
+      return [];
+    }
+    
+    // Transform the response to a more usable format
+    return response.data.$values.map(courtBooking => ({
+      courtId: courtBooking.courtId,
+      startTimes: courtBooking.startTimes,
+      endTimes: courtBooking.endTimes
+    }));
+  } catch (error) {
+    console.error('Error fetching booking times:', error);
     handleApiError(error as AxiosError);
     throw error;
   }

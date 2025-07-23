@@ -16,6 +16,11 @@ export enum CourtReportStatus {
     CANCELLED = "CANCELLED"
 }
 
+export interface ReportImage {
+    $id?: string;
+    $values: string[];
+}
+
 export interface CourtReport {
     courtReportId: string;
     createdBy: string | number;
@@ -29,7 +34,7 @@ export interface CourtReport {
     facilityName?: string;
     estimateTime: string | null;
     maintainDate: string | null;
-    reportImages?: any[];
+    reportImages?: ReportImage | null;
 }
 
 export interface CourtReportListResponse {

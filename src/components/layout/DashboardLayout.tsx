@@ -15,7 +15,7 @@ interface SidebarItem {
 }
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
-    const { logout } = useAuthContext();
+    const { logout, user } = useAuthContext();
     const navigate = useNavigate();
     const location = useLocation();
     
@@ -84,10 +84,14 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                 <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-700/50">
                     <div className="flex items-center space-x-3 mb-4">
                         <div className="w-10 h-10 bg-gradient-to-r from-mint-400 to-blue-400 rounded-full flex items-center justify-center">
-                            <span className="text-white font-semibold text-sm">JD</span>
+                            <span className="text-white font-semibold text-sm">
+                                {user ? `${user.firstName?.charAt(0) ?? ''}${user.lastName?.charAt(0) ?? ''}` : 'ND'}
+                            </span>
                         </div>
                         <div>
-                            <p className="text-white font-medium text-sm">John Doe</p>
+                            <p className="text-white font-medium text-sm">
+                                {user ? `${user.firstName} ${user.lastName}` : 'Người dùng'}
+                            </p>
                             <p className="text-slate-400 text-xs">Facility Owner</p>
                         </div>
                     </div>
@@ -104,13 +108,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
             {/* Main Content */}
             <div className="ml-64">
                 {/* Top Bar */}
-                <motion.div
+                {/* <motion.div
                     className="bg-slate-800/50 backdrop-blur-xl border-b border-slate-700/50 p-4"
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                 >
                     <div className="flex items-center justify-between">
-                        {/* <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-4">
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                                 <input
@@ -119,7 +123,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                                     className="pl-10 pr-4 py-2 bg-slate-700/50 border border-slate-600/50 rounded-xl text-white placeholder-slate-400 focus:border-mint-500 focus:outline-none transition-colors"
                                 />
                             </div>
-                        </div> */}
+                        </div>
                         <div className="flex items-center space-x-4">
                             <button className="relative p-2 text-slate-400 hover:text-white transition-colors">
                                 <Bell className="w-5 h-5" />
@@ -127,7 +131,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                             </button>
                         </div>
                     </div>
-                </motion.div>
+                </motion.div> */}
 
                 {/* Page Content */}
                 <div className="p-6">

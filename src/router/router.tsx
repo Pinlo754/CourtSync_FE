@@ -74,6 +74,10 @@ const routers = createBrowserRouter([
     element: <ReportsPage />,
   },
   {
+    path: "/reports/:reportId",
+    element: <ReportsPage />,
+  },
+  {
     path: "/facility-management",
     element: (
       <AuthGuard requiredRole={UserRole.FACILITY_OWNER}>
