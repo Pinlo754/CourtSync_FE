@@ -146,10 +146,9 @@ export const useAuthStore = create<AuthStore>()(
         }),
         {
             name: 'auth-storage',
-            // Only persist user data, not temporary states
             partialize: (state) => ({
                 user: state.user
-            }),
+            })
         }
     )
 );

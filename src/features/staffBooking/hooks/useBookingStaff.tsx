@@ -25,7 +25,7 @@ export const useBookingStaff = () => {
   // Lấy danh sách courts theo facilityId
   const getCourtsByFacilityId = async (facilityId: number) => {
     try {
-      const response = await postData(`/Facilities/GetCourtsByFacilityId?facilityId=${facilityId}`,{});
+      const response = await fetcher(`/Court/GetCourtsByFacilityId/${facilityId}`);
       // Có thể cần map lại dữ liệu nếu backend trả về dạng khác
       return response?.$values || [];
     } catch (error) {
