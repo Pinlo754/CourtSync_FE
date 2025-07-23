@@ -225,12 +225,18 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
             // Check first range starts at facility opening time
             if (ranges[0].defaultStartTime !== facilityOpeningTime) {
                 setError(`First ${dayName} range must start at facility opening time (${facilityOpeningTime})`);
+                // Auto-correct to facility opening time
+                const firstRangeId = ranges[0].id;
+                updatePriceConfig(firstRangeId, 'defaultStartTime', facilityOpeningTime);
                 return false;
             }
 
             // Check last range ends at facility closing time
             if (ranges[ranges.length - 1].defaultEndTime !== facilityClosingTime) {
                 setError(`Last ${dayName} range must end at facility closing time (${facilityClosingTime})`);
+                // Auto-correct to facility closing time
+                const lastRangeId = ranges[ranges.length - 1].id;
+                updatePriceConfig(lastRangeId, 'defaultEndTime', facilityClosingTime);
                 return false;
             }
 
@@ -238,6 +244,8 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
             for (let i = 0; i < ranges.length - 1; i++) {
                 if (ranges[i].defaultEndTime !== ranges[i + 1].defaultStartTime) {
                     setError(`Gap detected in ${dayName} ranges between ${ranges[i].label} and ${ranges[i + 1].label}. End time must equal next start time.`);
+                    // Auto-correct: make next start time equal to current end time
+                    updatePriceConfig(ranges[i + 1].id, 'defaultStartTime', ranges[i].defaultEndTime);
                     return false;
                 }
             }
@@ -539,6 +547,10 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                                                         <span className="inline-block w-4 text-blue-400 mr-1">•</span>
                                                         <span>Start time cannot equal end time within same range</span>
                                                     </li>
+                                                    <li className="flex items-start">
+                                                        <span className="inline-block w-4 text-yellow-400 mr-1">⚠</span>
+                                                        <span>You can only adjust the midday transition time (12:00). Facility opening and closing times are fixed.</span>
+                                                    </li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -573,9 +585,12 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                                                                 type="time"
                                                                 value={config.defaultStartTime.substring(0, 5)}
                                                                 onChange={(e) => updatePriceConfig(config.id, 'defaultStartTime', e.target.value)}
-                                                                className="w-full p-2 bg-slate-700/50 border border-slate-600/50 rounded-lg focus:border-mint-500 focus:outline-none text-white text-sm"
-                                                                disabled={isLoading}
+                                                                className={`w-full p-2 bg-slate-700/50 border border-slate-600/50 rounded-lg focus:border-mint-500 focus:outline-none text-white text-sm ${config.defaultStartTime === facilityOpeningTime ? 'opacity-70 cursor-not-allowed bg-slate-800/70' : ''}`}
+                                                                disabled={isLoading || (config.defaultStartTime === facilityOpeningTime)}
                                                             />
+                                                            {config.defaultStartTime === facilityOpeningTime && (
+                                                                <p className="text-xs text-slate-500 mt-1">Fixed to facility opening time</p>
+                                                            )}
                                                         </div>
                                                         <div>
                                                             <label className="block text-xs font-medium text-slate-400 mb-2">
@@ -585,9 +600,12 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                                                                 type="time"
                                                                 value={config.defaultEndTime.substring(0, 5)}
                                                                 onChange={(e) => updatePriceConfig(config.id, 'defaultEndTime', e.target.value)}
-                                                                className="w-full p-2 bg-slate-700/50 border border-slate-600/50 rounded-lg focus:border-mint-500 focus:outline-none text-white text-sm"
-                                                                disabled={isLoading}
+                                                                className={`w-full p-2 bg-slate-700/50 border border-slate-600/50 rounded-lg focus:border-mint-500 focus:outline-none text-white text-sm ${config.defaultEndTime === facilityClosingTime ? 'opacity-70 cursor-not-allowed bg-slate-800/70' : ''}`}
+                                                                disabled={isLoading || (config.defaultEndTime === facilityClosingTime)}
                                                             />
+                                                            {config.defaultEndTime === facilityClosingTime && (
+                                                                <p className="text-xs text-slate-500 mt-1">Fixed to facility closing time</p>
+                                                            )}
                                                         </div>
                                                     </div>
 
