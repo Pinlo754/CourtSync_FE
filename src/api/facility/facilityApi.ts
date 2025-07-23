@@ -1,4 +1,7 @@
 import axiosInstance from "../axiosInstance";
+import { handleApiError } from "../errorHandler";
+import { CourtReportListResponse, CourtReportStatus } from "../../features/staffReport/types";
+import { AxiosError } from "axios";
 
 // Backend Response Interfaces (Simplified - no nested objects)
 export interface BackendFacility {
@@ -138,6 +141,48 @@ export const createFacility = async (facilityData: CreateFacilityRequest): Promi
         console.error('Error creating facility:', error);
         throw error;
     }
+};
+
+// Thêm function lấy thông tin chi tiết của facility
+export const getFacilityById = async (facilityId: number): Promise<BackendFacility> => {
+    try {
+        const response = await axiosInstance.post(`/Facilities/GetFacilityDetail?facilityId=${facilityId}`);
+        console.log('GetFacilityById response:', response.data);
+        
+        if (!response.data) {
+            throw new Error('Invalid response structure');
+        }
+        
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching facility details:', error);
+        throw error;
+    }
+};
+
+// Staff interface
+export interface StaffInfo {
+  $id: string;
+  userId: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  role: string;
+  userStatus: string;
+  facilityId: number;
+  facilityName: string;
+}
+
+// Get staff by facility ID
+export const getStaffByFacilityId = async (facilityId: number): Promise<StaffInfo> => {
+  try {
+    const response = await axiosInstance.get(`/Facilities/GetStaffByFacilityId/${facilityId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching staff information:', error);
+    throw error;
+  }
 };
 
 // Court Interfaces - Backend Response
@@ -303,4 +348,67 @@ export const createCourt = async (courtData: CreateCourtRequest): Promise<Create
             message: errorMessage
         };
     }
+}; 
+
+export const getCourtReports = async (): Promise<CourtReportListResponse> => {
+  try {
+    const response = await axiosInstance.get('/CourtReport/GetCourtReportsByOwner');
+    
+    // Transform backend response to match our frontend interface
+    const reports = response.data.$values.map((item: any) => ({
+      courtReportId: item.courtReportId.toString(),
+      createdBy: item.creatorName || `User ${item.createdBy}`,
+      createdDate: item.createdDate,
+      description: item.description,
+      courtReportStatus: mapReportStatus(item.courtReportStatus),
+      courtId: item.courtId.toString(),
+      courtName: item.courtName,
+      facilityId: item.facilityId.toString(),
+      facilityName: item.facilityName,
+      estimateTime: item.estimateTime || 'Not specified',
+      maintainDate: item.maintainDate || null
+    }));
+    
+    return {
+      reports,
+      totalCount: reports.length
+    };
+  } catch (error) {
+    handleApiError(error as AxiosError);
+    throw error;
+  }
+}; 
+
+// Helper function to map backend status to frontend enum
+const mapReportStatus = (status: string): CourtReportStatus => {
+  switch (status) {
+    case "0":
+      return CourtReportStatus.PENDING;
+    case "1":
+      return CourtReportStatus.IN_PROGRESS;
+    case "2":
+      return CourtReportStatus.COMPLETED;
+    case "3":
+      return CourtReportStatus.CANCELLED;
+    default:
+      return CourtReportStatus.PENDING;
+  }
+}; 
+
+// Interface for approve court report request
+export interface ApproveCourtReportRequest {
+  courtReportId: number;
+  maintainDate: string;
+  estimatedTime: number;
+}
+
+// Function to approve court report
+export const approveCourtReport = async (data: ApproveCourtReportRequest): Promise<any> => {
+  try {
+    const response = await axiosInstance.post('/CourtReport/ApproveCourtReport', data);
+    return response.data;
+  } catch (error) {
+    handleApiError(error as AxiosError);
+    throw error;
+  }
 }; 

@@ -12,7 +12,6 @@ import {
     Save,
     X,
     Calendar,
-
     Users,
     BarChart3,
     Settings,
@@ -25,14 +24,15 @@ import {
     Trash2,
     Eye,
     EyeOff,
-    Gamepad2
+    Gamepad2,
+    UserCircle
 } from 'lucide-react';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { Button } from '../../components/ui/Button';
 import { ErrorMessage } from '../../components/ui/ErrorMessage';
 import { CourtCard } from '../../components/courts/CourtCard';
 import { AddCourtModal } from '../../components/courts/AddCourtModal';
-import { getCourtsByFacilityId, Court, CourtPricing } from '../../api/facility/facilityApi';
+import { getCourtsByFacilityId, getFacilityById, Court, CourtPricing, getStaffByFacilityId, StaffInfo } from '../../api/facility/facilityApi';
 
 interface FacilityDetail {
     $id: string;
@@ -52,38 +52,43 @@ interface FacilityDetail {
     facilityStatus: string;
     ownerId: number;
     staffId: number;
+    distance?: number;
+    totalCourts?: number;
+    minPrice?: number;
+    maxPrice?: number;
 }
 
 export const FacilityDetailPage: React.FC = () => {
     const { id: facilityId } = useParams<{ id: string }>();
 
     const [facility, setFacility] = useState<FacilityDetail>({
-        $id: "2",
-        facilityId: parseInt(facilityId || '1'),
-        facilityName: "CapPT",
-        description: "Facility1",
-        contactPhone: "0862414845",
-        contactEmail: "phatasdasd0197@gmail.com",
-        openingTime: "07:00:00",
-        closingTime: "23:00:00",
-        address: "329",
-        ward: "Hoa Minh",
-        district: "Chau Thanh",
-        city: "Tra Vinh",
+        $id: "",
+        facilityId: parseInt(facilityId || '0'),
+        facilityName: "",
+        description: "",
+        contactPhone: "",
+        contactEmail: "",
+        openingTime: "00:00:00",
+        closingTime: "00:00:00",
+        address: "",
+        ward: "",
+        district: "",
+        city: "",
         latitude: 0,
         longtitude: 0,
-        facilityStatus: "1",
-        ownerId: 2,
-        staffId: 3
+        facilityStatus: "",
+        ownerId: 0,
+        staffId: 0
     });
 
     const [isEditing, setIsEditing] = useState(false);
     const [editData, setEditData] = useState({
-        description: facility.description,
-        openingTime: facility.openingTime.slice(0, 5),
-        closingTime: facility.closingTime.slice(0, 5)
+        description: "",
+        openingTime: "",
+        closingTime: ""
     });
     const [isLoading, setIsLoading] = useState(false);
+    const [facilityLoading, setFacilityLoading] = useState(true);
     const [error, setError] = useState('');
     const [activeTab, setActiveTab] = useState('courts');
 
@@ -93,6 +98,38 @@ export const FacilityDetailPage: React.FC = () => {
     const [courtsError, setCourtsError] = useState('');
     const [showAddCourtModal, setShowAddCourtModal] = useState(false);
     const [editingCourt, setEditingCourt] = useState<Court | null>(null);
+    
+    // Staff information state
+    const [staffInfo, setStaffInfo] = useState<StaffInfo | null>(null);
+    const [staffLoading, setStaffLoading] = useState(false);
+    const [staffError, setStaffError] = useState('');
+    
+    // Load facility details
+    useEffect(() => {
+        const loadFacilityDetails = async () => {
+            if (!facilityId) return;
+
+            setFacilityLoading(true);
+            setError('');
+            try {
+                const facilityData = await getFacilityById(parseInt(facilityId));
+                setFacility(facilityData);
+                setEditData({
+                    description: facilityData.description,
+                    openingTime: facilityData.openingTime.slice(0, 5),
+                    closingTime: facilityData.closingTime.slice(0, 5)
+                });
+                console.log('Loaded facility details:', facilityData);
+            } catch (error) {
+                console.error('Error loading facility details:', error);
+                setError('Không thể tải thông tin cơ sở. Vui lòng thử lại sau.');
+            } finally {
+                setFacilityLoading(false);
+            }
+        };
+
+        loadFacilityDetails();
+    }, [facilityId]);
 
     // Load courts function
     const loadCourts = async () => {
@@ -117,11 +154,33 @@ export const FacilityDetailPage: React.FC = () => {
         loadCourts();
     }, [facilityId]);
 
+    // Load staff information
+    useEffect(() => {
+        const loadStaffInfo = async () => {
+            if (!facilityId) return;
+
+            setStaffLoading(true);
+            setStaffError('');
+            try {
+                const staffData = await getStaffByFacilityId(parseInt(facilityId));
+                setStaffInfo(staffData);
+                console.log('Loaded staff details:', staffData);
+            } catch (error) {
+                console.error('Error loading staff information:', error);
+                setStaffError('Không thể tải thông tin nhân viên. Vui lòng thử lại sau.');
+            } finally {
+                setStaffLoading(false);
+            }
+        };
+
+        loadStaffInfo();
+    }, [facilityId]);
 
 
     const tabs = [
         { id: 'courts', label: 'Courts Management', icon: Building2 },
         { id: 'details', label: 'Details', icon: Settings },
+        { id: 'staff', label: 'Staff', icon: UserCircle },
     ];
 
     const handleEditChange = (field: string, value: string) => {
@@ -185,6 +244,33 @@ export const FacilityDetailPage: React.FC = () => {
         loadCourts(); // Reload courts list
     };
 
+    // Format user status
+    const formatUserStatus = (status: string) => {
+        switch (status) {
+            case '0':
+                return { label: 'Active', color: 'green' };
+            case '1':
+                return { label: 'Inactive', color: 'red' };
+            default:
+                return { label: 'Unknown', color: 'gray' };
+        }
+    };
+
+    // Format role
+    const formatRole = (role: string) => {
+        switch (role) {
+            case '1':
+                return 'Admin';
+            case '2':
+                return 'Facility Owner';
+            case '3':
+                return 'Staff';
+            case '4':
+                return 'Customer';
+            default:
+                return 'Unknown';
+        }
+    };
 
 
     return (
@@ -202,63 +288,72 @@ export const FacilityDetailPage: React.FC = () => {
                     <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-radial from-mint-400/10 to-transparent rounded-full blur-3xl"></div>
 
                     <div className="relative p-6">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4">
-                                <motion.button
-                                    onClick={() => window.history.back()}
-                                    className="p-2 text-slate-400 hover:text-white transition-colors rounded-xl hover:bg-slate-700/50 backdrop-blur-sm"
-                                    whileHover={{ x: -3, scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                >
-                                    <ArrowLeft className="w-5 h-5" />
-                                </motion.button>
+                        {facilityLoading ? (
+                            <div className="flex justify-center items-center h-24">
+                                <div className="animate-spin w-10 h-10 border-4 border-mint-500/30 border-t-mint-500 rounded-full"></div>
+                            </div>
+                        ) : (
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-4">
+                                    <motion.button
+                                        onClick={() => window.history.back()}
+                                        className="p-2 text-slate-400 hover:text-white transition-colors rounded-xl hover:bg-slate-700/50 backdrop-blur-sm"
+                                        whileHover={{ x: -3, scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                    >
+                                        <ArrowLeft className="w-5 h-5" />
+                                    </motion.button>
 
-                                <div className="flex items-center space-x-8">
-                                    {/* Facility Name and Status - Redesigned */}
-                                    <div className="flex items-center space-x-4">
-                                        <div className="w-14 h-14 bg-gradient-to-br from-mint-500/30 to-blue-500/20 rounded-2xl flex items-center justify-center">
-                                            <Building2 className="w-7 h-7 text-mint-400" />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <div className="flex items-center space-x-3">
-                                                <h1 className="text-2xl font-bold text-white">{facility.facilityName}</h1>
-                                                <motion.div
-                                                    className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center space-x-2 ${facility.facilityStatus === '1'
-                                                        ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                                                        : 'bg-red-500/20 text-red-400 border border-red-500/30'
-                                                        }`}
-                                                    initial={{ scale: 0 }}
-                                                    animate={{ scale: 1 }}
-                                                    transition={{ delay: 0.3, type: "spring" }}
-                                                >
-                                                    <div className={`w-2 h-2 rounded-full ${facility.facilityStatus === '1' ? 'bg-green-400' : 'bg-red-400'} animate-pulse`}></div>
-                                                    <span>{facility.facilityStatus === '1' ? 'Active' : 'Inactive'}</span>
-                                                </motion.div>
+                                    <div className="flex items-center space-x-8">
+                                        {/* Facility Name and Status - Redesigned */}
+                                        <div className="flex items-center space-x-4">
+                                            <div className="w-14 h-14 bg-gradient-to-br from-mint-500/30 to-blue-500/20 rounded-2xl flex items-center justify-center">
+                                                <Building2 className="w-7 h-7 text-mint-400" />
                                             </div>
-                                            <p className="text-slate-400 text-sm">Facility ID: #{facility.facilityId}</p>
-                                        </div>
-                                    </div>
-
-                                    {/* Facility Info Cards - Improved */}
-                                    <div className="flex items-center space-x-3">
-                                        <div className="bg-slate-700/40 backdrop-blur-sm rounded-xl px-4 py-3 border border-slate-600/50 min-w-[100px]">
-                                            <div className="text-center">
-                                                <p className="text-xs text-slate-400 mb-1">Location</p>
-                                                <p className="text-sm font-semibold text-white">{facility.city}</p>
+                                            <div className="space-y-1">
+                                                <div className="flex items-center space-x-3">
+                                                    <h1 className="text-2xl font-bold text-white">{facility.facilityName}</h1>
+                                                    <motion.div
+                                                        className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center space-x-2 ${facility.facilityStatus === '1'
+                                                            ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                                                            : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                                                            }`}
+                                                        initial={{ scale: 0 }}
+                                                        animate={{ scale: 1 }}
+                                                        transition={{ delay: 0.3, type: "spring" }}
+                                                    >
+                                                        <div className={`w-2 h-2 rounded-full ${facility.facilityStatus === '1' ? 'bg-green-400' : 'bg-red-400'} animate-pulse`}></div>
+                                                        <span>{facility.facilityStatus === '1' ? 'Active' : 'Inactive'}</span>
+                                                    </motion.div>
+                                                </div>
+                                                <p className="text-slate-400 text-sm">Facility ID: #{facility.facilityId}</p>
                                             </div>
                                         </div>
-                                        <div className="bg-slate-700/40 backdrop-blur-sm rounded-xl px-4 py-3 border border-slate-600/50 min-w-[120px]">
-                                            <div className="text-center">
-                                                <p className="text-xs text-slate-400 mb-1">Operating Hours</p>
-                                                <p className="text-sm font-semibold text-white">{formatTime(facility.openingTime)} - {formatTime(facility.closingTime)}</p>
+
+                                        {/* Facility Info Cards - Improved */}
+                                        <div className="flex items-center space-x-3">
+                                            <div className="bg-slate-700/40 backdrop-blur-sm rounded-xl px-4 py-3 border border-slate-600/50 min-w-[100px]">
+                                                <div className="text-center">
+                                                    <p className="text-xs text-slate-400 mb-1">Location</p>
+                                                    <p className="text-sm font-semibold text-white">{facility.city}</p>
+                                                </div>
+                                            </div>
+                                            <div className="bg-slate-700/40 backdrop-blur-sm rounded-xl px-4 py-3 border border-slate-600/50 min-w-[120px]">
+                                                <div className="text-center">
+                                                    <p className="text-xs text-slate-400 mb-1">Operating Hours</p>
+                                                    <p className="text-sm font-semibold text-white">{formatTime(facility.openingTime)} - {formatTime(facility.closingTime)}</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </motion.div>
+
+                {/* Show error if any */}
+                <ErrorMessage message={error} show={!!error} />
 
                 {/* Tab Navigation */}
                 <motion.div
@@ -389,44 +484,7 @@ export const FacilityDetailPage: React.FC = () => {
                                     </div>
                                 </div>
 
-                                {!isEditing ? (
-                                    <motion.div
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 0.2 }}
-                                    >
-                                        <Button
-                                            onClick={() => setIsEditing(true)}
-                                            icon={Edit3}
-                                            className="bg-gradient-to-r from-mint-500/20 to-blue-500/20 border border-mint-500/30 hover:from-mint-500/30 hover:to-blue-500/30 px-4 py-2 text-sm"
-                                        >
-                                            Edit Facility
-                                        </Button>
-                                    </motion.div>
-                                ) : (
-                                    <motion.div
-                                        className="flex space-x-3"
-                                        initial={{ opacity: 0, x: 20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                    >
-                                        <Button
-                                            onClick={handleCancel}
-                                            variant="secondary"
-                                            icon={X}
-                                            className="px-4 py-2 text-sm font-medium bg-slate-700/50 border border-slate-600/50 hover:bg-slate-600/50 hover:border-slate-500/50 text-slate-300 hover:text-white transition-all duration-300 whitespace-nowrap"
-                                        >
-                                            Cancel
-                                        </Button>
-                                        <Button
-                                            onClick={handleSave}
-                                            loading={isLoading}
-                                            icon={Save}
-                                            className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-mint-500 to-blue-500 hover:from-mint-600 hover:to-blue-600 text-white border-0 shadow-lg shadow-mint-500/25 whitespace-nowrap"
-                                        >
-                                            Save Changes
-                                        </Button>
-                                    </motion.div>
-                                )}
+                 
                             </div>
 
                             <ErrorMessage message={error} show={!!error} />
@@ -576,10 +634,161 @@ export const FacilityDetailPage: React.FC = () => {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Remove Staff Information Section */}
                         </motion.div>
                     )}
 
+                    {activeTab === 'staff' && (
+                        <motion.div
+                            key="staff"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.3 }}
+                            className="space-y-6"
+                        >
+                            {/* Header */}
+                            <div className="flex items-center justify-between bg-gradient-to-br from-slate-800/60 to-slate-700/40 backdrop-blur-xl rounded-2xl p-6 border border-slate-600/50">
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-12 h-12 bg-gradient-to-br from-mint-500/30 to-blue-500/20 rounded-xl flex items-center justify-center">
+                                        <UserCircle className="w-6 h-6 text-mint-400" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-white">Staff Information</h2>
+                                        <p className="text-slate-400">View staff assigned to this facility</p>
+                                    </div>
+                                </div>
+                            </div>
 
+                            <ErrorMessage message={staffError} show={!!staffError} />
+
+                            {/* Staff Information */}
+                            {staffLoading ? (
+                                <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/40 backdrop-blur-xl rounded-2xl p-12 border border-slate-600/50 text-center">
+                                    <div className="animate-spin w-12 h-12 border-4 border-mint-500/30 border-t-mint-500 rounded-full mx-auto mb-4"></div>
+                                    <p className="text-slate-400">Loading staff information...</p>
+                                </div>
+                            ) : staffInfo ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* Staff Profile */}
+                                    <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/40 backdrop-blur-xl rounded-2xl p-6 border border-slate-600/50">
+                                        <h3 className="flex items-center space-x-2 text-lg font-semibold text-white border-b border-slate-600/50 pb-3 mb-4">
+                                            <UserCircle className="w-5 h-5 text-mint-400" />
+                                            <span>Staff Profile</span>
+                                        </h3>
+
+                                        <div className="flex items-center space-x-4 mb-6">
+                                            <div className="w-20 h-20 bg-gradient-to-br from-mint-500/30 to-blue-500/20 rounded-full flex items-center justify-center">
+                                                <UserCircle className="w-10 h-10 text-mint-400" />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-xl font-semibold text-white">{staffInfo.firstName} {staffInfo.lastName}</h4>
+                                                <div className="flex items-center space-x-2 mt-1">
+                                                    <span className="text-sm text-slate-400">{formatRole(staffInfo.role)}</span>
+                                                    <div className={`px-2 py-0.5 rounded-md text-xs font-medium ${staffInfo.userStatus === '0' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-red-500/20 text-red-400 border border-red-500/30'}`}>
+                                                        {formatUserStatus(staffInfo.userStatus).label}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <div className="flex items-center space-x-3 p-4 bg-slate-700/50 rounded-lg">
+                                                <Mail className="w-5 h-5 text-slate-400" />
+                                                <div>
+                                                    <p className="text-xs text-slate-400">Email</p>
+                                                    <p className="text-white">{staffInfo.email}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center space-x-3 p-4 bg-slate-700/50 rounded-lg">
+                                                <Phone className="w-5 h-5 text-slate-400" />
+                                                <div>
+                                                    <p className="text-xs text-slate-400">Phone</p>
+                                                    <p className="text-white">{staffInfo.phoneNumber}</p>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center space-x-3 p-4 bg-slate-700/50 rounded-lg">
+                                                <Building2 className="w-5 h-5 text-slate-400" />
+                                                <div>
+                                                    <p className="text-xs text-slate-400">Assigned Facility</p>
+                                                    <p className="text-white">{staffInfo.facilityName}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Staff Details */}
+                                    <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/40 backdrop-blur-xl rounded-2xl p-6 border border-slate-600/50">
+                                        <h3 className="flex items-center space-x-2 text-lg font-semibold text-white border-b border-slate-600/50 pb-3 mb-4">
+                                            <Settings className="w-5 h-5 text-mint-400" />
+                                            <span>Staff Details</span>
+                                        </h3>
+
+                                        <div className="space-y-4">
+                                            <div className="flex items-center justify-between p-4 bg-slate-700/50 rounded-lg">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                                        <Users className="w-5 h-5 text-blue-400" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs text-slate-400">Staff ID</p>
+                                                        <p className="text-white font-medium">#{staffInfo.userId}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center justify-between p-4 bg-slate-700/50 rounded-lg">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className="w-10 h-10 bg-mint-500/20 rounded-lg flex items-center justify-center">
+                                                        <Activity className="w-5 h-5 text-mint-400" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs text-slate-400">Status</p>
+                                                        <p className={`font-medium ${staffInfo.userStatus === '0' ? 'text-green-400' : 'text-red-400'}`}>
+                                                            {formatUserStatus(staffInfo.userStatus).label}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center justify-between p-4 bg-slate-700/50 rounded-lg">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                                                        <Settings className="w-5 h-5 text-purple-400" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs text-slate-400">Role</p>
+                                                        <p className="text-white font-medium">{formatRole(staffInfo.role)}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex items-center justify-between p-4 bg-slate-700/50 rounded-lg">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center">
+                                                        <Building2 className="w-5 h-5 text-orange-400" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs text-slate-400">Facility ID</p>
+                                                        <p className="text-white font-medium">#{staffInfo.facilityId}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/40 backdrop-blur-xl rounded-2xl p-12 border border-slate-600/50 text-center">
+                                    <UserCircle className="w-16 h-16 text-slate-500 mx-auto mb-3" />
+                                    <h3 className="text-xl font-semibold text-white mb-2">No Staff Assigned</h3>
+                                    <p className="text-slate-400">This facility doesn't have any staff assigned yet.</p>
+                                </div>
+                            )}
+                        </motion.div>
+                    )}
                 </AnimatePresence>
             </div>
 

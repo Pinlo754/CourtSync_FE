@@ -1,16 +1,33 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Building2, Users, Settings, LogOut, Bell, Search } from 'lucide-react';
+import { Building2, FileBarChart, LogOut, Bell, Search } from 'lucide-react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { useAuthContext } from '../../features/auth/hooks/useAuthContext';
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
 }
 
+interface SidebarItem {
+    icon: React.FC<{ className?: string }>;
+    label: string;
+    path: string;
+}
+
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
-    const sidebarItems = [
-        { icon: Building2, label: 'Facilities', active: true },
-        { icon: Settings, label: 'Settings', active: false },
+    const { logout } = useAuthContext();
+    const navigate = useNavigate();
+    const location = useLocation();
+    
+    const sidebarItems: SidebarItem[] = [
+        { icon: Building2, label: 'Facilities', path: '/facility-management' },
+        { icon: FileBarChart, label: 'Reports', path: '/reports' },
     ];
+    
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -38,22 +55,29 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
 
                 {/* Navigation */}
                 <nav className="p-4 space-y-2">
-                    {sidebarItems.map((item, index) => (
-                        <motion.button
-                            key={item.label}
-                            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 ${item.active
-                                ? 'bg-gradient-to-r from-mint-500/20 to-blue-500/20 text-mint-400 border border-mint-500/30'
-                                : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
-                                }`}
-                            whileHover={{ x: 4 }}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                        >
-                            <item.icon className="w-5 h-5" />
-                            <span className="font-medium">{item.label}</span>
-                        </motion.button>
-                    ))}
+                    {sidebarItems.map((item, index) => {
+                        const isActive = location.pathname === item.path || 
+                                        (item.path !== '/' && location.pathname.startsWith(item.path));
+                        
+                        return (
+                            <Link to={item.path} key={item.label}>
+                                <motion.div
+                                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-300 ${
+                                        isActive
+                                        ? 'bg-gradient-to-r from-mint-500/20 to-blue-500/20 text-mint-400 border border-mint-500/30'
+                                        : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+                                    }`}
+                                    whileHover={{ x: 4 }}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: index * 0.1 }}
+                                >
+                                    <item.icon className="w-5 h-5" />
+                                    <span className="font-medium">{item.label}</span>
+                                </motion.div>
+                            </Link>
+                        );
+                    })}
                 </nav>
 
                 {/* User Profile */}
@@ -67,7 +91,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                             <p className="text-slate-400 text-xs">Facility Owner</p>
                         </div>
                     </div>
-                    <button className="w-full flex items-center space-x-2 text-slate-400 hover:text-red-400 transition-colors">
+                    <button 
+                        className="w-full flex items-center space-x-2 text-slate-400 hover:text-red-400 transition-colors"
+                        onClick={handleLogout}
+                    >
                         <LogOut className="w-4 h-4" />
                         <span className="text-sm">Sign Out</span>
                     </button>

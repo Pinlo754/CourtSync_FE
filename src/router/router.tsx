@@ -14,6 +14,7 @@ import { FacilityOwnerDashboard } from "../pages/FacilityManagement/FacilityOwne
 import { AuthGuard } from "../guards/authGuard";
 import { UserRole } from "../types/role";
 import { FacilityDetailPage } from "../pages/FacilityManagement/FacilityDetailPage";
+import ReportsPage from "../pages/Reports/ReportsPage";
 
 const routers = createBrowserRouter([
   {
@@ -67,6 +68,10 @@ const routers = createBrowserRouter([
   {
     path: "/test",
     element: <TestPage />,
+  },
+  {
+    path: "/reports",
+    element: <ReportsPage />,
   },
   {
     path: "/facility-management",
