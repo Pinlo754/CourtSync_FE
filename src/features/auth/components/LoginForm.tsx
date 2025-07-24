@@ -8,13 +8,14 @@ import { ErrorMessage } from '../../../components/ui/ErrorMessage';
 import { SuccessMessage } from '../../../components/ui/SuccessMessage';
 import { AuthToggle } from './AuthToggle';
 import { SignUpFields } from './SignUpFields';
-import { LoginRequest, SignUpRequest, SendRegistrationOTPRequest } from '../types';
-import { sendRegistrationOTP } from '../../../api/auth/authApi';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { LoginRequest, SignUpRequest } from '../types';
+import { authService } from '../api/authService';
+import { useNavigate } from 'react-router-dom';
 import { ForgotPasswordModal } from './ForgetPasswordModal';
 import { RegistrationOTPModal } from './RegistrationOTPModal';
 import { useAuthContext } from '../hooks/useAuthContext';
 import { UserRole } from '../../../types/role';
+import { getUser } from '../utils/storage';
 
 export const LoginForm: React.FC = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -76,7 +77,7 @@ export const LoginForm: React.FC = () => {
 
   const handleLogin = async (): Promise<void> => {
     await login(loginData);
-    const loggedUser = JSON.parse(sessionStorage.getItem('loggedUser') || '{}');
+    const loggedUser = getUser();
     switch (loggedUser?.role) {
       case String(UserRole.FACILITY_STAFF):
         navigate('/staff');
@@ -103,7 +104,7 @@ export const LoginForm: React.FC = () => {
       setShowRegistrationOTP(true);
       
       // Send registration data to get OTP in the background
-      await sendRegistrationOTP(signupData);
+      await authService.sendRegistrationOTP(signupData);
       setSignupLoading(false);
     } catch (error: any) {
       setSignupLoading(false);

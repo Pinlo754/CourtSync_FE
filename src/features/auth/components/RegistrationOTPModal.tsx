@@ -10,7 +10,7 @@ import {
     VerifyRegistrationOTPRequest,
     SendRegistrationOTPResponse
 } from '../types';
-import { sendRegistrationOTP, verifyRegistrationOTP } from '../../../api/auth/authApi';
+import { authService } from '../api/authService';
 
 interface RegistrationOTPModalProps {
     isOpen: boolean;
@@ -130,7 +130,7 @@ export const RegistrationOTPModal: React.FC<RegistrationOTPModalProps> = ({
         setSuccess('');
 
         try {
-            await verifyRegistrationOTP({
+            await authService.verifyRegistrationOTP({
                 email: registrationData.email,
                 otp: otpCode
             });
@@ -152,7 +152,7 @@ export const RegistrationOTPModal: React.FC<RegistrationOTPModalProps> = ({
         setSuccess('');
 
         try {
-            await sendRegistrationOTP(registrationData);
+            await authService.sendRegistrationOTP(registrationData);
             setIsLoading(false);
             setSuccess('New OTP code has been sent');
             startCountdown();

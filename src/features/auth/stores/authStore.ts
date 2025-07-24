@@ -2,8 +2,9 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User } from '../../../types/user';
 import { LoginRequest } from '../types';
-import { loginUser } from '../../../api/auth/authApi';
+import { authService } from '../api/authService';
 import { jwtDecode } from 'jwt-decode';
+import { saveAuthToken, saveUser, getUser, clearAuthData } from '../utils/storage';
 
 interface AuthState {
     user: User | null;
@@ -38,7 +39,7 @@ export const useAuthStore = create<AuthStore>()(
                 try {
                     set({ isLoading: true, loginMessage: null, success: false });
 
-                    const response = await loginUser(credentials);
+                    const response = await authService.login(credentials);
                     console.log('Login response:', response); // Debug log
 
                     // Handle different response structures
@@ -52,7 +53,8 @@ export const useAuthStore = create<AuthStore>()(
                         // Response has token property
                         token = response.token;
                     } else {
-                        throw new Error('Invalid response format: token not found');
+                        // Assume the entire response is the token
+                        token = response as any;
                     }
 
                     try {
@@ -62,34 +64,33 @@ export const useAuthStore = create<AuthStore>()(
 
                         // Create user object from decoded token
                         user = {
-                            userId: decodedToken.userId || decodedToken.id || decodedToken.sub || '',
+                            userId: decodedToken.UserID || '',
                             email: decodedToken.email || '',
-                            firstName: decodedToken.firstName || decodedToken.given_name || '',
-                            lastName: decodedToken.lastName || decodedToken.family_name || '',
-                            phoneNumber: decodedToken.phoneNumber || decodedToken.phone || '',
-                            role: decodedToken.role || decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || '',
-                            userStatus: decodedToken.userStatus || 'Active',
+                            firstName:  decodedToken.FirstName  || '',
+                            lastName: decodedToken.lastName || '',
+                            phoneNumber: decodedToken.phoneNumber || '',
+                            role: decodedToken.role || '',
+                            userStatus: decodedToken.userStatus || '',
                             balance: decodedToken.balance || 0
                         };
                     } catch (jwtError) {
                         console.error('JWT decode error:', jwtError);
-                        // If JWT decode fails, create user from response data
-                        const responseUser = response.user as any; // Type assertion for unknown properties
+                        // If JWT decode fails, use email from credentials
                         user = {
-                            userId: responseUser?.id || '',
-                            email: responseUser?.email || credentials.email,
-                            firstName: responseUser?.firstName || '',
-                            lastName: responseUser?.lastName || '',
-                            phoneNumber: responseUser?.phone || responseUser?.phoneNumber || '',
-                            role: responseUser?.role || '',
-                            userStatus: 'Active',
-                            balance: responseUser?.balance || 0
+                            userId: '',
+                            email: '',
+                            firstName: '',
+                            lastName: '',
+                            phoneNumber: '',
+                            role: '',
+                            userStatus: '',
+                            balance: 0
                         };
                     }
 
-                    // Save to sessionStorage
-                    sessionStorage.setItem('accessToken', JSON.stringify(response));
-                    sessionStorage.setItem('loggedUser', JSON.stringify(user));
+                    // Save to sessionStorage using utility functions
+                    saveAuthToken(token);
+                    saveUser(user);
 
                     set({
                         user,
@@ -109,8 +110,8 @@ export const useAuthStore = create<AuthStore>()(
             },
 
             logout: () => {
-                sessionStorage.removeItem('accessToken');
-                sessionStorage.removeItem('loggedUser');
+                // Clear auth data using utility function
+                clearAuthData();
                 set({
                     user: null,
                     loginMessage: null,
@@ -129,18 +130,14 @@ export const useAuthStore = create<AuthStore>()(
 
             initializeAuth: () => {
                 try {
-                    const storedUser = sessionStorage.getItem('loggedUser');
-                    const storedToken = sessionStorage.getItem('accessToken');
-
-                    if (storedUser && storedToken) {
-                        const user = JSON.parse(storedUser);
+                    const user = getUser();
+                    if (user) {
                         set({ user });
                     }
                 } catch (error) {
                     console.error('Error initializing auth:', error);
                     // Clear invalid data
-                    sessionStorage.removeItem('accessToken');
-                    sessionStorage.removeItem('loggedUser');
+                    clearAuthData();
                 }
             }
         }),

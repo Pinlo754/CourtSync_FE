@@ -1,13 +1,5 @@
 import { User } from "../../types/user";
 
-export interface AuthContextType {
-  user: User | null;
-  login: (user: LoginRequest) => void;
-  logout: () => void;
-  loginMessage: string | null;
-  success: boolean;
-}
-
 // Auth API Request Types
 export interface LoginRequest {
   email: string;
@@ -65,23 +57,6 @@ export interface ResetPasswordByOTPRequest {
   confirmPassword: string;
 }
 
-// Phone Reset Password Types
-export interface ForgotPasswordByPhoneRequest {
-  phoneNumber: string;
-}
-
-export interface VerifyOTPByPhoneRequest {
-  phoneNumber: string;
-  otp: string;
-}
-
-export interface ResetPasswordByPhoneRequest {
-  phoneNumber: string;
-  otp: string;
-  newPassword: string;
-  confirmPassword: string;
-}
-
 // Auth API Response Types
 export interface LoginResponse {
   token: string;
@@ -113,21 +88,5 @@ export interface ResetPasswordResponse {
   success: boolean;
 }
 
-// Phone Reset Password Response Types
-export interface ForgotPasswordByPhoneResponse {
-  message: string;
-  success: boolean;
-}
-
-export interface VerifyOTPByPhoneResponse {
-  message: string;
-  success: boolean;
-}
-
-export interface ResetPasswordByPhoneResponse {
-  message: string;
-  success: boolean;
-}
-
 // Legacy alias - để backward compatibility
-export interface LoginUserDTO extends LoginRequest { }
+export interface LoginUserDTO extends LoginRequest { } 
