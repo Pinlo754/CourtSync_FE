@@ -1,5 +1,4 @@
-"use client"
-
+import React, { useRef } from "react";
 import { Button } from "../..//components/ui/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card"
 import { Badge } from "../../components/ui/badge"
@@ -10,7 +9,8 @@ import { BookingHistoryItem,  getBookingStatus,
   formatDateTime,
   formatTime,
   calculateDuration, } from "../../types/booking"
-
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 interface BookingDetailModalProps {
   booking: BookingHistoryItem
   onClose: () => void
@@ -27,9 +27,44 @@ export function BookingDetailModal({ booking, onClose, open }: BookingDetailModa
 
   if (!open) return null
 
+const downloadDivAsPdf = async (elementId: string) => {
+  const input = document.getElementById(elementId);
+  if (!input) return;
+
+  // Chụp thẻ và toàn bộ thẻ con
+  const canvas = await html2canvas(input, {
+    scale: 2, // Độ nét cao
+    useCORS: true, // Hỗ trợ ảnh từ server
+    logging: false
+  });
+
+  const imgData = canvas.toDataURL("image/png");
+
+  // Khởi tạo PDF
+  const pdf = new jsPDF("p", "mm", "a4");
+  const pdfWidth = pdf.internal.pageSize.getWidth();
+  const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+  // Nếu chiều cao lớn hơn 1 trang, tự động chia trang
+  let heightLeft = pdfHeight;
+  let position = 0;
+
+  while (heightLeft > 0) {
+    pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+    heightLeft -= pdf.internal.pageSize.getHeight();
+    if (heightLeft > 0) {
+      position = heightLeft - pdfHeight;
+      pdf.addPage();
+    }
+  }
+
+  pdf.save("download.pdf");
+};
+
+
   return (
-    <div className="fixed inset-0 bg-gray-50 bg-opacity-5 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl shadow-lg w-[90%] max-w-4xl max-h-[90vh] overflow-y-auto relative">
+    <div className="fixed inset-0 bg-gray-50 bg-opacity-5 flex items-center justify-center z-50" id={"invoice"} >
+      <div className="bg-white rounded-xl shadow-lg w-[90%] max-w-4xl max-h-[90vh] overflow-y-auto relative" >
         {/* Close Button */}
         <button
           className="absolute top-4 right-4 text-gray-500 hover:text-red-500 z-10 bg-white rounded-full p-2 shadow-md"
@@ -39,7 +74,7 @@ export function BookingDetailModal({ booking, onClose, open }: BookingDetailModa
         </button>
 
         {/* Header */}
-        <div className="p-6 border-b">
+        <div className="p-6 border-b" >
           <h2 className="text-xl font-bold flex items-center space-x-2">
             <FileText className="h-5 w-5" />
             <span>Chi tiết đặt sân #{booking.bookingId}</span>
@@ -253,7 +288,7 @@ export function BookingDetailModal({ booking, onClose, open }: BookingDetailModa
               </Button>
             )}
 
-            <Button variant="outline" className="flex-1 bg-transparent">
+            <Button variant="outline" className="flex-1 bg-transparent" onClick={() => downloadDivAsPdf ("invoice")}>
               <FileText className="h-4 w-4 mr-2" />
               Tải hóa đơn
             </Button>
