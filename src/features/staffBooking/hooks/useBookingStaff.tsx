@@ -302,7 +302,7 @@ export function useBookingStaff() {
     setTotalPrice(0);
   };
 
-  const totalHours = selectedSlots.length * 0.5;
+  const totalHours = (selectedSlots.length-1) * 0.5;
 
   return {
     facility,

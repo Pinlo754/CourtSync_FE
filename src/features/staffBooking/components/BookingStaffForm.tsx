@@ -147,7 +147,7 @@ export function BookingStaffForm() {
                     </div>
 
                     {/* Courts Grid */}
-                    {courts.map((courtId) => (
+                    {courts.map((courtId,index) => (
                       <div key={courtId} className="grid grid-cols-[100px_repeat(38,1fr)] gap-1 mb-1">
                         <div
                           className={`flex items-center justify-center p-2 rounded text-sm font-medium cursor-pointer transition-colors ${
@@ -157,7 +157,7 @@ export function BookingStaffForm() {
                           }`}
                           onClick={() => handleCourtChange(courtId)}
                         >
-                          Sân {courtId}
+                          Sân {index+1}
                         </div>
                         {timeSlots.map((timeSlot) => {
                           const status = getSlotStatus(courtId, timeSlot)
