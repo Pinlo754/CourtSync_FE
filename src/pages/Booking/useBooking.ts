@@ -274,6 +274,7 @@ export function useBooking() {
       facilityName: facility.FacilityName,
       facilityAddress: facility.Address,
       facilityPhone: facility.Phone,
+      courtName: courtName,
       courtId: selectedCourt,
       selectedDate,
       selectedSlots: sortedSlots,
@@ -301,7 +302,7 @@ export function useBooking() {
   };
 
   const totalHours = Math.max(0, selectedSlots.length * 0.5 - 0.5);
-
+  const [courtName, setCourtName] = useState<number>();
   return {
     facility,
     facilityLoading,
@@ -318,7 +319,7 @@ export function useBooking() {
     timeSlots,
     courts,
     totalHours,
-
+    setCourtName,
     setSelectedDate,
     setNote,
 
