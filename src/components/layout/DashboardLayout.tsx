@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Building2, FileBarChart, LogOut, Bell, Search } from 'lucide-react';
+import { Building2, FileBarChart, LogOut, Bell, Search, DollarSign, Calendar } from 'lucide-react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../../features/auth/hooks/useAuthContext';
 
@@ -21,7 +21,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
     
     const sidebarItems: SidebarItem[] = [
         { icon: Building2, label: 'Facilities', path: '/facility-management' },
+        { icon: Calendar, label: 'Bookings', path: '/bookings' },
         { icon: FileBarChart, label: 'Reports', path: '/reports' },
+        { icon: DollarSign, label: 'Transactions', path: '/transactions' },
     ];
     
     const handleLogout = () => {

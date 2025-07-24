@@ -75,7 +75,7 @@ export const ReportsList: React.FC<ReportsListProps> = ({ onSelectReport }) => {
   if (error) {
     return (
       <div className="bg-red-50 border border-red-200 rounded-md p-4 my-4">
-        <p className="text-red-700">{error}</p>
+        <p className="text-red-700 text-lg">{error}</p>
         <button 
           onClick={() => window.location.reload()}
           className="mt-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md"
@@ -93,49 +93,78 @@ export const ReportsList: React.FC<ReportsListProps> = ({ onSelectReport }) => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white mb-2">Court Reports</h1>
-        <p className="text-slate-400">Manage and track maintenance reports for your courts</p>
+        <h1 className="text-3xl font-bold text-white mb-2">Court Reports</h1>
+        <p className="text-slate-300">Manage and track maintenance reports for your courts</p>
       </div>
       
       <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-slate-700/50">
-              <TableHead className="text-slate-300">Report ID</TableHead>
-              <TableHead className="text-slate-300">Created By</TableHead>
-              <TableHead className="text-slate-300">Created Date</TableHead>
-              <TableHead className="text-slate-300">Court</TableHead>
-              <TableHead className="text-slate-300">Description</TableHead>
-              <TableHead className="text-slate-300">Status</TableHead>
-              <TableHead className="text-slate-300">Estimate Time</TableHead>
-              <TableHead className="text-slate-300">Maintain Date</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {displayReports.map((report) => (
-              <TableRow 
-                key={report.courtReportId} 
-                className="hover:bg-slate-700/50 cursor-pointer"
-                onClick={() => onSelectReport && onSelectReport(report)}
-              >
-                <TableCell className="font-medium text-white">#{report.courtReportId}</TableCell>
-                <TableCell className="text-slate-300">{report.createdBy}</TableCell>
-                <TableCell className="text-slate-300">{formatDate(report.createdDate)}</TableCell>
-                <TableCell className="text-slate-300">{report.courtName || `Court ${report.courtId}`}</TableCell>
-                <TableCell className="text-slate-300 max-w-xs truncate" title={report.description}>
-                  <div className="max-w-[200px] truncate">{report.description}</div>
-                </TableCell>
-                <TableCell>
-                  <Badge className={`${getStatusBadgeColor(report.courtReportStatus)} font-medium`}>
-                    {report.courtReportStatus}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-slate-300">{report.estimateTime || 'Not specified'}</TableCell>
-                <TableCell className="text-slate-300">{formatDate(report.maintainDate)}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        {displayReports.length === 0 ? (
+          <div className="p-8 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-slate-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <h3 className="text-xl font-medium text-white mb-2">No Reports Found</h3>
+            <p className="text-slate-400 text-lg">There are no maintenance reports for your courts yet.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent">
+                  <TableHead className="text-sm font-medium text-slate-300 w-[80px]">ID</TableHead>
+                  <TableHead className="text-sm font-medium text-slate-300">Court</TableHead>
+                  <TableHead className="text-sm font-medium text-slate-300">Description</TableHead>
+                  <TableHead className="text-sm font-medium text-slate-300">Created</TableHead>
+                  <TableHead className="text-sm font-medium text-slate-300">Maintenance Date</TableHead>
+                  <TableHead className="text-sm font-medium text-slate-300">Status</TableHead>
+                  <TableHead className="text-sm font-medium text-slate-300 text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {displayReports.map((report) => (
+                  <TableRow 
+                    key={report.courtReportId} 
+                    className="hover:bg-slate-700/30 cursor-pointer border-slate-700/50"
+                    onClick={() => onSelectReport?.(report)}
+                  >
+                    <TableCell className="font-medium text-base text-white">#{report.courtReportId}</TableCell>
+                    <TableCell className="text-base text-white">
+                      <div>
+                        <p className="font-medium">{report.courtName || `Court ${report.courtId}`}</p>
+                        <p className="text-sm text-slate-400">{report.facilityName}</p>
+                      </div>
+                    </TableCell>
+                    <TableCell className="max-w-[300px] truncate text-base text-slate-300">
+                      {report.description}
+                    </TableCell>
+                    <TableCell className="text-base text-slate-300">
+                      {formatDate(report.createdDate)}
+                    </TableCell>
+                    <TableCell className="text-base text-slate-300">
+                      {formatDate(report.maintainDate)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={`${getStatusBadgeColor(report.courtReportStatus)} font-medium px-3 py-1 text-sm`}>
+                        {report.courtReportStatus}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelectReport?.(report);
+                        }}
+                        className="text-mint-400 hover:text-mint-500 font-medium text-base"
+                      >
+                        View Details
+                      </button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
       </div>
     </div>
   );
