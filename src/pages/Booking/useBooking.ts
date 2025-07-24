@@ -14,6 +14,7 @@ import type {
   BookingRequest,
 } from "../../types/booking";
 import { Facility } from "../../types/Facility";
+import { postData } from "../../api/fetchers";
 
 export function useBooking() {
   const { facilityId } = useParams<{ facilityId: string }>();
@@ -62,15 +63,9 @@ export function useBooking() {
     try {
       setFacilityLoading(true);
       setFacilityError(null);
-      const response = await fetch(
-        `https://localhost:7255/api/Facilities/GetFacilityDetail?facilityId=${facilityId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI0IiwiZW1haWwiOiJ1c2VyQGdtYWlsLmNvbSIsIkZpcnN0TmFtZSI6InN0cmluZyIsImxhc3ROYW1lIjoic3RyaW5nIiwicm9sZSI6IjQiLCJUb2tlbklkIjoiMzU3MGYyMWEtMjYxMy00NDE4LTliOTMtMGFkOWU1MWU1OTZlIiwibmJmIjoxNzUzMjAwMDAxLCJleHAiOjE3NTcwODgwMDEsImlhdCI6MTc1MzIwMDAwMX0.l4byFFO-LBQzf8rMIZxY_g2GwbNKslG6-wDeF6DsV8Q"}`,
-          },
-        }
+      const response = await postData(
+        `/Facilities/GetFacilityDetail?facilityId=${facilityId}`,
+        {}
       );
       if (!response.ok) {
         throw new Error("Không tìm thấy thông tin sân");
@@ -122,19 +117,11 @@ export function useBooking() {
 
     try {
       setLoading(true);
-      const requestBody = {
-        facilityId: facilityId,
-        bookingDate: selectedDate,
-      };
-      const response = await fetch(
+      const response = await postData(
         `https://localhost:7255/api/Facilities/GetBookingTime`,
         {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI0IiwiZW1haWwiOiJ1c2VyQGdtYWlsLmNvbSIsIkZpcnN0TmFtZSI6InN0cmluZyIsImxhc3ROYW1lIjoic3RyaW5nIiwicm9sZSI6IjQiLCJUb2tlbklkIjoiMzU3MGYyMWEtMjYxMy00NDE4LTliOTMtMGFkOWU1MWU1OTZlIiwibmJmIjoxNzUzMjAwMDAxLCJleHAiOjE3NTcwODgwMDEsImlhdCI6MTc1MzIwMDAwMX0.l4byFFO-LBQzf8rMIZxY_g2GwbNKslG6-wDeF6DsV8Q"}`,
-          },
-          body: JSON.stringify(requestBody),
+          facilityId: facilityId,
+        bookingDate: selectedDate,
         }
       );
       if (!response.ok) throw new Error("Failed to load booking data");
@@ -164,19 +151,14 @@ export function useBooking() {
       createDateTimeString(selectedDate, sortedSlots[sortedSlots.length - 1]),
     ];
 
-    const priceRequest = {
-      courtId: selectedCourt,
-      startTimes: startTimes,
-      endTimes: endTimes,
-    };
 
     try {
-      const response = await fetch(
+      const response = await postData(
         "https://localhost:7255/api/CourtPrice/GetTotalPriceBooking",
         {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(priceRequest),
+          courtId: selectedCourt,
+      startTimes: startTimes,
+      endTimes: endTimes,
         }
       );
       if (!response.ok) throw new Error("Price API error");
@@ -206,41 +188,40 @@ export function useBooking() {
   };
 
   const handleTimeSlotClick = (timeSlot: string) => {
-  const bookedSlots = getCourtBookedSlots(selectedCourt);
+    const bookedSlots = getCourtBookedSlots(selectedCourt);
 
-  if (isTimeSlotBooked(timeSlot, bookedSlots, selectedDate)) return;
+    if (isTimeSlotBooked(timeSlot, bookedSlots, selectedDate)) return;
 
-  const status = getSlotStatus(selectedCourt, timeSlot);
-  if (status === "locked" || status === "booked") return;
+    const status = getSlotStatus(selectedCourt, timeSlot);
+    if (status === "locked" || status === "booked") return;
 
-  if (!isSelecting) {
-    setIsSelecting(true);
-    setSelectionStart(timeSlot);
-    setSelectedSlots([timeSlot]);
-  } else {
-    if (selectionStart) {
-      const startIndex = timeSlots.indexOf(selectionStart);
-      const endIndex = timeSlots.indexOf(timeSlot);
-      const minIndex = Math.min(startIndex, endIndex);
-      const maxIndex = Math.max(startIndex, endIndex);
+    if (!isSelecting) {
+      setIsSelecting(true);
+      setSelectionStart(timeSlot);
+      setSelectedSlots([timeSlot]);
+    } else {
+      if (selectionStart) {
+        const startIndex = timeSlots.indexOf(selectionStart);
+        const endIndex = timeSlots.indexOf(timeSlot);
+        const minIndex = Math.min(startIndex, endIndex);
+        const maxIndex = Math.max(startIndex, endIndex);
 
-      const newSelection = timeSlots.slice(minIndex, maxIndex + 1);
+        const newSelection = timeSlots.slice(minIndex, maxIndex + 1);
 
-      const hasInvalidSlot = newSelection.some((slot) => {
-        const slotStatus = getSlotStatus(selectedCourt, slot);
-        return slotStatus === "booked" || slotStatus === "locked";
-      });
+        const hasInvalidSlot = newSelection.some((slot) => {
+          const slotStatus = getSlotStatus(selectedCourt, slot);
+          return slotStatus === "booked" || slotStatus === "locked";
+        });
 
-      if (!hasInvalidSlot) {
-        setSelectedSlots(newSelection);
+        if (!hasInvalidSlot) {
+          setSelectedSlots(newSelection);
+        }
       }
+
+      setIsSelecting(false);
+      setSelectionStart(null);
     }
-
-    setIsSelecting(false);
-    setSelectionStart(null);
-  }
-};
-
+  };
 
   const getSlotStatus = (courtId: number, timeSlot: string) => {
     const bookedSlots = getCourtBookedSlots(courtId);
@@ -272,7 +253,7 @@ export function useBooking() {
       case "available":
         return "bg-white border border-gray-300";
       case "locked":
-        return "bg-gray-300"
+        return "bg-gray-300";
       default:
         return "bg-gray-300";
     }
@@ -325,7 +306,7 @@ export function useBooking() {
     setTotalPrice(0);
   };
 
-  const totalHours = Math.max(0, selectedSlots.length * 0.5 - 0.5);
+  const totalHours = Math.max(0, selectedSlots.length * 0.5);
 
   return {
     facility,

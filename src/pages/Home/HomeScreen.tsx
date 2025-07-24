@@ -23,6 +23,7 @@ export default function HomePage() {
     filteredFacilities,
     clearAllFilters,
     hasActiveFilters,
+    scrollToSection
   } = useHomeScreen()
 
   return (
@@ -41,11 +42,11 @@ export default function HomePage() {
             <div className="absolute inset-0 flex items-center justify-end pr-16">
               <div className="text-right text-white">
                 <h1 className="text-5xl font-bold mb-4">Badminton<br />Court</h1>
-                <a href="/courts">
-                  <Button className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-2xl">
+                <div>
+                  <Button className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-2xl"  onClick={scrollToSection}>
                     Đặt sân ngay
                   </Button>
-                </a>
+                </div>
               </div>
             </div>
           </div>
@@ -115,7 +116,7 @@ export default function HomePage() {
           )}
         </div>
 
-        <div className="flex gap-8">
+        <div className="flex gap-8" id="targetDiv">
           <div className="flex-1">
             <FacilityGrid facilities={filteredFacilities} />
           </div>
