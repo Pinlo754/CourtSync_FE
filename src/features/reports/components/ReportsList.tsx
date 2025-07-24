@@ -67,6 +67,21 @@ export const ReportsList: React.FC<ReportsListProps> = ({ onSelectReport }) => {
     }
   };
 
+  const getReportStatusLabel = (status: CourtReportStatus) => {
+    switch (status) {
+      case CourtReportStatus.PENDING:
+        return 'Chờ phê duyệt';
+      case CourtReportStatus.IN_PROGRESS:
+        return 'Đang xử lý';
+      case CourtReportStatus.COMPLETED:
+        return 'Đã hoàn thành';
+      case CourtReportStatus.CANCELLED:
+        return 'Đã hủy';
+      default:
+        return 'Không xác định';
+    }
+  };
+
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'Not scheduled';
     try {
@@ -270,7 +285,7 @@ export const ReportsList: React.FC<ReportsListProps> = ({ onSelectReport }) => {
                     </TableCell>
                     <TableCell>
                       <Badge className={`${getStatusBadgeColor(report.courtReportStatus)} font-medium px-3 py-1 text-sm`}>
-                        {report.courtReportStatus}
+                        {getReportStatusLabel(report.courtReportStatus)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
