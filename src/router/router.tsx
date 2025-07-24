@@ -15,8 +15,10 @@ import { AuthGuard } from "../guards/authGuard";
 import { UserRole } from "../types/role";
 import { FacilityDetailPage } from "../pages/FacilityManagement/FacilityDetailPage";
 import ReportsPage from "../pages/Reports/ReportsPage";
+import { BookingSuccess } from "../pages/BookingResult/BookingResult";
 import { TransactionsPage } from "../pages/Transactions";
 import { BookingsPage } from "../pages/Bookings";
+
 
 const routers = createBrowserRouter([
   {
@@ -110,7 +112,11 @@ const routers = createBrowserRouter([
         <FacilityDetailPage />
       </AuthGuard>
     ),
-  }
+  },
+  {
+    path: "/BookingSuccess",
+    element: <BookingSuccess />,
+  },
 ]);
 
 export default routers;

@@ -58,7 +58,7 @@ export default function useHomeScreen() {
           MaxPrice: item.maxPrice,
           facilityImageUrl: item.facilittyImageUrl,
         }));
-        console.log("Facilities:", mapped); // <-- Thêm dòng này để test
+        console.log("Facilities:", mapped);
         setFacilities(mapped);
       } catch (err) {
         console.error("Lỗi khi gọi API:", err);
@@ -69,6 +69,12 @@ export default function useHomeScreen() {
     console.log(facilities);
   }, []);
 
+  const scrollToSection = () => {
+  const element = document.getElementById("targetDiv");
+  if (element) {
+    element.scrollIntoView({ behavior: "smooth" }); 
+  }
+};
   const filteredFacilities = useMemo(() => {
     const searchFiltered = facilities.filter((facility) => {
       const search = searchTerm.toLowerCase();
@@ -114,5 +120,6 @@ export default function useHomeScreen() {
     filteredFacilities,
     clearAllFilters,
     hasActiveFilters,
+    scrollToSection
   };
 }

@@ -62,11 +62,11 @@ export const useAuthStore = create<AuthStore>()(
 
                         // Create user object from decoded token
                         user = {
-                            userId: decodedToken.userId || decodedToken.id || decodedToken.sub || '',
+                            userId: decodedToken.UserID || decodedToken.id || decodedToken.sub || '',
                             email: decodedToken.email || '',
-                            firstName: decodedToken.firstName || decodedToken.given_name || '',
-                            lastName: decodedToken.lastName || decodedToken.family_name || '',
-                            phoneNumber: decodedToken.phoneNumber || decodedToken.phone || '',
+                            firstName: decodedToken.FirstName || decodedToken.given_name || '',
+                            lastName: decodedToken.LastName || decodedToken.family_name || '',
+                            phoneNumber: decodedToken.Phone || decodedToken.phone || '',
                             role: decodedToken.role || decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || '',
                             userStatus: decodedToken.userStatus || 'Active',
                             balance: decodedToken.balance || 0

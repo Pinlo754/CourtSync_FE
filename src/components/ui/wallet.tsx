@@ -287,7 +287,6 @@ const useWallet = () => {
     try {
       setLoading(true)
       setError(null)
-
       const  response = await postData("/transaction/GetUserTransactions", {});
       const data: TransactionAPI = await response
       console.log("transactionAPI:", data.$values)

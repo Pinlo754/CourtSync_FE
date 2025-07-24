@@ -157,25 +157,22 @@ export default function PaymentResponsePage() {
   } | null>(null);
 
   useEffect(() => {
-    // Lấy action từ sessionStorage
-    const storedAction = sessionStorage.getItem("action");
-    setAction(storedAction);
-
-    // Lấy deposit info nếu có
-    if (storedAction === "deposit") {
-      const storedDepositInfo = sessionStorage.getItem("depositInfo");
-      if (storedDepositInfo) {
-        setDepositInfo(JSON.parse(storedDepositInfo));
-      }
-    }
-
-    // Lấy tất cả parameters từ URL
+    const searchParams = new URLSearchParams(location.search);
     const params: Partial<VNPayResponse> = {};
-    searchParams.forEach((value: any, key: any) => {
-      params[key as keyof VNPayResponse] = value;
+
+    searchParams.forEach((value, key) => {
+      params[key as keyof VNPayResponse] = decodeURIComponent(
+        value.replace(/\+/g, " ")
+      );
     });
+
+    if (params.vnp_ResponseCode) {
+      const vnpadata = params as VNPayResponse;
+      console.log(vnpadata);
+      setVnpayData(vnpadata);
+    }
     setLoading(false);
-  }, [searchParams]);
+  }, [location.search]);
 
   useEffect(() => {
     return () => {
@@ -183,6 +180,10 @@ export default function PaymentResponsePage() {
       sessionStorage.removeItem("depositInfo");
     };
   }, []);
+
+  useEffect(() => {
+    console.log("data:", vnpayData);
+  });
   const handleDownloadReceipt = () => {
     // Tạo và download receipt PDF
     console.log("Downloading receipt...");
@@ -197,19 +198,28 @@ export default function PaymentResponsePage() {
 
   const calledRef = useRef(false);
   useEffect(() => {
-    if (!vnpayData || calledRef.current) return;
     const Callback = async () => {
-      const response = await postData("/Transaction/DepositCallBack", {
-        vnp_Amount: vnpayData.vnp_Amount,
-        vnp_OrderInfo: vnpayData.vnp_OrderInfo,
-        vnp_ResponseCode: vnpayData.vnp_ResponseCode,
-      });
-      console.log(response);
-      calledRef.current = true; 
-    };
+      const depositData = {
+        vnp_Amount: vnpayData?.vnp_Amount,
+        vnp_OrderInfo: vnpayData?.vnp_OrderInfo,
+        vnp_ResponseCode: vnpayData?.vnp_ResponseCode,
+      };
 
+      if (vnpayData?.vnp_ResponseCode && vnpayData?.vnp_TransactionNo && vnpayData?.vnp_ResponseCode) {
+    setLoading(true);
+
+      const response = await postData(
+        "/Transaction/DepositCallBack",
+        depositData
+      );
+      console.log(depositData);
+      console.log("result", response)
+      calledRef.current = true;
+      setLoading(false);
+    };
+  }
     Callback();
-  }, []);
+  }, [vnpayData]);
 
   if (loading) {
     return (

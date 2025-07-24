@@ -141,11 +141,6 @@ export function CourtBooking() {
                 <span>Khóa</span>
               </div>
             </div>
-            {selectedSlots.length > 0 && (
-              <Button variant="outline" onClick={clearSelection} className="text-red-600 border-red-600 bg-transparent">
-                Xóa lựa chọn
-              </Button>
-            )}
           </div>
         </div>
       </div>
