@@ -72,8 +72,8 @@ export const FacilityOwnerDashboard: React.FC = () => {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Facility Management</h1>
-            <p className="text-slate-300">Manage your badminton facilities and staff</p>
+            <h1 className="text-3xl font-bold text-white mb-2">Quản lý cơ sở</h1>
+            <p className="text-slate-300">Quản lý cơ sở và nhân viên</p>
           </div>
           <motion.button
             onClick={() => setShowCreateModal(true)}
@@ -82,7 +82,7 @@ export const FacilityOwnerDashboard: React.FC = () => {
             whileTap={{ scale: 0.95 }}
           >
             <Plus className="w-5 h-5" />
-            <span>Create Facility</span>
+            <span>Tạo cơ sở</span>
           </motion.button>
         </div>
 
@@ -92,7 +92,7 @@ export const FacilityOwnerDashboard: React.FC = () => {
 
         {/* Facilities Grid */}
         <div>
-          <h2 className="text-xl font-semibold text-white mb-4">Your Facilities</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">Cơ sở của bạn</h2>
 
           {/* Loading State */}
           {isLoading ? (
@@ -103,7 +103,7 @@ export const FacilityOwnerDashboard: React.FC = () => {
                 transition={{ duration: 1.5, repeat: Infinity }}
               >
                 <Loader2 className="w-6 h-6 animate-spin" />
-                <span>Đang tải facilities...</span>
+                <span>Đang tải cơ sở...</span>
               </motion.div>
             </div>
           ) : error ? (
@@ -141,7 +141,7 @@ export const FacilityOwnerDashboard: React.FC = () => {
                 transition={{ delay: facilities.length * 0.1 }}
               >
                 <Plus className="w-12 h-12 text-slate-500 mb-4" />
-                <p className="text-slate-400 text-center">Add New Facility</p>
+                <p className="text-slate-400 text-center">Thêm cơ sở mới</p>
               </motion.div>
 
               {/* Empty State */}

@@ -113,12 +113,12 @@ export function useBookingStaff() {
         `/Facilities/GetBookingTime`,
         requestBody
       );
-      setBookingData(response);
+      console.log("response:", response);
+      setBookingData(response.$values);
 
-      const ids = Array.isArray(response)
-        ? response.map((court: BookingTime) => court.courtId)
-        : [];
+      const ids = response.$values.map((court: BookingTime) => court.courtId);
       setCourtIds(ids);
+      console.log("ids:", ids);
 
       if (ids.length > 0 && !selectedCourt) {
         setSelectedCourt(ids[0]);
@@ -161,10 +161,10 @@ export function useBookingStaff() {
     if (!bookingData) return [];
 
     const courtData = bookingData.find((court) => court.courtId === courtId);
-    if (!courtData || !courtData.startTimes?.length) return [];
-    return courtData.startTimes.map((start, index) => ({
+    if (!courtData || !courtData.startTimes?.$values?.length) return [];
+    return courtData.startTimes.$values.map((start, index) => ({
       start,
-      end: courtData.endTimes[index],
+      end: courtData.endTimes.$values[index],
     }));
   };
 

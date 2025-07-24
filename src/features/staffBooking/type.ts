@@ -35,12 +35,15 @@ export interface Facility {
     totalCourts: number;
     ward: string;
 }
+export interface listTime {
+  $id: number
+  $values: string[]
+}
 export interface BookingTime {
   courtId: number
-  startTimes: string[]
-  endTimes: string[]
+  startTimes: listTime
+  endTimes: listTime
 }
-
 export interface BookingResponse {
   $values: BookingTime[]
 }

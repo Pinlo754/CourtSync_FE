@@ -76,7 +76,7 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
         },
         {
             id: 'weekend_morning',
-            label: 'Weekend/Holiday Morning',
+            label: 'Sáng cuối tuần/ngày lễ',
             icon: Sunrise,
             dayType: '2',
             defaultStartTime: facilityOpeningTime, // Use actual facility opening time
@@ -85,7 +85,7 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
         },
         {
             id: 'weekend_afternoon',
-            label: 'Weekend/Holiday Afternoon',
+            label: 'Chiều cuối tuần/ngày lễ',
             icon: Sunset,
             dayType: '2',
             defaultStartTime: '12:00:00', // Must match previous endTime exactly
@@ -99,7 +99,7 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
             setPriceConfigs([
                 {
                     id: 'weekday_morning',
-                    label: 'Weekday Morning',
+                    label: 'Sáng thứ 2 đến thứ 6',
                     icon: Sunrise,
                     dayType: '1',
                     defaultStartTime: facilityOpeningTime,
@@ -108,7 +108,7 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                 },
                 {
                     id: 'weekday_afternoon',
-                    label: 'Weekday Afternoon',
+                    label: 'Chiều thứ 2 đến thứ 6',
                     icon: Sun,
                     dayType: '1',
                     defaultStartTime: '12:00:00',
@@ -117,7 +117,7 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                 },
                 {
                     id: 'weekend_morning',
-                    label: 'Weekend/Holiday Morning',
+                    label: 'Sáng cuối tuần/ngày lễ',
                     icon: Sunrise,
                     dayType: '2',
                     defaultStartTime: facilityOpeningTime,
@@ -126,7 +126,7 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                 },
                 {
                     id: 'weekend_afternoon',
-                    label: 'Weekend/Holiday Afternoon',
+                    label: 'Chiều cuối tuần/ngày lễ',
                     icon: Sunset,
                     dayType: '2',
                     defaultStartTime: '12:00:00',
@@ -380,7 +380,7 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
             setPriceConfigs([
                 {
                     id: 'weekday_morning',
-                    label: 'Weekday Morning',
+                    label: 'Sáng thứ 2 đến thứ 6',
                     icon: Sunrise,
                     dayType: '1',
                     defaultStartTime: facilityOpeningTime,
@@ -389,7 +389,7 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                 },
                 {
                     id: 'weekday_afternoon',
-                    label: 'Weekday Afternoon',
+                    label: 'Chiều thứ 2 đến thứ 6',
                     icon: Sun,
                     dayType: '1',
                     defaultStartTime: '12:00:00',
@@ -398,7 +398,7 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                 },
                 {
                     id: 'weekend_morning',
-                    label: 'Weekend/Holiday Morning',
+                        label: 'Sáng cuối tuần/ngày lễ',
                     icon: Sunrise,
                     dayType: '2',
                     defaultStartTime: facilityOpeningTime,
@@ -407,7 +407,7 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                 },
                 {
                     id: 'weekend_afternoon',
-                    label: 'Weekend/Holiday Afternoon',
+                    label: 'Chiều cuối tuần/ngày lễ',
                     icon: Sunset,
                     dayType: '2',
                     defaultStartTime: '12:00:00',
@@ -458,7 +458,7 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: 0.2 }}
                                         >
-                                            Create New Court
+                                            Tạo sân mới
                                         </motion.h2>
                                         <motion.p
                                             className="text-slate-400 text-sm font-medium"
@@ -466,7 +466,7 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: 0.3 }}
                                         >
-                                            Add a new court to your facility
+                                            Thêm sân mới vào cơ sở của bạn
                                         </motion.p>
                                     </div>
                                 </div>
@@ -499,20 +499,20 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                                 {/* Basic Info */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-3">
-                                        <label className="text-sm font-medium text-slate-300">Court Name *</label>
+                                        <label className="text-sm font-medium text-slate-300">Tên sân *</label>
                                         <input
                                             type="text"
                                             value={courtName}
                                             onChange={(e) => setCourtName(e.target.value)}
                                             className="w-full p-4 bg-slate-700/50 border-2 border-slate-600/50 rounded-xl focus:border-mint-500 focus:outline-none transition-all duration-300 text-white placeholder-slate-500"
-                                            placeholder="Enter court name..."
+                                            placeholder="Nhập tên sân..."
                                             disabled={isLoading}
                                             required
                                         />
                                     </div>
 
                                     <div className="space-y-3">
-                                        <label className="text-sm font-medium text-slate-300">Court Image *</label>
+                                        <label className="text-sm font-medium text-slate-300">Ảnh sân *</label>
 
                                         {/* Image Upload Area */}
                                         {!imagePreview ? (
@@ -522,8 +522,8 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                                             >
                                                 <Upload className="w-8 h-8 text-slate-400 mb-2" />
                                                 <p className="text-slate-400 text-sm text-center">
-                                                    Click to upload court image<br />
-                                                    <span className="text-xs">PNG, JPG up to 5MB</span>
+                                                    Nhấn để tải lên ảnh sân<br />
+                                                    <span className="text-xs">PNG, JPG tối đa 5MB</span>
                                                 </p>
                                             </div>
                                         ) : (
@@ -559,7 +559,7 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                                 <div className="space-y-4">
                                     <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
                                         <DollarSign className="w-5 h-5 text-mint-400" />
-                                        <span>Price Configuration (4 Types)</span>
+                                        <span>Cấu hình giá (4 loại)</span>
                                     </h3>
 
                                     <div className="bg-gradient-to-r from-blue-900/40 to-slate-800/40 rounded-xl p-4 mb-4 border border-blue-700/30 shadow-lg">
@@ -572,27 +572,27 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                                                 </svg>
                                             </div>
                                             <div className="space-y-2">
-                                                <h4 className="font-medium text-blue-300">Scheduling Rules</h4>
+                                                <h4 className="font-medium text-blue-300">Quy tắc lịch đặt sân</h4>
                                                 <ul className="text-sm text-slate-300 space-y-1.5">
                                                     <li className="flex items-start">
                                                         <span className="inline-block w-4 text-blue-400 mr-1">•</span>
-                                                        <span>Time ranges must cover entire facility operating hours ({facilityOpeningTime.slice(0, 5)}-{facilityClosingTime.slice(0, 5)})</span>
+                                                        <span>Khoảng thời gian phải bao phủ toàn bộ giờ hoạt động của cơ sở ({facilityOpeningTime.slice(0, 5)}-{facilityClosingTime.slice(0, 5)})</span>
                                                     </li>
                                                     <li className="flex items-start">
                                                         <span className="inline-block w-4 text-blue-400 mr-1">•</span>
-                                                        <span>No gaps allowed: End time of one range = Start time of next range</span>
+                                                            <span>Không được có khoảng trống: Thời gian kết thúc của một khoảng thời gian = Thời gian bắt đầu của khoảng thời gian tiếp theo</span>
                                                     </li>
                                                     <li className="flex items-start">
                                                         <span className="inline-block w-4 text-blue-400 mr-1">•</span>
-                                                        <span>Must have both weekday and weekend ranges</span>
+                                                        <span>Phải có cả thứ 7 và chủ nhật</span>
                                                     </li>
                                                     <li className="flex items-start">
                                                         <span className="inline-block w-4 text-blue-400 mr-1">•</span>
-                                                        <span>Start time cannot equal end time within same range</span>
+                                                        <span>Thời gian bắt đầu không được bằng thời gian kết thúc trong cùng một khoảng thời gian</span>
                                                     </li>
                                                     <li className="flex items-start">
                                                         <span className="inline-block w-4 text-yellow-400 mr-1">⚠</span>
-                                                        <span>You can only adjust the midday transition time (12:00). Facility opening and closing times are fixed.</span>
+                                                        <span>Bạn chỉ có thể điều chỉnh thời gian chuyển đổi giữa sáng và chiều (12:00). Thời gian mở cửa và đóng cửa của cơ sở là cố định.</span>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -622,7 +622,7 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                                                     <div className="grid grid-cols-2 gap-3">
                                                         <div>
                                                             <label className="block text-xs font-medium text-slate-400 mb-2">
-                                                                Start Time
+                                                                Thời gian bắt đầu
                                                             </label>
                                                             <input
                                                                 type="time"
@@ -632,12 +632,12 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                                                                 disabled={isLoading || (config.defaultStartTime === facilityOpeningTime)}
                                                             />
                                                             {config.defaultStartTime === facilityOpeningTime && (
-                                                                <p className="text-xs text-slate-500 mt-1">Fixed to facility opening time</p>
+                                                                <p className="text-xs text-slate-500 mt-1">Cố định với thời gian mở cửa của cơ sở</p>
                                                             )}
                                                         </div>
                                                         <div>
                                                             <label className="block text-xs font-medium text-slate-400 mb-2">
-                                                                End Time
+                                                                Thời gian kết thúc
                                                             </label>
                                                             <input
                                                                 type="time"
@@ -647,14 +647,14 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                                                                 disabled={isLoading || (config.defaultEndTime === facilityClosingTime)}
                                                             />
                                                             {config.defaultEndTime === facilityClosingTime && (
-                                                                <p className="text-xs text-slate-500 mt-1">Fixed to facility closing time</p>
+                                                                <p className="text-xs text-slate-500 mt-1">Cố định với thời gian đóng cửa của cơ sở</p>
                                                             )}
                                                         </div>
                                                     </div>
 
                                                     <div>
                                                         <label className="block text-xs font-medium text-slate-400 mb-2">
-                                                            Price (VND/h)
+                                                            Giá (VND/h)
                                                         </label>
                                                         <div className="relative">
                                                             <input
@@ -686,7 +686,7 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                                         disabled={isLoading}
                                         className="px-6 py-3"
                                     >
-                                        Cancel
+                                        Hủy
                                     </Button>
                                     <Button
                                         type="submit"
@@ -694,7 +694,7 @@ export const AddCourtModal: React.FC<AddCourtModalProps> = ({
                                         icon={Save}
                                         className="px-6 py-3 bg-gradient-to-r from-mint-500 to-blue-500 hover:from-mint-600 hover:to-blue-600"
                                     >
-                                        Create Court
+                                        Tạo sân
                                     </Button>
                                 </div>
                             </form>

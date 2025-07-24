@@ -147,8 +147,8 @@ const BookingsPage: React.FC = () => {
         >
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Bookings</h1>
-              <p className="text-slate-300">Manage and track all bookings for your courts</p>
+              <h1 className="text-3xl font-bold text-white mb-2">Đơn đặt sân</h1>
+              <p className="text-slate-300">Quản lý và theo dõi tất cả đặt sân</p>
             </div>
           </div>
 
@@ -157,7 +157,7 @@ const BookingsPage: React.FC = () => {
             <div className="flex-1 min-w-[200px]">
               <input
                 type="text"
-                placeholder="Search by name, court, or facility..."
+                placeholder="Tìm kiếm theo tên, sân, hoặc cơ sở..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg p-3 text-white focus:border-mint-500 focus:outline-none transition-colors"
@@ -169,10 +169,10 @@ const BookingsPage: React.FC = () => {
                 onChange={(e) => setFilter(e.target.value as any)}
                 className="bg-slate-700/50 border border-slate-600/50 rounded-lg p-3 text-white focus:border-mint-500 focus:outline-none transition-colors"
               >
-                <option value="all">All Bookings</option>
-                <option value="pending">Pending</option>
-                <option value="paid">Paid</option>
-                <option value="cancelled">Cancelled</option>
+                <option value="all">Tất cả đơn đặt sân</option>
+                <option value="pending">Chờ thanh toán</option>
+                <option value="paid">Đã thanh toán</option>
+                <option value="cancelled">Đã hủy</option>
               </select>
             </div>
             <div>
@@ -181,7 +181,7 @@ const BookingsPage: React.FC = () => {
                 onChange={(e) => setSelectedFacility(e.target.value === 'all' ? 'all' : Number(e.target.value))}
                 className="bg-slate-700/50 border border-slate-600/50 rounded-lg p-3 text-white focus:border-mint-500 focus:outline-none transition-colors"
               >
-                <option value="all">All Facilities</option>
+                <option value="all">Tất cả cơ sở</option>
                 {facilities.map(facility => (
                   <option key={facility.id} value={facility.id}>{facility.name}</option>
                 ))}
@@ -202,24 +202,24 @@ const BookingsPage: React.FC = () => {
               <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-slate-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <h3 className="text-xl font-medium text-white mb-2">No Bookings Found</h3>
-              <p className="text-slate-400 text-lg">There are no bookings matching your filters.</p>
+              <h3 className="text-xl font-medium text-white mb-2">Không tìm thấy đơn đặt sân</h3>
+              <p className="text-slate-400 text-lg">Không có đơn đặt sân nào phù hợp với các bộ lọc của bạn.</p>
             </div>
           ) : (
             <div>
-              <h2 className="text-xl font-semibold text-white mb-4">Booking History</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Lịch sử đặt sân</h2>
               <div className="overflow-hidden rounded-xl border border-slate-700/50">
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
                       <tr className="bg-slate-700/30">
                         <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">ID</th>
-                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Customer</th>
-                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Court</th>
-                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Facility</th>
-                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Time Slots</th>
-                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Price</th>
-                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Khách hàng</th>
+                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Sân</th>
+                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Cơ sở</th>
+                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Thời gian</th>
+                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Giá</th>
+                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Trạng thái</th>
                         <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Check-in</th>
                       </tr>
                     </thead>
@@ -248,7 +248,7 @@ const BookingsPage: React.FC = () => {
                                   );
                                 })
                               ) : (
-                                <span>No time slots</span>
+                                <span>Không có thời gian</span>
                               )}
                             </div>
                           </td>

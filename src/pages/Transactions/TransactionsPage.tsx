@@ -225,8 +225,8 @@ const TransactionsPage: React.FC = () => {
         >
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Transactions</h1>
-              <p className="text-slate-300">View and manage your payment transactions</p>
+              <h1 className="text-3xl font-bold text-white mb-2">Giao dịch</h1>
+              <p className="text-slate-300">Xem và quản lý giao dịch thanh toán của bạn</p>
             </div>
           </div>
 
@@ -239,7 +239,7 @@ const TransactionsPage: React.FC = () => {
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mint-400 h-5 w-5" />
                     <input
                       type="text"
-                      placeholder="Search transactions..."
+                      placeholder="Tìm kiếm giao dịch..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full bg-slate-700/70 border border-slate-600/50 rounded-lg pl-10 pr-4 py-3 text-white focus:border-mint-500 focus:ring-1 focus:ring-mint-500 focus:outline-none transition-all shadow-inner"
@@ -251,7 +251,7 @@ const TransactionsPage: React.FC = () => {
                   <div className="relative">
                     <input
                       type="date"
-                      placeholder="Start Date"
+                      placeholder="Ngày bắt đầu"
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
                       className="bg-slate-800/70 border border-slate-700/50 rounded-lg px-4 py-2.5 text-white focus:border-mint-500 focus:ring-1 focus:ring-mint-500 focus:outline-none transition-all w-40"
@@ -261,7 +261,7 @@ const TransactionsPage: React.FC = () => {
                   <div className="relative">
                     <input
                       type="date"
-                      placeholder="End Date"
+                      placeholder="Ngày kết thúc"
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
                       className="bg-slate-800/70 border border-slate-700/50 rounded-lg px-4 py-2.5 text-white focus:border-mint-500 focus:ring-1 focus:ring-mint-500 focus:outline-none transition-all w-40"
@@ -277,10 +277,10 @@ const TransactionsPage: React.FC = () => {
                     className="bg-slate-700/70 border border-slate-600/50 rounded-lg px-4 py-3 text-white focus:border-mint-500 focus:ring-1 focus:ring-mint-500 focus:outline-none transition-all shadow-inner appearance-none pr-10 relative"
                     style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2380CBC4%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1.5em 1.5em' }}
                   >
-                    <option value="all">All Statuses</option>
-                    <option value="0">Pending</option>
-                    <option value="1">Paid</option>
-                    <option value="2">Cancelled</option>
+                    <option value="all">Tất cả trạng thái</option>
+                    <option value="0">Chờ thanh toán</option>
+                    <option value="1">Đã thanh toán</option>
+                    <option value="2">Đã hủy</option>
                   </select>
                 </div>
 
@@ -291,7 +291,7 @@ const TransactionsPage: React.FC = () => {
                     className="bg-slate-700/70 border border-slate-600/50 rounded-lg px-4 py-3 text-white focus:border-mint-500 focus:ring-1 focus:ring-mint-500 focus:outline-none transition-all shadow-inner appearance-none pr-10 relative"
                     style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2380CBC4%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1.5em 1.5em' }}
                   >
-                    <option value="all">All Facilities</option>
+                    <option value="all">Tất cả cơ sở</option>
                     {facilities.map((facility, index) => (
                       <option key={index} value={facility.name}>{facility.name}</option>
                     ))}
@@ -304,34 +304,34 @@ const TransactionsPage: React.FC = () => {
                     className="px-4 py-3 bg-red-500/20 hover:bg-red-500/30 text-red-300 font-medium rounded-lg transition-all flex items-center gap-2 border border-red-500/20 hover:border-red-500/30"
                   >
                     <Filter className="h-4 w-4" />
-                    Clear Filters
+                    Xóa bộ lọc
                   </button>
                 )}
               </div>
               
               {(!!searchQuery || statusFilter !== 'all' || facilityFilter !== 'all' || !!startDate || !!endDate) && (
                 <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-                  <span className="text-slate-400">Active filters:</span>
+                  <span className="text-slate-400">Bộ lọc đang hoạt động:</span>
                   {!!searchQuery && (
                     <span className="bg-mint-500/20 text-mint-300 py-1 px-3 rounded-full flex items-center gap-1">
                       <Search className="h-3 w-3" />
-                      Search: {searchQuery}
+                      Tìm kiếm: {searchQuery}
                     </span>
                   )}
                   {statusFilter !== 'all' && (
                     <span className="bg-mint-500/20 text-mint-300 py-1 px-3 rounded-full flex items-center gap-1">
-                      Status: {getTransactionStatusLabel(statusFilter)}
+                      Trạng thái: {getTransactionStatusLabel(statusFilter)}
                     </span>
                   )}
                   {facilityFilter !== 'all' && (
                     <span className="bg-mint-500/20 text-mint-300 py-1 px-3 rounded-full flex items-center gap-1">
-                      Facility: {facilityFilter}
+                        Cơ sở: {facilityFilter}
                     </span>
                   )}
                   {(!!startDate || !!endDate) && (
                     <span className="bg-mint-500/20 text-mint-300 py-1 px-3 rounded-full flex items-center gap-1">
                       <Calendar className="h-3 w-3" />
-                      Date: {startDate ? format(new Date(startDate), 'dd/MM/yyyy') : 'Any'} - {endDate ? format(new Date(endDate), 'dd/MM/yyyy') : 'Any'}
+                      Ngày: {startDate ? format(new Date(startDate), 'dd/MM/yyyy') : 'Bất kỳ'} - {endDate ? format(new Date(endDate), 'dd/MM/yyyy') : 'Bất kỳ'}
                     </span>
                   )}
                 </div>
@@ -352,24 +352,24 @@ const TransactionsPage: React.FC = () => {
               <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-slate-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <h3 className="text-xl font-medium text-white mb-2">No Transactions Found</h3>
-              <p className="text-slate-400 text-lg">No transactions match your current filters.</p>
+              <h3 className="text-xl font-medium text-white mb-2">Không tìm thấy giao dịch</h3>
+              <p className="text-slate-400 text-lg">Không có giao dịch nào phù hợp với các bộ lọc hiện tại.</p>
             </div>
           ) : (
             <div>
-              <h2 className="text-xl font-semibold text-white mb-4">Transaction History</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Lịch sử giao dịch</h2>
               <div className="overflow-hidden rounded-xl border border-slate-700/50">
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
                       <tr className="bg-slate-700/30">
                         <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">ID</th>
-                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Description</th>
-                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Facility</th>
-                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Court</th>
-                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Amount</th>
-                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Date</th>
-                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Mô tả</th>
+                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Cơ sở</th>
+                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Sân</th>
+                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Số tiền</th>
+                          <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Ngày</th>
+                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Trạng thái</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-700/30 bg-slate-800/20">

@@ -37,7 +37,7 @@ export const AuthToggle: React.FC<AuthToggleProps> = ({ isSignUp, onToggle }) =>
           : 'text-slate-400 hover:text-white'
           }`}
       >
-        Sign In
+        Đăng nhập
       </button>
       <button
         onClick={() => onToggle(true)}
@@ -46,7 +46,7 @@ export const AuthToggle: React.FC<AuthToggleProps> = ({ isSignUp, onToggle }) =>
           : 'text-slate-400 hover:text-white'
           }`}
       >
-        Sign Up
+        Đăng ký
       </button>
     </motion.div>
   );

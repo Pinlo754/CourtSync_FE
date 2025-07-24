@@ -182,9 +182,9 @@ export const FacilityDetailPage: React.FC = () => {
 
 
     const tabs = [
-        { id: 'courts', label: 'Courts Management', icon: Building2 },
-        { id: 'details', label: 'Details', icon: Settings },
-        { id: 'staff', label: 'Staff', icon: UserCircle },
+        { id: 'courts', label: 'Quản lý sân', icon: Building2 },
+        { id: 'details', label: 'Thông tin', icon: Settings },
+        { id: 'staff', label: 'Nhân viên', icon: UserCircle },
     ];
 
     const handleEditChange = (field: string, value: string) => {
@@ -357,7 +357,7 @@ export const FacilityDetailPage: React.FC = () => {
                                                         <span>{facility.facilityStatus === '1' ? 'Active' : 'Inactive'}</span>
                                                     </motion.div>
                                                 </div>
-                                                <p className="text-slate-400 text-sm">Facility ID: #{facility.facilityId}</p>
+                                                <p className="text-slate-400 text-sm">Mã cơ sở: #{facility.facilityId}</p>
                                             </div>
                                         </div>
 
@@ -365,13 +365,13 @@ export const FacilityDetailPage: React.FC = () => {
                                         <div className="flex items-center space-x-3">
                                             <div className="bg-slate-700/40 backdrop-blur-sm rounded-xl px-4 py-3 border border-slate-600/50 min-w-[100px]">
                                                 <div className="text-center">
-                                                    <p className="text-xs text-slate-400 mb-1">Location</p>
+                                                    <p className="text-xs text-slate-400 mb-1">Vị trí</p>
                                                     <p className="text-sm font-semibold text-white">{facility.city}</p>
                                                 </div>
                                             </div>
                                             <div className="bg-slate-700/40 backdrop-blur-sm rounded-xl px-4 py-3 border border-slate-600/50 min-w-[120px]">
                                                 <div className="text-center">
-                                                    <p className="text-xs text-slate-400 mb-1">Operating Hours</p>
+                                                    <p className="text-xs text-slate-400 mb-1">Giờ hoạt động</p>
                                                     <p className="text-sm font-semibold text-white">{formatTime(facility.openingTime)} - {formatTime(facility.closingTime)}</p>
                                                 </div>
                                             </div>
@@ -428,8 +428,8 @@ export const FacilityDetailPage: React.FC = () => {
                                         <Building2 className="w-6 h-6 text-mint-400" />
                                     </div>
                                     <div>
-                                        <h2 className="text-2xl font-bold text-white">Courts Management</h2>
-                                        <p className="text-slate-400">Manage all courts in this facility</p>
+                                        <h2 className="text-2xl font-bold text-white">Quản lý sân</h2>
+                                        <p className="text-slate-400">Quản lý tất cả sân trong cơ sở</p>
                                     </div>
                                 </div>
 
@@ -443,7 +443,7 @@ export const FacilityDetailPage: React.FC = () => {
                                         icon={Plus}
                                         className="bg-gradient-to-r from-mint-500/20 to-blue-500/20 border border-mint-500/30 hover:from-mint-500/30 hover:to-blue-500/30 px-4 py-2 text-sm"
                                     >
-                                        Add New Court
+                                        Thêm sân mới
                                     </Button>
                                 </motion.div>
                             </div>
@@ -455,7 +455,7 @@ export const FacilityDetailPage: React.FC = () => {
                             {courtsLoading && (
                                 <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/40 backdrop-blur-xl rounded-2xl p-12 border border-slate-600/50 text-center">
                                     <div className="animate-spin w-12 h-12 border-4 border-mint-500/30 border-t-mint-500 rounded-full mx-auto mb-4"></div>
-                                    <p className="text-slate-400">Loading courts...</p>
+                                    <p className="text-slate-400">Đang tải sân...</p>
                                 </div>
                             )}
 
@@ -480,14 +480,14 @@ export const FacilityDetailPage: React.FC = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                 >
                                     <Building2 className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-                                    <h3 className="text-xl font-semibold text-white mb-2">No Courts Yet</h3>
-                                    <p className="text-slate-400 mb-6">Start by adding your first court to this facility</p>
+                                    <h3 className="text-xl font-semibold text-white mb-2">Chưa có sân nào</h3>
+                                    <p className="text-slate-400 mb-6">Hãy thêm sân đầu tiên để bắt đầu quản lý sân của bạn</p>
                                     <Button
                                         onClick={() => setShowAddCourtModal(true)}
                                         icon={Plus}
                                         className="bg-gradient-to-r from-mint-500 to-blue-500 hover:from-mint-600 hover:to-blue-600 text-white border-0 shadow-lg shadow-mint-500/25"
                                     >
-                                        Add New Court
+                                        Thêm sân mới
                                     </Button>
                                 </motion.div>
                             )}
@@ -510,8 +510,8 @@ export const FacilityDetailPage: React.FC = () => {
                                         <Building2 className="w-6 h-6 text-mint-400" />
                                     </div>
                                     <div>
-                                        <h2 className="text-2xl font-bold text-white">Facility Information</h2>
-                                        <p className="text-slate-400">Manage your facility details</p>
+                                        <h2 className="text-2xl font-bold text-white">Thông tin cơ sở</h2>
+                                        <p className="text-slate-400">Quản lý thông tin cơ sở</p>
                                     </div>
                                 </div>
 
@@ -526,18 +526,18 @@ export const FacilityDetailPage: React.FC = () => {
                                 <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/40 backdrop-blur-xl rounded-2xl p-6 border border-slate-600/50 space-y-6">
                                     <h3 className="flex items-center space-x-2 text-xl font-semibold text-white border-b border-slate-600/50 pb-3">
                                         <Edit3 className="w-5 h-5 text-mint-400" />
-                                        <span>Basic Information</span>
+                                        <span>Thông tin cơ sở</span>
                                     </h3>
 
                                     {/* Description */}
                                     <div className="space-y-3">
-                                        <label className="text-sm font-medium text-slate-300">Description</label>
+                                        <label className="text-sm font-medium text-slate-300">Mô tả</label>
                                         {isEditing ? (
                                             <textarea
                                                 value={editData.description}
                                                 onChange={(e) => handleEditChange('description', e.target.value)}
                                                 className="w-full p-4 bg-slate-700/50 border-2 border-slate-600/50 rounded-xl focus:border-mint-500 focus:outline-none transition-all duration-300 text-white text-sm placeholder-slate-500 resize-none h-32"
-                                                placeholder="Enter facility description..."
+                                                placeholder="Nhập mô tả cơ sở..."
                                             />
                                         ) : (
                                             <div className="p-4 bg-slate-700/30 rounded-xl border border-slate-600/50">
@@ -548,11 +548,11 @@ export const FacilityDetailPage: React.FC = () => {
 
                                     {/* Operating Hours */}
                                     <div className="space-y-3">
-                                        <label className="text-sm font-medium text-slate-300">Operating Hours</label>
+                                        <label className="text-sm font-medium text-slate-300">Giờ hoạt động</label>
                                         {isEditing ? (
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <label className="block text-xs font-medium text-slate-400 mb-2">Opening Time</label>
+                                                    <label className="block text-xs font-medium text-slate-400 mb-2">Giờ mở cửa</label>
                                                     <input
                                                         type="time"
                                                         value={editData.openingTime}
@@ -561,7 +561,7 @@ export const FacilityDetailPage: React.FC = () => {
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="block text-xs font-medium text-slate-400 mb-2">Closing Time</label>
+                                                    <label className="block text-xs font-medium text-slate-400 mb-2">Giờ đóng cửa</label>
                                                     <input
                                                         type="time"
                                                         value={editData.closingTime}
@@ -578,7 +578,7 @@ export const FacilityDetailPage: React.FC = () => {
                                                             <Clock className="w-5 h-5 text-mint-400" />
                                                         </div>
                                                         <div>
-                                                            <p className="text-xs text-slate-400">Opens</p>
+                                                            <p className="text-xs text-slate-400">Mở cửa</p>
                                                             <p className="text-white font-semibold">{formatTime(facility.openingTime)}</p>
                                                         </div>
                                                     </div>
@@ -588,7 +588,7 @@ export const FacilityDetailPage: React.FC = () => {
                                                             <Clock className="w-5 h-5 text-blue-400" />
                                                         </div>
                                                         <div>
-                                                            <p className="text-xs text-slate-400">Closes</p>
+                                                            <p className="text-xs text-slate-400">Đóng cửa</p>
                                                             <p className="text-white font-semibold">{formatTime(facility.closingTime)}</p>
                                                         </div>
                                                     </div>
@@ -604,7 +604,7 @@ export const FacilityDetailPage: React.FC = () => {
                                     <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/40 backdrop-blur-xl rounded-2xl p-6 border border-slate-600/50 space-y-4">
                                         <h3 className="flex items-center space-x-2 text-lg font-semibold text-white border-b border-slate-600/50 pb-3">
                                             <Phone className="w-5 h-5 text-mint-400" />
-                                            <span>Contact Information</span>
+                                            <span>Thông tin liên hệ</span>
                                         </h3>
 
                                         <div className="space-y-3">
@@ -614,7 +614,7 @@ export const FacilityDetailPage: React.FC = () => {
                                                         <Phone className="w-5 h-5 text-green-400" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-xs text-slate-400">Phone</p>
+                                                        <p className="text-xs text-slate-400">Số điện thoại</p>
                                                         <p className="text-white font-medium">{facility.contactPhone}</p>
                                                     </div>
                                                 </div>
@@ -626,7 +626,7 @@ export const FacilityDetailPage: React.FC = () => {
                                                         <Mail className="w-5 h-5 text-blue-400" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-xs text-slate-400">Email</p>
+                                                        <p className="text-xs text-slate-400">Email cơ sở</p>
                                                         <p className="text-white font-medium text-sm break-all">{facility.contactEmail}</p>
                                                     </div>
                                                 </div>
@@ -638,7 +638,7 @@ export const FacilityDetailPage: React.FC = () => {
                                     <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/40 backdrop-blur-xl rounded-2xl p-6 border border-slate-600/50 space-y-4">
                                         <h3 className="flex items-center space-x-2 text-lg font-semibold text-white border-b border-slate-600/50 pb-3">
                                             <MapPin className="w-5 h-5 text-mint-400" />
-                                            <span>Location</span>
+                                            <span>Vị trí</span>
                                         </h3>
 
                                         <div className="p-4 bg-slate-700/30 rounded-xl border border-slate-600/50">
@@ -686,8 +686,8 @@ export const FacilityDetailPage: React.FC = () => {
                                         <UserCircle className="w-6 h-6 text-mint-400" />
                                     </div>
                                     <div>
-                                        <h2 className="text-2xl font-bold text-white">Staff Information</h2>
-                                        <p className="text-slate-400">View staff assigned to this facility</p>
+                                        <h2 className="text-2xl font-bold text-white">Thông tin nhân viên</h2>
+                                        <p className="text-slate-400">Xem nhân viên được giao cho cơ sở</p>
                                     </div>
                                 </div>
                             </div>
@@ -706,7 +706,7 @@ export const FacilityDetailPage: React.FC = () => {
                                     <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/40 backdrop-blur-xl rounded-2xl p-6 border border-slate-600/50">
                                         <h3 className="flex items-center space-x-2 text-lg font-semibold text-white border-b border-slate-600/50 pb-3 mb-4">
                                             <UserCircle className="w-5 h-5 text-mint-400" />
-                                            <span>Staff Profile</span>
+                                            <span>Thông tin nhân viên</span>
                                         </h3>
 
                                         <div className="flex items-center space-x-4 mb-6">
@@ -728,7 +728,7 @@ export const FacilityDetailPage: React.FC = () => {
                                             <div className="flex items-center space-x-3 p-4 bg-slate-700/50 rounded-lg">
                                                 <Mail className="w-5 h-5 text-slate-400" />
                                                 <div>
-                                                    <p className="text-xs text-slate-400">Email</p>
+                                                    <p className="text-xs text-slate-400">Email nhân viên</p>
                                                     <p className="text-white">{staffInfo.email}</p>
                                                 </div>
                                             </div>
@@ -736,7 +736,7 @@ export const FacilityDetailPage: React.FC = () => {
                                             <div className="flex items-center space-x-3 p-4 bg-slate-700/50 rounded-lg">
                                                 <Phone className="w-5 h-5 text-slate-400" />
                                                 <div>
-                                                    <p className="text-xs text-slate-400">Phone</p>
+                                                    <p className="text-xs text-slate-400">Số điện thoại</p>
                                                     <p className="text-white">{staffInfo.phoneNumber}</p>
                                                 </div>
                                             </div>
@@ -744,7 +744,7 @@ export const FacilityDetailPage: React.FC = () => {
                                             <div className="flex items-center space-x-3 p-4 bg-slate-700/50 rounded-lg">
                                                 <Building2 className="w-5 h-5 text-slate-400" />
                                                 <div>
-                                                    <p className="text-xs text-slate-400">Assigned Facility</p>
+                                                    <p className="text-xs text-slate-400">Cơ sở được giao</p>
                                                     <p className="text-white">{staffInfo.facilityName}</p>
                                                 </div>
                                             </div>
@@ -755,7 +755,7 @@ export const FacilityDetailPage: React.FC = () => {
                                     <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/40 backdrop-blur-xl rounded-2xl p-6 border border-slate-600/50">
                                         <h3 className="flex items-center space-x-2 text-lg font-semibold text-white border-b border-slate-600/50 pb-3 mb-4">
                                             <Settings className="w-5 h-5 text-mint-400" />
-                                            <span>Staff Details</span>
+                                            <span>Thông tin nhân viên</span>
                                         </h3>
 
                                         <div className="space-y-4">
@@ -765,7 +765,7 @@ export const FacilityDetailPage: React.FC = () => {
                                                         <Users className="w-5 h-5 text-blue-400" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-xs text-slate-400">Staff ID</p>
+                                                        <p className="text-xs text-slate-400">Mã nhân viên</p>
                                                         <p className="text-white font-medium">#{staffInfo.userId}</p>
                                                     </div>
                                                 </div>
@@ -777,7 +777,7 @@ export const FacilityDetailPage: React.FC = () => {
                                                         <Activity className="w-5 h-5 text-mint-400" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-xs text-slate-400">Status</p>
+                                                        <p className="text-xs text-slate-400">Trạng thái</p>
                                                         <p className={`font-medium ${staffInfo.userStatus === '0' ?  'text-red-400' : 'text-green-400'}`}> 
                                                             {formatUserStatus(staffInfo.userStatus).label}
                                                         </p>
@@ -791,7 +791,7 @@ export const FacilityDetailPage: React.FC = () => {
                                                         <Settings className="w-5 h-5 text-purple-400" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-xs text-slate-400">Role</p>
+                                                        <p className="text-xs text-slate-400">Vai trò</p>
                                                         <p className="text-white font-medium">{formatRole(staffInfo.role)}</p>
                                                     </div>
                                                 </div>
@@ -803,7 +803,7 @@ export const FacilityDetailPage: React.FC = () => {
                                                         <Building2 className="w-5 h-5 text-orange-400" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-xs text-slate-400">Facility ID</p>
+                                                        <p className="text-xs text-slate-400">Mã cơ sở</p>
                                                         <p className="text-white font-medium">#{staffInfo.facilityId}</p>
                                                     </div>
                                                 </div>
@@ -814,8 +814,8 @@ export const FacilityDetailPage: React.FC = () => {
                             ) : (
                                 <div className="bg-gradient-to-br from-slate-800/60 to-slate-700/40 backdrop-blur-xl rounded-2xl p-12 border border-slate-600/50 text-center">
                                     <UserCircle className="w-16 h-16 text-slate-500 mx-auto mb-3" />
-                                    <h3 className="text-xl font-semibold text-white mb-2">No Staff Assigned</h3>
-                                    <p className="text-slate-400">This facility doesn't have any staff assigned yet.</p>
+                                    <h3 className="text-xl font-semibold text-white mb-2">Chưa có nhân viên nào</h3>
+                                    <p className="text-slate-400">Cơ sở này chưa có nhân viên nào</p>
                                 </div>
                             )}
                         </motion.div>
