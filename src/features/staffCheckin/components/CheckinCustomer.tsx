@@ -12,7 +12,7 @@ import {
 import { useStaffCheckin } from "../hooks/useStaffCheckin";
 import { BookingElements } from "../type";
 import { CheckinDetailBox } from "./checkinDetailBox";
-
+import { ErrorMessage } from "../../../components/ui/ErrorMessage";
 
 
 const PAGE_SIZE = 5;
@@ -26,6 +26,7 @@ const CheckinCustomer: React.FC = () => {
 
   const [selectedBooking, setSelectedBooking] = useState<BookingElements | null>(null)
   const [showDetailModal, setShowDetailModal] = useState(false)
+  const [error, setError] = useState("");
 
   const fetchData = async () => {
     const facilityId = await getFacilityIdByStaffId();
@@ -61,10 +62,14 @@ const CheckinCustomer: React.FC = () => {
   };
 
   const handleCheckin = async () => {
-    if (window.confirm(`Bạn có chắc chắn muốn check-in cho các đặt sân: ${selected.join(", ")}?`)) {
-      await checkinBooking(selected);
-      fetchData();
-      setSelected([]);
+    try {
+      if (window.confirm(`Bạn có chắc chắn muốn check-in cho các đặt sân: ${selected.join(", ")}?`)) {
+        await checkinBooking(selected);
+        fetchData();
+        setSelected([]);
+      }
+    } catch (error) {
+      setError("Check-in thất bại");
     }
   };
 
@@ -108,6 +113,7 @@ const CheckinCustomer: React.FC = () => {
 
   return (
     <div className="container mx-auto py-8 px-4">
+      {error && <ErrorMessage message={error} show={true} />}
       <Card className="bg-blue-300/20 shadow-lg">
         <CardContent className="p-8">
           <div className="flex justify-between items-center mb-6">
