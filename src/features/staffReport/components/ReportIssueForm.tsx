@@ -35,7 +35,7 @@ export const ReportIssueForm = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { getFacilityIdByStaffId, getCourtsByFacilityId } = useBookingStaff();
+  const { getFacilityIdByStaffId, getCourtsByFacilityId } = useReportIssue();
   const [facilityId, setFacilityId] = useState<number>(0);
   const [courts, setCourts] = useState<
     { courtId: number; courtName: string }[]
@@ -53,7 +53,7 @@ export const ReportIssueForm = () => {
             const apiCourts = data.$values || data || [];
             const mappedCourts = apiCourts.map((court: any) => ({
               courtId: court.courtId,
-              courtName: `Court ${court.courtName}`,
+              courtName: court.courtName,
             }));
             setCourts(mappedCourts);
           })
@@ -92,14 +92,14 @@ export const ReportIssueForm = () => {
         "image/webp",
       ];
       if (!allowedTypes.includes(file.type)) {
-        setError("Only JPEG, PNG, GIF, and WebP image files are allowed");
+        setError("Chỉ chấp nhận file ảnh JPEG, PNG, GIF, và WebP");
         return;
       }
 
       // Validate file size (max 5MB - same as Firebase upload)
       const maxSize = 5 * 1024 * 1024; // 5MB
       if (file.size > maxSize) {
-        setError("Image size must be less than 5MB");
+        setError("Kích thước ảnh phải nhỏ hơn 5MB");
         return;
       }
 
@@ -158,17 +158,17 @@ export const ReportIssueForm = () => {
 
   const validateForm = (): boolean => {
     if (!form.courtId) {
-      setError("Court is required");
+      setError("Sân là bắt buộc");
       return false;
     }
 
     if (!form.description.trim()) {
-      setError("Issue description is required");
+      setError("Mô tả vấn đề là bắt buộc");
       return false;
     }
 
     if (!selectedImage) {
-      setError("Image is required");
+      setError("Ảnh là bắt buộc");
       return false;
     }
 
@@ -214,26 +214,26 @@ export const ReportIssueForm = () => {
     const result = await reportIssue(submitForm);
 
       if (result) {
-        setSuccessMessage("Reported successfully!");
+        setSuccessMessage("Báo cáo thành công!");
         setTimeout(() => {
           handleClose();
         }, 1500);
       } else {
-        setError(result.message || "Failed to report issue");
+        setError(result.message || "Lỗi khi báo cáo vấn đề");
       }
     } catch (error: any) {
       console.error("Error reporting issue:", error);
 
       // More specific error handling
       if (error.message?.includes("Firebase")) {
-        setError("Upload service error. Please try again or contact support.");
+        setError("Lỗi dịch vụ upload. Vui lòng thử lại hoặc liên hệ hỗ trợ.");
       } else if (error.message?.includes("Network")) {
         setError(
-          "Network error. Please check your internet connection and try again."
+          "Lỗi mạng. Vui lòng kiểm tra kết nối internet và thử lại."
         );
       } else {
         setError(
-          "An error occurred while reporting the issue. Please try again."
+          "Đã xảy ra lỗi khi báo cáo vấn đề. Vui lòng thử lại."
         );
       }
     } finally {
@@ -244,7 +244,7 @@ export const ReportIssueForm = () => {
   return (
     <Card className="bg-white shadow-lg">
       <CardHeader>
-        <CardTitle>Report Issue</CardTitle>
+        <CardTitle>Báo cáo vấn đề</CardTitle>
       </CardHeader>
       <CardContent className="p-4">
         {/* Error/Success Messages */}
@@ -257,7 +257,7 @@ export const ReportIssueForm = () => {
             {/* Court id */}
             <div className="space-y-3 mb-6">
               <label className="text-md font-medium text-slate-700">
-                Court ID
+                Tên sân
               </label>
               <Select
                 value={form.courtId ? String(form.courtId) : ""}
@@ -265,7 +265,7 @@ export const ReportIssueForm = () => {
                 disabled={!facilityId || courts?.length === 0}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select court" />
+                  <SelectValue placeholder="Chọn sân" />
                 </SelectTrigger>
                 <SelectContent className="bg-blue-100">
                   {courts?.map((court) => (
@@ -283,11 +283,11 @@ export const ReportIssueForm = () => {
             {/* Issue Description */}
             <div className="space-y-3 mb-6">
               <label className="text-md font-medium text-slate-700">
-                Issue Description
+                Mô tả vấn đề
               </label>
               <textarea
                 className="w-full h-56 p-4 bg-white border-2 border-slate-600/50 rounded-xl focus:border-mint-500 focus:outline-none transition-all duration-300 text-slate-700 placeholder-slate-500"
-                placeholder="Enter issue description..."
+                placeholder="Nhập mô tả vấn đề..."
                 onChange={handleIssueDescriptionChange}
                 value={form.description}
                 required
@@ -298,7 +298,7 @@ export const ReportIssueForm = () => {
           {/* Image Upload */}
           <div className="space-y-3 w-1/2">
             <label className="text-md font-medium text-slate-700">
-              Court Image *
+              Ảnh sân *
             </label>
 
             {/* Image Upload Area */}
@@ -309,9 +309,9 @@ export const ReportIssueForm = () => {
               >
                 <Upload className="w-8 h-8 text-slate-400 mb-2" />
                 <p className="text-slate-400 text-sm text-center">
-                  Click to upload court image
+                  Nhấn để tải ảnh sân
                   <br />
-                  <span className="text-xs">PNG, JPG up to 5MB</span>
+                  <span className="text-xs">PNG, JPG up to 5MB</span>Ảnh sân
                 </p>
               </div>
             ) : (
@@ -352,7 +352,7 @@ export const ReportIssueForm = () => {
             disabled={isLoading}
             className="px-6 py-3"
           >
-            Cancel
+            Hủy
           </Button>
           <Button
             type="button"
@@ -361,7 +361,7 @@ export const ReportIssueForm = () => {
             onClick={handleSubmit}
             className="px-6 py-3 bg-gradient-to-r from-mint-500 to-blue-500 hover:from-mint-600 hover:to-blue-600"
           >
-            Report Issue
+            Báo cáo vấn đề
           </Button>
         </div>
       </CardContent>
