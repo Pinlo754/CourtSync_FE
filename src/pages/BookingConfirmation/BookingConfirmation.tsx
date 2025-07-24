@@ -28,7 +28,7 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
-import { User } from "../../types/user"
+import { User } from "../../types/user";
 import { fetcher, postData } from "../../api/fetchers";
 interface BookingData {
   facilityId: number;
@@ -121,8 +121,7 @@ export function BookingConfirmation() {
 
   const handleNextStep = () => {
     if (currentStep === "info") {
-        setCurrentStep("payment");
-      
+      setCurrentStep("payment");
     } else if (currentStep === "payment") {
       if (validatePaymentInfo()) {
         handlePayment();
@@ -131,7 +130,7 @@ export function BookingConfirmation() {
   };
 
   const handlePayment = async () => {
-    setLoading(true);       
+    setLoading(true);
     localStorage.removeItem("bookingData");
     localStorage.setItem("bookingData", JSON.stringify(bookingData));
     if (
@@ -143,39 +142,49 @@ export function BookingConfirmation() {
       toast.warning(
         "Phương thức thanh toán bạn chọn đang được phát triển, vui lòng chọn phương thức khác!"
       );
-      console.log( "Phương thức thanh toán bạn chọn đang được phát triển, vui lòng chọn phương thức khác!")
+      console.log(
+        "Phương thức thanh toán bạn chọn đang được phát triển, vui lòng chọn phương thức khác!"
+      );
       return;
     } else if (paymentInfo.method == "wallet") {
       await new Promise((resolve) => setTimeout(resolve, 2000));
-       if(userBalance < bookingData.totalPrice) 
-    {
-      setLoading(false);
-      toast.warning("Số dư trong ví không đủ, xin vui lòng nộp thêm hoặc chọn phương thức thanh toán khác!")
-      console.log("Số dư trong ví không đủ, xin vui lòng nộp thêm hoặc chọn phương thức thanh toán khác!")
-      return;      
-    }
+      if (userBalance < bookingData.totalPrice) {
+        setLoading(false);
+        toast.warning(
+          "Số dư trong ví không đủ, xin vui lòng nộp thêm hoặc chọn phương thức thanh toán khác!"
+        );
+        console.log(
+          "Số dư trong ví không đủ, xin vui lòng nộp thêm hoặc chọn phương thức thanh toán khác!"
+        );
+        return;
+      }
       try {
         const response = await postData(
           "https://localhost:7255/api/Booking/CreateBooking",
-        {
-          courtId: bookingData.courtId,
-        note: bookingData.note,
-        totalPrice: bookingData.totalPrice,
-        startTimes: bookingData.startTimes,
-        endTimes: bookingData.endTimes,
-        }
+          {
+            courtId: bookingData.courtId,
+            note: bookingData.note,
+            totalPrice: bookingData.totalPrice,
+            startTimes: bookingData.startTimes,
+            endTimes: bookingData.endTimes,
+          }
         );
-        console.log(response)
+        console.log(response);
         console.log("createbooking:", response.bookingId);
         if (response.bookingId) {
           const res = await postData(
-          "https://localhost:7255/api/Transaction/PayBookingCourt",
-          {
-            bookingId: response.bookingId          
-          }
-        );
-        console.log("payment:", res)
-        navigate("/BookingSuccess")
+            "https://localhost:7255/api/Transaction/PayBookingCourt",
+            {
+              bookingId: response.bookingId,
+            }
+          );
+          console.log("payment:", res);
+          toast.success(
+            "Đặt sân thành công! Chuyển đến trang Profile sau 2 giây..."
+          );
+          setTimeout(() => {
+            navigate("/profile");
+          }, 2500);
         }
       } catch (error) {
         console.error("Payment error:", error);
@@ -213,33 +222,27 @@ export function BookingConfirmation() {
     }
   };
 
-    const [userBalance, setUserBalance] = useState<number>(0)
+  const [userBalance, setUserBalance] = useState<number>(0);
 
-  useEffect(() =>
-  {
-    const userString = sessionStorage.getItem('loggedUser');
+  useEffect(() => {
+    const userString = sessionStorage.getItem("loggedUser");
     const loggedUser = userString ? JSON.parse(userString) : null;
-    console.log("logged:", loggedUser)
-    setUser(loggedUser)    
+    console.log("logged:", loggedUser);
+    setUser(loggedUser);
 
     const fetchBalance = async () => {
-          try {
-            const res = await fetcher(
-              "/Users/GetUserBalance"          
-            );
-            console.log("balance:", res)
-            setUserBalance(res);
-          } catch (error) {
-            console.error("Lỗi khi lấy dữ liệu đặt sân:", error);
-          } finally {
-            setLoading(false);
-          }
-        }
-        fetchBalance();
-  }, [])
-
-
-
+      try {
+        const res = await fetcher("/Users/GetUserBalance");
+        console.log("balance:", res);
+        setUserBalance(res);
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu đặt sân:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBalance();
+  }, []);
 
   if (currentStep === "success") {
     return (
@@ -348,10 +351,7 @@ export function BookingConfirmation() {
                       <Input
                         id="fullName"
                         value={user?.firstName + " " + user?.lastName}
-                        onChange={(e: any) =>  {
-
-                        }                         
-                        }
+                        onChange={(e: any) => {}}
                         disabled
                         placeholder="Nhập họ và tên"
                         className="[&_input]:!bg-white [&_input]:!text-gray-900 [&_input]:!border-gray-300 [&_input]:!placeholder-gray-500 [&_input:focus]:!border-blue-500"
@@ -368,9 +368,7 @@ export function BookingConfirmation() {
                       <Input
                         id="phone"
                         value={user?.phoneNumber ?? ""}
-                        onChange={(e: any) =>
-                        {}
-                        }
+                        onChange={(e: any) => {}}
                         disabled
                         placeholder="Nhập số điện thoại"
                         className="[&_input]:!bg-white [&_input]:!text-gray-900 [&_input]:!border-gray-300 [&_input]:!placeholder-gray-500 [&_input:focus]:!border-blue-500"
@@ -389,9 +387,8 @@ export function BookingConfirmation() {
                       id="email"
                       type="email"
                       value={user?.email ?? ""}
-                      onChange={(e: any) => {}
-                      }
-                    disabled
+                      onChange={(e: any) => {}}
+                      disabled
                       placeholder="Nhập địa chỉ email"
                       className="[&_input]:!bg-white [&_input]:!text-gray-900 [&_input]:!border-gray-300 [&_input]:!placeholder-gray-500 [&_input:focus]:!border-blue-500"
                     />
@@ -626,8 +623,8 @@ export function BookingConfirmation() {
                             Thanh toán bằng số dư trong ví
                           </p>
                           <p className="text-sm text-blue-700">
-                            Số dư hiện có: {userBalance} đ. Số dư sau thanh toán:{" "}
-                            {userBalance - bookingData.totalPrice}
+                            Số dư hiện có: {userBalance} đ. Số dư sau thanh
+                            toán: {userBalance - bookingData.totalPrice}
                           </p>
                         </div>
                       </div>

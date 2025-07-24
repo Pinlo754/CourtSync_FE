@@ -19,7 +19,8 @@ import {
   Mail,
 } from "lucide-react";
 import { postData } from "../../api/fetchers";
-
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 interface VNPayResponse {
   vnp_Amount: string;
   vnp_BankCode: string;
@@ -261,6 +262,40 @@ export default function PaymentResponsePage() {
   );
   const StatusIcon = paymentStatus.icon;
 
+  const downloadDivAsPdf = async (elementId: string) => {
+  const input = document.getElementById(elementId);
+  if (!input) return;
+
+  // Chụp thẻ và toàn bộ thẻ con
+  const canvas = await html2canvas(input, {
+    scale: 2, // Độ nét cao
+    useCORS: true, // Hỗ trợ ảnh từ server
+    logging: false
+  });
+
+  const imgData = canvas.toDataURL("image/png");
+
+  // Khởi tạo PDF
+  const pdf = new jsPDF("p", "mm", "a4");
+  const pdfWidth = pdf.internal.pageSize.getWidth();
+  const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+  // Nếu chiều cao lớn hơn 1 trang, tự động chia trang
+  let heightLeft = pdfHeight;
+  let position = 0;
+
+  while (heightLeft > 0) {
+    pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+    heightLeft -= pdf.internal.pageSize.getHeight();
+    if (heightLeft > 0) {
+      position = heightLeft - pdfHeight;
+      pdf.addPage();
+    }
+  }
+
+  pdf.save("download.pdf");
+};
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -296,7 +331,7 @@ export default function PaymentResponsePage() {
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-1 gap-6" id="invoice">
             {/* Transaction Details */}
             <Card>
               <CardHeader>
@@ -415,62 +450,63 @@ export default function PaymentResponsePage() {
               </Card>
             ) : (
               // Booking Details (existing code)
-              <Card>
-                <CardHeader>
-                  <CardTitle>Thông tin đặt sân</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <span className="text-sm text-gray-600">Tên sân</span>
-                    <p className="font-semibold">{bookingInfo.facilityName}</p>
-                  </div>
+              // <Card>
+              //   <CardHeader>
+              //     <CardTitle>Thông tin đặt sân</CardTitle>
+              //   </CardHeader>
+              //   <CardContent className="space-y-4">
+              //     <div>
+              //       <span className="text-sm text-gray-600">Tên sân</span>
+              //       <p className="font-semibold">{bookingInfo.facilityName}</p>
+              //     </div>
 
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Sân số</span>
-                    <Badge variant="outline">Sân {bookingInfo.courtId}</Badge>
-                  </div>
+              //     <div className="flex items-center justify-between">
+              //       <span className="text-sm text-gray-600">Sân số</span>
+              //       <Badge variant="outline">Sân {bookingInfo.courtId}</Badge>
+              //     </div>
 
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Ngày chơi</span>
-                    <span className="text-sm font-medium">
-                      {bookingInfo.selectedDate}
-                    </span>
-                  </div>
+              //     <div className="flex items-center justify-between">
+              //       <span className="text-sm text-gray-600">Ngày chơi</span>
+              //       <span className="text-sm font-medium">
+              //         {bookingInfo.selectedDate}
+              //       </span>
+              //     </div>
 
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Thời gian</span>
-                    <span className="text-sm font-medium">
-                      {bookingInfo.selectedTime}
-                    </span>
-                  </div>
+              //     <div className="flex items-center justify-between">
+              //       <span className="text-sm text-gray-600">Thời gian</span>
+              //       <span className="text-sm font-medium">
+              //         {bookingInfo.selectedTime}
+              //       </span>
+              //     </div>
 
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">
-                      Tổng thời gian
-                    </span>
-                    <span className="text-sm font-medium">
-                      {bookingInfo.totalHours} giờ
-                    </span>
-                  </div>
+              //     <div className="flex items-center justify-between">
+              //       <span className="text-sm text-gray-600">
+              //         Tổng thời gian
+              //       </span>
+              //       <span className="text-sm font-medium">
+              //         {bookingInfo.totalHours} giờ
+              //       </span>
+              //     </div>
 
-                  <div>
-                    <span className="text-sm text-gray-600">
-                      Thông tin khách hàng
-                    </span>
-                    <div className="mt-2 space-y-1">
-                      <p className="text-sm font-medium">
-                        {bookingInfo.customerName}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {bookingInfo.customerPhone}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {bookingInfo.customerEmail}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              //     <div>
+              //       <span className="text-sm text-gray-600">
+              //         Thông tin khách hàng
+              //       </span>
+              //       <div className="mt-2 space-y-1">
+              //         <p className="text-sm font-medium">
+              //           {bookingInfo.customerName}
+              //         </p>
+              //         <p className="text-sm text-gray-600">
+              //           {bookingInfo.customerPhone}
+              //         </p>
+              //         <p className="text-sm text-gray-600">
+              //           {bookingInfo.customerEmail}
+              //         </p>
+              //       </div>
+              //     </div>
+              //   </CardContent>
+              // </Card>
+              <></>
             )}
           </div>
 
@@ -481,20 +517,12 @@ export default function PaymentResponsePage() {
                 {paymentStatus.status === "success" && (
                   <>
                     <Button
-                      onClick={handleDownloadReceipt}
+                      onClick={() => downloadDivAsPdf ("invoice")}
                       variant="outline"
                       className="flex-1 bg-transparent"
                     >
                       <Download className="h-4 w-4 mr-2" />
                       Tải hóa đơn
-                    </Button>
-                    <Button
-                      onClick={handleSendEmail}
-                      variant="outline"
-                      className="flex-1 bg-transparent"
-                    >
-                      <Mail className="h-4 w-4 mr-2" />
-                      Gửi email xác nhận
                     </Button>
                   </>
                 )}
@@ -513,7 +541,7 @@ export default function PaymentResponsePage() {
                   </Button>
                 ) : (
                   <Button
-                    onClick={() => navigate("/bookings")}
+                    onClick={() => navigate("/profile")}
                     variant="outline"
                     className="flex-1 bg-transparent"
                   >
