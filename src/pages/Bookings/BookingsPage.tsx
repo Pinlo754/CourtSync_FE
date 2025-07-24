@@ -54,24 +54,24 @@ const BookingsPage: React.FC = () => {
   const getBookingStatusLabel = (status: string) => {
     switch (status) {
       case '0':
-        return 'Pending';
+        return 'Chờ thanh toán';
       case '1':
-        return 'Paid';
+        return 'Đã thanh toán';
       case '2':
-        return 'Cancelled';
+        return 'Đã hủy';
       default:
-        return 'Unknown';
+        return 'Không xác định';
     }
   };
 
   const getCheckinStatusLabel = (status: string) => {
     switch (status) {
       case '0':
-        return 'Not Checked In';
+        return 'Chưa check-in';
       case '1':
-        return 'Checked In';
+        return 'Đã check-in';
       default:
-        return 'Unknown';
+        return 'Không xác định';
     }
   };
 
