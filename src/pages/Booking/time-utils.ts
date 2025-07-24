@@ -17,6 +17,7 @@ export const isTimeSlotBooked = (
   bookedSlots: { start: string; end: string }[],
   selectedDate: string
 ): boolean => {
+  
   const slotTime = new Date(`${selectedDate}T${timeSlot}:00`)
 
   return bookedSlots.some(({ start, end }) => {

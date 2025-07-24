@@ -1,23 +1,9 @@
 import { useState, useEffect } from "react";
 import { Calendar, DollarSign, Heart, MapPin, Star } from "lucide-react";
-import { BookingHistoryItem } from "../../types/booking";
+import { BookingHistoryItem, BookingHistoryResponse } from "../../types/booking";
+import { User } from "../../types/user";
+import { fetcher, postData } from "../../api/fetchers";
 const useProfile = () => {
-  interface UserProfile {
-    id: string;
-    email: string;
-    full_name: string;
-    phone: string;
-    date_of_birth: string;
-    avatar_url: string;
-    created_at: string;
-  }
-
-  interface UserStats {
-    totalBookings: number;
-    favoriteCourts: number;
-    totalSpent: number;
-    memberSince: string;
-  }
 
   interface RecentActivity {
     id: string;
@@ -27,7 +13,7 @@ const useProfile = () => {
     icon: any;
   }
 
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
@@ -54,23 +40,6 @@ const useProfile = () => {
   });
 
   // Mock data
-
-  const mockUserProfile: UserProfile = {
-    id: "1a2b3c4d",
-    email: "johndoe@example.com",
-    full_name: "John Doe",
-    phone: "+84123456789",
-    date_of_birth: "1990-05-15",
-    avatar_url: "https://example.com/avatar/johndoe.jpg",
-    created_at: "2024-07-01T10:30:00Z",
-  };
-
-  const userStats: UserStats = {
-    totalBookings: 24,
-    favoriteCourts: 5,
-    totalSpent: 680,
-    memberSince: "Jan 2024",
-  };
 
   const recentActivities: RecentActivity[] = [
     {
@@ -135,40 +104,12 @@ const useProfile = () => {
   ];
 
   useEffect(() => {
-    // fetchUserProfile()
-    setUser(mockUserProfile);
+    const userString = sessionStorage.getItem('loggedUser');
+    const loggedUser = userString ? JSON.parse(userString) : null;
+      setUser(loggedUser);
   }, []);
 
-  const fetchUserProfile = async () => {
-    // try {
-    //   const {
-    //     data: { session },
-    //   } = await supabase.auth.getSession()
-    //   if (session?.user) {
-    //     // Mock user data - in real app, fetch from database
-    //     const mockUser: UserProfile = {
-    //       id: session.user.id,
-    //       email: session.user.email || "",
-    //       full_name: session.user.user_metadata?.full_name || "John Doe",
-    //       phone: "+1 (555) 123-4567",
-    //       date_of_birth: "1990-01-15",
-    //       avatar_url: "/placeholder.svg?height=120&width=120",
-    //       created_at: "2024-01-15T00:00:00Z",
-    //     }
-    //     setUser(mockUser)
-    //     setFormData({
-    //       full_name: mockUser.full_name,
-    //       email: mockUser.email,
-    //       phone: mockUser.phone,
-    //       date_of_birth: mockUser.date_of_birth,
-    //     })
-    //   }
-    // } catch (error) {
-    //   console.error("Error fetching profile:", error)
-    // } finally {
-    //   setLoading(false)
-    // }
-  };
+
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -207,7 +148,6 @@ const useProfile = () => {
     }
 
     setSaving(true);
-    // Simulate API call
     setTimeout(() => {
       setSaving(false);
       setPasswordData({
@@ -222,48 +162,15 @@ const useProfile = () => {
   const [bookings, setBookings] = useState<BookingHistoryItem[]>([]);
   const [selectedBooking, setSelectedBooking] = useState<BookingHistoryItem | null>(null)
    const [showDetailModal, setShowDetailModal] = useState(false)
+   const [userBalance, setUserBalance] = useState<number>()
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const res = await fetch(
-          "https://localhost:7255/api/Booking/UserViewBooking",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI0IiwiZW1haWwiOiJ1c2VyQGdtYWlsLmNvbSIsIkZpcnN0TmFtZSI6InN0cmluZyIsImxhc3ROYW1lIjoic3RyaW5nIiwicm9sZSI6IjQiLCJUb2tlbklkIjoiMzU3MGYyMWEtMjYxMy00NDE4LTliOTMtMGFkOWU1MWU1OTZlIiwibmJmIjoxNzUzMjAwMDAxLCJleHAiOjE3NTcwODgwMDEsImlhdCI6MTc1MzIwMDAwMX0.l4byFFO-LBQzf8rMIZxY_g2GwbNKslG6-wDeF6DsV8Q"}`,
-            },
-          }
+        const res = await postData(
+          "https://localhost:7255/api/Booking/UserViewBooking", {}          
         );
-        const data = await res.json();
-        console.log(data);
-        const mapped: BookingHistoryItem[] = data["$values"].map(
-          (item: any) => ({
-            bookingId: item.bookingId,
-            courtId: item.courtId,
-            facilityId: item.facilityId,
-            bookingStatus: item.bookingStatus,
-            checkinStatus: item.checkinStatus,
-            cHeckinDate: item.cHeckingDate,
-            startTime: {
-              $id: item.startTime?.$id || "",
-              $values: item.startTime?.$values || [],
-            },
-            endTime: {
-              $id: item.endTime?.$id || "",
-              $values: item.endTime?.$values || [],
-            },
-            totalPrice: item.totalPrice,
-            note: item.note,
-            bookingDate: item.bookingDate,
-            transactionId: item.transactionId,
-            transactionStatus: item.transactionStatus,
-            transactionType: item.transactionType,
-            transactionDate: item.transactionDate,
-          })
-        );
-        console.log("Mapped:", mapped)
-        setBookings(mapped);
+        const data: BookingHistoryResponse = await res;
+        setBookings(data.$values);
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu đặt sân:", error);
       } finally {
@@ -272,12 +179,22 @@ const useProfile = () => {
     };
 
     fetchBookings();
-    
-  }, []);
 
-  useEffect(() => {
-  console.log("Booking đã cập nhật:", bookings)
-}, [bookings])
+    const fetchBalance = async () => {
+      try {
+        const res = await fetcher(
+          "/Users/GetUserBalance"          
+        );
+        console.log("balance:", res)
+        setUserBalance(res);
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu đặt sân:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchBalance();
+  }, []);
 
   const handleViewDetails = (booking: BookingHistoryItem) => {
     setSelectedBooking(booking)
@@ -288,35 +205,21 @@ const useProfile = () => {
     setShowDetailModal(false)
     setSelectedBooking(null)
   }
-  return {
+  return {    
     user,
-    loading,
-    saving,
-    activeTab,
-    setActiveTab,
     formData,
-    setFormData,
     passwordData,
-    setPasswordData,
-    preferences,
-    setPreferences,
+    saving,
     handleInputChange,
     handlePasswordChange,
-    handlePreferenceChange,
     handleSaveProfile,
     handlePasswordUpdate,
-    favoriteCourts,
-    recentActivities,
-    userStats,
-    mockUserProfile,
-    Calendar,
-    DollarSign,
-    bookings,
+    bookings: bookings || [],
     handleViewDetails,
     handleCloseModal,
     selectedBooking,
-    setSelectedBooking,
-    showDetailModal
+    showDetailModal,
+    userBalance
   };
 };
 export default useProfile;

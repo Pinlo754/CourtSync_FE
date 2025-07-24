@@ -40,7 +40,7 @@ export interface CourtBooking {
 }
 
 export interface BookingHistoryItem {
-  $id: string
+  $id: number
   bookingId: number
   courtId: number
   facilityId: number
@@ -65,7 +65,7 @@ export interface BookingHistoryItem {
 }
 
 export interface BookingHistoryResponse {
-  $id: string
+  $id: number
   $values: BookingHistoryItem[]
 }
 

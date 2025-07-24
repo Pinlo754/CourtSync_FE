@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
 import {
@@ -26,10 +26,10 @@ import {
   CreditCard,
   Wallet,
   CheckCircle,
-  AlertCircle,
 } from "lucide-react";
 import { toast, ToastContainer } from "react-toastify";
-
+import { User } from "../../types/user"
+import { fetcher, postData } from "../../api/fetchers";
 interface BookingData {
   facilityId: number;
   facilityName: string;
@@ -49,7 +49,6 @@ interface CustomerInfo {
   fullName: string;
   phone: string;
   email: string;
-  note: string;
 }
 
 interface PaymentInfo {
@@ -69,13 +68,7 @@ export function BookingConfirmation() {
   const [currentStep, setCurrentStep] = useState<
     "info" | "payment" | "success"
   >("info");
-
-  const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
-    fullName: "",
-    phone: "",
-    email: "",
-    note: "",
-  });
+  const [user, setUser] = useState<User | null>(null);
 
   const [paymentInfo, setPaymentInfo] = useState<PaymentInfo>({
     method: "",
@@ -86,29 +79,6 @@ export function BookingConfirmation() {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  const validateCustomerInfo = (): boolean => {
-    const newErrors: Record<string, string> = {};
-
-    if (!customerInfo.fullName.trim()) {
-      newErrors.fullName = "Vui lòng nhập họ tên";
-    }
-
-    if (!customerInfo.phone.trim()) {
-      newErrors.phone = "Vui lòng nhập số điện thoại";
-    } else if (!/^[0-9]{10,11}$/.test(customerInfo.phone.replace(/\s/g, ""))) {
-      newErrors.phone = "Số điện thoại không hợp lệ";
-    }
-
-    if (!customerInfo.email.trim()) {
-      newErrors.email = "Vui lòng nhập email";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerInfo.email)) {
-      newErrors.email = "Email không hợp lệ";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
 
   const validatePaymentInfo = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -151,9 +121,8 @@ export function BookingConfirmation() {
 
   const handleNextStep = () => {
     if (currentStep === "info") {
-      if (validateCustomerInfo()) {
         setCurrentStep("payment");
-      }
+      
     } else if (currentStep === "payment") {
       if (validatePaymentInfo()) {
         handlePayment();
@@ -162,7 +131,7 @@ export function BookingConfirmation() {
   };
 
   const handlePayment = async () => {
-    setLoading(true);
+    setLoading(true);       
     localStorage.removeItem("bookingData");
     localStorage.setItem("bookingData", JSON.stringify(bookingData));
     if (
@@ -171,51 +140,41 @@ export function BookingConfirmation() {
       paymentInfo.method === "zalopay"
     ) {
       setLoading(false);
-      toast.error(
+      toast.warning(
         "Phương thức thanh toán bạn chọn đang được phát triển, vui lòng chọn phương thức khác!"
       );
       console.log( "Phương thức thanh toán bạn chọn đang được phát triển, vui lòng chọn phương thức khác!")
       return;
     } else if (paymentInfo.method == "wallet") {
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      const bookingRequest = {
-        courtId: bookingData.courtId,
+       if(userBalance < bookingData.totalPrice) 
+    {
+      setLoading(false);
+      toast.warning("Số dư trong ví không đủ, xin vui lòng nộp thêm hoặc chọn phương thức thanh toán khác!")
+      console.log("Số dư trong ví không đủ, xin vui lòng nộp thêm hoặc chọn phương thức thanh toán khác!")
+      return;      
+    }
+      try {
+        const response = await postData(
+          "https://localhost:7255/api/Booking/CreateBooking",
+        {
+          courtId: bookingData.courtId,
         note: bookingData.note,
         totalPrice: bookingData.totalPrice,
         startTimes: bookingData.startTimes,
         endTimes: bookingData.endTimes,
-      };
-      try {
-        const response = await fetch(
-          "https://localhost:7255/api/Booking/CreateBooking",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI0IiwiZW1haWwiOiJ1c2VyQGdtYWlsLmNvbSIsIkZpcnN0TmFtZSI6InN0cmluZyIsImxhc3ROYW1lIjoic3RyaW5nIiwicm9sZSI6IjQiLCJUb2tlbklkIjoiMzU3MGYyMWEtMjYxMy00NDE4LTliOTMtMGFkOWU1MWU1OTZlIiwibmJmIjoxNzUzMjAwMDAxLCJleHAiOjE3NTcwODgwMDEsImlhdCI6MTc1MzIwMDAwMX0.l4byFFO-LBQzf8rMIZxY_g2GwbNKslG6-wDeF6DsV8Q"}`,
-            },
-            body: JSON.stringify(bookingRequest),
-          }
-        );
-        if (!response.ok) throw new Error("Create booking API error");
-        const data = await response.json();
-        console.log(data.bookingId);
-        if (data) {
-          const payRequest = {
-            bookingId: data.bookingId
-          }
-          const response = await fetch(
-          "https://localhost:7255/api/Transaction/PayBookingCourt",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiI0IiwiZW1haWwiOiJ1c2VyQGdtYWlsLmNvbSIsIkZpcnN0TmFtZSI6InN0cmluZyIsImxhc3ROYW1lIjoic3RyaW5nIiwicm9sZSI6IjQiLCJUb2tlbklkIjoiMzU3MGYyMWEtMjYxMy00NDE4LTliOTMtMGFkOWU1MWU1OTZlIiwibmJmIjoxNzUzMjAwMDAxLCJleHAiOjE3NTcwODgwMDEsImlhdCI6MTc1MzIwMDAwMX0.l4byFFO-LBQzf8rMIZxY_g2GwbNKslG6-wDeF6DsV8Q"}`,
-            },
-            body: JSON.stringify(payRequest),
-          }
+        }
         );
         console.log(response)
+        console.log("createbooking:", response.bookingId);
+        if (response.bookingId) {
+          const res = await postData(
+          "https://localhost:7255/api/Transaction/PayBookingCourt",
+          {
+            bookingId: response.bookingId          
+          }
+        );
+        console.log("payment:", res)
         }
       } catch (error) {
         console.error("Payment error:", error);
@@ -253,10 +212,38 @@ export function BookingConfirmation() {
     }
   };
 
+    const [userBalance, setUserBalance] = useState<number>(0)
+
+  useEffect(() =>
+  {
+    const userString = sessionStorage.getItem('loggedUser');
+    const loggedUser = userString ? JSON.parse(userString) : null;
+    console.log("logged:", loggedUser)
+    setUser(loggedUser)    
+
+    const fetchBalance = async () => {
+          try {
+            const res = await fetcher(
+              "/Users/GetUserBalance"          
+            );
+            console.log("balance:", res)
+            setUserBalance(res);
+          } catch (error) {
+            console.error("Lỗi khi lấy dữ liệu đặt sân:", error);
+          } finally {
+            setLoading(false);
+          }
+        }
+        fetchBalance();
+  }, [])
+
+
+
+
   if (currentStep === "success") {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <ToastContainer />
+        <ToastContainer position="top-right" autoClose={2000} />
         <Card className="w-full max-w-md">
           <CardContent className="text-center p-8">
             <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
@@ -359,13 +346,12 @@ export function BookingConfirmation() {
                       <Label htmlFor="fullName">Họ và tên *</Label>
                       <Input
                         id="fullName"
-                        value={customerInfo.fullName}
-                        onChange={(e: any) =>
-                          setCustomerInfo({
-                            ...customerInfo,
-                            fullName: e.target.value,
-                          })
+                        value={user?.firstName + " " + user?.lastName}
+                        onChange={(e: any) =>  {
+
+                        }                         
                         }
+                        disabled
                         placeholder="Nhập họ và tên"
                         className="[&_input]:!bg-white [&_input]:!text-gray-900 [&_input]:!border-gray-300 [&_input]:!placeholder-gray-500 [&_input:focus]:!border-blue-500"
                       />
@@ -380,13 +366,11 @@ export function BookingConfirmation() {
                       <Label htmlFor="phone">Số điện thoại *</Label>
                       <Input
                         id="phone"
-                        value={customerInfo.phone}
+                        value={user?.phoneNumber ?? ""}
                         onChange={(e: any) =>
-                          setCustomerInfo({
-                            ...customerInfo,
-                            phone: e.target.value,
-                          })
+                        {}
                         }
+                        disabled
                         placeholder="Nhập số điện thoại"
                         className="[&_input]:!bg-white [&_input]:!text-gray-900 [&_input]:!border-gray-300 [&_input]:!placeholder-gray-500 [&_input:focus]:!border-blue-500"
                       />
@@ -403,13 +387,10 @@ export function BookingConfirmation() {
                     <Input
                       id="email"
                       type="email"
-                      value={customerInfo.email}
-                      onChange={(e: any) =>
-                        setCustomerInfo({
-                          ...customerInfo,
-                          email: e.target.value,
-                        })
+                      value={user?.email ?? ""}
+                      onChange={(e: any) => {}
                       }
+                    disabled
                       placeholder="Nhập địa chỉ email"
                       className="[&_input]:!bg-white [&_input]:!text-gray-900 [&_input]:!border-gray-300 [&_input]:!placeholder-gray-500 [&_input:focus]:!border-blue-500"
                     />
@@ -420,7 +401,7 @@ export function BookingConfirmation() {
                     )}
                   </div>
 
-                  <div>
+                  {/* <div>
                     <Label htmlFor="customerNote">Ghi chú thêm</Label>
                     <Input
                       id="customerNote"
@@ -434,7 +415,7 @@ export function BookingConfirmation() {
                       placeholder="Yêu cầu đặc biệt (tùy chọn)"
                       className="[&_input]:!bg-white [&_input]:!text-gray-900 [&_input]:!border-gray-300 [&_input]:!placeholder-gray-500 [&_input:focus]:!border-blue-500"
                     />
-                  </div>
+                  </div> */}
                 </CardContent>
               </Card>
             )}
@@ -644,8 +625,8 @@ export function BookingConfirmation() {
                             Thanh toán bằng số dư trong ví
                           </p>
                           <p className="text-sm text-blue-700">
-                            Số dư hiện có: 950.000 đ. Số dư sau thanh toán:{" "}
-                            {950000 - bookingData.totalPrice}
+                            Số dư hiện có: {userBalance} đ. Số dư sau thanh toán:{" "}
+                            {userBalance - bookingData.totalPrice}
                           </p>
                         </div>
                       </div>

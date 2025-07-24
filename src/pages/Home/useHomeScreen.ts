@@ -56,7 +56,7 @@ export default function useHomeScreen() {
           NumberOfCourts: item.totalCourts,
           MinPrice: item.minPrice,
           MaxPrice: item.maxPrice,
-          image: "",
+          facilityImageUrl: item.facilittyImageUrl,
         }));
         console.log("Facilities:", mapped); // <-- Thêm dòng này để test
         setFacilities(mapped);
