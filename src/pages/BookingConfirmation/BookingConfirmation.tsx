@@ -175,7 +175,7 @@ export function BookingConfirmation() {
           }
         );
         console.log("payment:", res)
-        navigate("/paymentSuccess")
+        navigate("/BookingSuccess")
         }
       } catch (error) {
         console.error("Payment error:", error);

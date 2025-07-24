@@ -217,7 +217,8 @@ export default function PaymentResponsePage() {
       calledRef.current = true;
       setLoading(false);
     };
-  }
+  } 
+  console.log("action:" , action)
     Callback();
   }, [vnpayData]);
 
