@@ -36,6 +36,7 @@ interface BookingData {
   facilityAddress: string;
   facilityPhone: string;
   courtId: number;
+  courtName: number;
   selectedDate: string;
   selectedSlots: string[];
   totalHours: number;
@@ -279,14 +280,14 @@ export function BookingConfirmation() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-green-600 text-white p-4 shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <Button onClick={() => navigate(-1)}>
+              <Button onClick={() => navigate(-1)} className=" w-[50px]">
                 <ArrowLeft className="h-5 w-5" />
               </Button>
-              <h1 className="text-xl font-semibold text-gray-900">
+              <h1 className="text-xl font-semibold text-gray-900 w-[500px]">
                 {currentStep === "info" ? "Thông tin đặt sân" : "Thanh toán"}
               </h1>
             </div>
@@ -639,7 +640,7 @@ export function BookingConfirmation() {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Thông tin đặt sân</CardTitle>
+                <CardTitle className="w-[500px]">Thông tin đặt sân</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
@@ -661,7 +662,7 @@ export function BookingConfirmation() {
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Sân</span>
-                    <Badge variant="secondary">Sân {bookingData.courtId}</Badge>
+                    <Badge variant="secondary">Sân {bookingData.courtName}</Badge>
                   </div>
 
                   <div className="flex items-center justify-between">

@@ -40,6 +40,7 @@ export function CourtBooking() {
     clearSelection,
     getSlotStatus,
     getSlotColor,
+    setCourtName
   } = useBooking()
 
   // Loading state
@@ -76,7 +77,7 @@ export function CourtBooking() {
       <div className="bg-green-600 text-white p-4">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center space-x-4">
-            <Button className="text-white hover:bg-green-700 w-[100px]" onClick={() => window.history.back()}>
+            <Button className="text-white hover:bg-green-700 w-[50px]" onClick={() => window.history.back()}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <h1 className="text-xl font-semibold w-[500px]">Đặt lịch ngày trực quan</h1>
@@ -192,6 +193,7 @@ export function CourtBooking() {
                             <button
                               key={`${courtId}-${timeSlot}`}
                               onClick={() => {
+                                setCourtName(courtName+1)
                                 handleCourtChange(courtId)
                                 handleTimeSlotClick(timeSlot)
                               }}
