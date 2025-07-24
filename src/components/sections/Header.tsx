@@ -12,7 +12,7 @@ const Header = () => {
     const userString = sessionStorage.getItem("loggedUser");
     const loggedUser = userString ? JSON.parse(userString) : null;
     setUser(loggedUser);
-    console.log("user:", loggedUser.role)
+    // console.log("user:", loggedUser.role)
   }, []);
 
   const handleLogout = () => {
