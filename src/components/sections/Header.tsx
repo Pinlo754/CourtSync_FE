@@ -7,15 +7,23 @@ import { User } from "../../types/user";
 const Header = () => {
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
+
   useEffect(() => {
     const userString = sessionStorage.getItem("loggedUser");
     const loggedUser = userString ? JSON.parse(userString) : null;
     setUser(loggedUser);
+    console.log("user:", loggedUser.role)
   }, []);
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("loggedUser");
+    setUser(null);
+    navigate("/login");
+  };
+
   return (
-    // Container chính của header với chiều cao cố định và căn chỉnh các phần tử
     <div className="flex h-20 w-full justify-between pb-1">
-      {/* Phần chứa logo bên trái */}
+      {/* Logo */}
       <div className="flex justify-center items-center h-full">
         <Link to="/">
           <img
@@ -28,17 +36,27 @@ const Header = () => {
 
       <div className="flex justify-between items-center text-2xl text-center h-full gap-6">
         {user ? (
-          <Link
-            to="/profile"
-            className="flex items-center hover:text-gray-600 transition-colors"
-          >
-            <p className="flex justify-center items-center">Profile</p>
-            <img
-              src={avatar}
-              alt="profile"
-              className="rounded-full ml-2 h-[40px]"
-            />
-          </Link>
+          <>
+            {(user.role === "4" || user.role === "1") && (
+              <Link
+                to="/profile"
+                className="flex items-center hover:text-gray-600 transition-colors"
+              >
+                <p className="flex justify-center items-center">Profile</p>
+                <img
+                  src={avatar}
+                  alt="profile"
+                  className="rounded-full ml-2 h-[40px]"
+                />
+              </Link>
+            )}
+            <button
+              onClick={handleLogout}
+              className="hover:text-gray-600 transition-colors"
+            >
+              Logout
+            </button>
+          </>
         ) : (
           <Link to="/login" className="hover:text-gray-600 transition-colors">
             Login

@@ -121,7 +121,6 @@ export function useBooking() {
           bookingDate: selectedDate,
         }
       );
-      if (!response.ok) throw new Error("Failed to load booking data");
       const data: BookingResponse = await response;
       console.log("response booking data", data)
       setBookingData(data);
@@ -157,8 +156,7 @@ export function useBooking() {
       endTimes: endTimes,
         }
       );
-      if (!response.ok) throw new Error("Price API error");
-      const data = await response.json();
+      const data = await response;
       setTotalPrice(data || 0);
     } catch (error) {
       console.error("Error calculating price:", error);
@@ -302,7 +300,7 @@ export function useBooking() {
     setTotalPrice(0);
   };
 
-  const totalHours = Math.max(0, selectedSlots.length * 0.5);
+  const totalHours = Math.max(0, selectedSlots.length * 0.5 - 0.5);
 
   return {
     facility,

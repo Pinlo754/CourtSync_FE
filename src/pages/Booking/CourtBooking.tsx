@@ -180,7 +180,7 @@ export function CourtBooking() {
                           }`}
                           onClick={() => handleCourtChange(courtId)}
                         >
-                          Sân {courtName}
+                          Sân {courtName+1}
                         </div>
                         {timeSlots.map((timeSlot) => {
                           const status = getSlotStatus(courtId, timeSlot)

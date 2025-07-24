@@ -13,14 +13,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "../../components/ui/avatar";
-import {
-  User,
-  Lock,
-  Camera,
-  Save,
-  History,
-  Wallet,
-} from "lucide-react";
+import { User, Lock, Camera, Save, History, Wallet } from "lucide-react";
 import Header from "../../components/sections/Header";
 import useProfile from "./useProfile";
 import { BookingHistoryCard } from "../../components/ui/booking-history-card";
@@ -41,7 +34,7 @@ export default function ProfilePage() {
     handleCloseModal,
     selectedBooking,
     showDetailModal,
-    userBalance
+    userBalance,
   } = useProfile();
   if (!user) {
     return (
@@ -93,73 +86,6 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left */}
           <div className="lg:col-span-1 space-y-6">
-            {/* Personal Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <User className="h-5 w-5 mr-2" />
-                  Thông tin cá nhân
-                </CardTitle>
-                <CardDescription>
-                  Chỉnh sửa thông tin cá nhân
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="fullName">Họ và tên</Label>
-                    <Input
-                      id="fullName"
-                      value={formData.full_name}
-                      onChange={(e) =>
-                        handleInputChange("full_name", e.target.value)
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) =>
-                        handleInputChange("email", e.target.value)
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Số điện thoại</Label>
-                    <Input
-                      id="phone"
-                      value={formData.phone}
-                      onChange={(e) =>
-                        handleInputChange("phone", e.target.value)
-                      }
-                    />
-                  </div>
-                </div>
-                <Button
-                  onClick={handleSaveProfile}
-                  disabled={saving}
-                  className="w-full md:w-auto"
-                >
-                  {saving ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Đang lưu
-                    </>
-                  ) : (
-                    <>
-                      <Save className="h-4 w-4 mr-2" />
-                      Lưu thay đổi
-                    </>
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-
-            
-
             {/* Security Settings */}
             <Card>
               <CardHeader>
@@ -167,9 +93,7 @@ export default function ProfilePage() {
                   <Lock className="h-5 w-5 mr-2" />
                   Bảo mật
                 </CardTitle>
-                <CardDescription>
-                  Quản lí mật khẩu
-                </CardDescription>
+                <CardDescription>Quản lí mật khẩu</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -223,43 +147,46 @@ export default function ProfilePage() {
 
           {/* Right */}
           <div className="lg:col-span-2 space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <History className="h-5 w-5 mr-2" />
-                  Lịch sử đặt sân
-                </CardTitle>
-                <CardDescription>
-                  Lịch sử đặt sân của bản thân và thông tin chi tiết
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4 h-[500px] overflow-y-scroll scrollbar-hide">
-                {bookings.map((booking) => (
-                  <>
-                    <BookingHistoryCard
-                      key={booking.bookingId}
-                      booking={booking}
-                      onViewDetails={handleViewDetails}
-                    />
-                    {selectedBooking && (
-                      <BookingDetailModal
-                        booking={selectedBooking}
-                        onClose={handleCloseModal}
-                        open={showDetailModal}
+            {user.role === "4" ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <History className="h-5 w-5 mr-2" />
+                    Lịch sử đặt sân
+                  </CardTitle>
+                  <CardDescription>
+                    Lịch sử đặt sân của bản thân và thông tin chi tiết
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4 h-[500px] overflow-y-scroll scrollbar-hide">
+                  {bookings.map((booking) => (
+                    <>
+                      <BookingHistoryCard
+                        key={booking.bookingId}
+                        booking={booking}
+                        onViewDetails={handleViewDetails}
                       />
-                    )}
-                  </>
-                ))}
-              </CardContent>
-            </Card>
-
+                      {selectedBooking && (
+                        <BookingDetailModal
+                          booking={selectedBooking}
+                          onClose={handleCloseModal}
+                          open={showDetailModal}
+                        />
+                      )}
+                    </>
+                  ))}
+                </CardContent>
+              </Card>
+            ) : (
+              <></>
+            )}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Wallet className="h-5 w-5 mr-2" />
                   Ví
                 </CardTitle>
-                <CardDescription>Số dư tài khoản - dùng để đặt sân</CardDescription>
+                <CardDescription>Số dư tài khoản</CardDescription>
               </CardHeader>
               <CardContent className="h-[500px]">
                 <WalletSection balance={userBalance ?? user.balance} />

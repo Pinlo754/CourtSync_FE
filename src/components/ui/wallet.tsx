@@ -39,24 +39,24 @@ const getTransactionIcon = (type: string) => {
 
 const getTransactionStatus = (status: string) => {
   switch (status) {
-    case "completed":
+    case "0":
       return {
         icon: <CheckCircle className="h-3 w-3" />,
+        label: "Pending",
+        color: "text-yellow-600",
+        bgColor: "bg-yellow-50",
+      }
+    case "1":
+      return {
+        icon: <Clock className="h-3 w-3" />,
         label: "Thành công",
         color: "text-green-600",
         bgColor: "bg-green-50",
       }
-    case "pending":
-      return {
-        icon: <Clock className="h-3 w-3" />,
-        label: "Đang xử lý",
-        color: "text-yellow-600",
-        bgColor: "bg-yellow-50",
-      }
-    case "failed":
+    case "2":
       return {
         icon: <XCircle className="h-3 w-3" />,
-        label: "Thất bại",
+        label: "Cancel",
         color: "text-red-600",
         bgColor: "bg-red-50",
       }
@@ -226,7 +226,7 @@ export function WalletSection({ balance }: WalletSectionProps) {
               <p className="text-gray-600">Chưa có giao dịch nào</p>
             </div>
           ) : (
-            <div className="space-y-3 max-h-96 overflow-y-auto">
+            <div className="space-y-3 max-h-96">
               {transactions.map((transaction) => {
                 const status = getTransactionStatus(transaction.transactionStatus)
                 const amount = formatAmount(transaction.amount)
@@ -320,18 +320,15 @@ const useWallet = () => {
       })
       const result = await response;
       window.location.href = response;
-      sessionStorage.setItem("action", "deposit");
+      localStorage.setItem("action", "deposit");
       if (result.success) {
-        alert("Nạp tiền thành công!")
         setDepositAmount("")
         fetchTransactions()
-        window.location.reload()
       } else {
         throw new Error(result.message || "Nạp tiền thất bại")
       }
     } catch (err) {
       console.error("Error depositing:", err)
-      alert(err instanceof Error ? err.message : "Có lỗi xảy ra khi nạp tiền")
     } finally {
       setDepositing(false)
     }
