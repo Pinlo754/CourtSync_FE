@@ -36,8 +36,8 @@ export const SignUpFields: React.FC<SignUpFieldsProps> = ({ isSignUp, formData, 
                 name="firstName"
                 value={formData.firstName}
                 onChange={onChange}
-                placeholder="First name"
-                label="First Name"
+                placeholder="Nhập tên"
+                label="Tên"
                 icon={User}
               />
             </motion.div>
@@ -52,8 +52,8 @@ export const SignUpFields: React.FC<SignUpFieldsProps> = ({ isSignUp, formData, 
                 name="lastName"
                 value={formData.lastName}
                 onChange={onChange}
-                placeholder="Last name"
-                label="Last Name"
+                placeholder="Nhập họ"
+                label="Họ"
                 icon={User}
               />
             </motion.div>
@@ -70,8 +70,8 @@ export const SignUpFields: React.FC<SignUpFieldsProps> = ({ isSignUp, formData, 
               name="phone"
               value={formData.phone}
               onChange={onChange}
-              placeholder="Phone number"
-              label="Phone Number"
+              placeholder="Nhập số điện thoại"
+              label="Số điện thoại"
               icon={Phone}
             />
           </motion.div>

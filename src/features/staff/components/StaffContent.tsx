@@ -9,14 +9,14 @@ import { BookingStaffForm } from '../../staffBooking/components/BookingStaffForm
 export const StaffContent: React.FC = () => {
   // Lấy giá trị từ localStorage nếu có, nếu không thì dùng mặc định
   const getInitialOption = () => {
-    const saved = localStorage.getItem('staff-selected-option');
-    return (saved as StaffSidebarOption) || 'check-in-customer';
+    const saved = sessionStorage.getItem('staff-selected-option');
+    return (saved as StaffSidebarOption) || 'Tạo đặt sân';
   };
   const [selectedOption, setSelectedOption] = useState<StaffSidebarOption>(getInitialOption);
 
   // Lưu vào localStorage mỗi khi selectedOption thay đổi
   useEffect(() => {
-    localStorage.setItem('staff-selected-option', selectedOption);
+    sessionStorage.setItem('staff-selected-option', selectedOption);
   }, [selectedOption]);
 
   return (
@@ -24,9 +24,9 @@ export const StaffContent: React.FC = () => {
       <StaffSidebar selectedOption={selectedOption} onSelect={setSelectedOption} />
       <div className="flex-1 p-8">
         {/* Hiển thị nội dung tương ứng với lựa chọn */}
-        {selectedOption === 'check-in-customer' && <CheckinCustomer />}
-        {selectedOption === 'report-issue' && <ReportIssueForm />}
-        {selectedOption === 'create-booking' && <BookingStaffForm />}
+        {selectedOption === 'Check-in sân' && <CheckinCustomer />}
+        {selectedOption === 'Báo cáo vấn đề' && <ReportIssueForm />}
+        {selectedOption === 'Tạo đặt sân' && <BookingStaffForm />}
       </div>
     </div>
   );

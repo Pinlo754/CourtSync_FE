@@ -30,8 +30,19 @@ export const CreateFacilityForm: React.FC = () => {
       !formData.lastName ||
       !formData.phone
     ) {
-      setError("Please fill in all required fields");
+      setError("Vui lòng điền đầy đủ các trường");
       return false;
+    }
+    if(formData.password) {
+      if (formData.password.length < 6) {
+        setError("Mật khẩu phải có tối thiểu 6 ký tự");
+        return false;
+      }
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])/;
+      if (!passwordRegex.test(formData.password)) {
+        setError("Mật khẩu phải bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt");
+        return false;
+      }
     }
     return true;
   };
@@ -46,23 +57,24 @@ export const CreateFacilityForm: React.FC = () => {
         if (errorValues.length > 0 && Array.isArray(errorValues[1])) {
           setError(errorValues[1][0]);
         } else {
-          setError("Invalid input"); // fallback
+          setError("Lỗi nhập liệu"); // fallback
         }
       } else if (data?.message) {
         // Trường hợp backend trả về message riêng
         setError(data.message);
       } else {
-        setError("Invalid request");
+        setError("Lỗi yêu cầu");
       }
     } else if (error.message?.includes("Network Error")) {
-      setError("Unable to connect to server. Please try again later.");
+      setError("Không thể kết nối đến máy chủ. Vui lòng thử lại sau.");
     } else {
-      setError("Invalid request");
+      setError("Lỗi yêu cầu");
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    validateForm();
     setError("");
     setSuccessMessage("");
   };
@@ -79,7 +91,7 @@ export const CreateFacilityForm: React.FC = () => {
       }
       const response = await UseCreateFacility(formData);
       console.log(response);
-      setSuccessMessage("Facility owner created successfully");
+      setSuccessMessage("Tạo chủ cơ sở thành công");
       setFormData(formData);
       // setTimeout(() => {
       //   setSuccessMessage("");
@@ -93,35 +105,33 @@ export const CreateFacilityForm: React.FC = () => {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <Card className="bg-blue-300/20 shadow-lg">
+      <Card className="bg-white shadow-lg">
         <CardContent className="p-8">
-          <h1 className="text-2xl font-bold mb-6 text-center">
-            Create Facility Owner
-          </h1>
+          <h1 className="text-2xl font-bold mb-6 text-center">Tạo chủ cơ sở</h1>
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* First Name and Last Name */}
             <div className="flex gap-8 justify-between">
               <Input
-                label="First Name"
+                label="Tên"
                 name="firstName"
                 type="text"
                 value={formData.firstName}
                 onChange={handleChange}
-                placeholder="Enter first name"
+                placeholder="Nhập tên"
                 icon={User}
-                className="w-1/2"
                 labelClassName="text-slate-800 text-md font-bold"
+                className="w-1/2 [&_input]:!bg-white [&_input]:!text-gray-900 [&_input]:!border-gray-300 [&_input]:!placeholder-gray-500 [&_input:focus]:!border-blue-500"
               />
               <Input
-                label="Last Name"
+                label="Họ"
                 name="lastName"
                 type="text"
                 value={formData.lastName}
                 onChange={handleChange}
-                placeholder="Enter last name"
+                placeholder="Nhập họ"
                 icon={User}
-                className="w-1/2"
                 labelClassName="text-slate-800 text-md font-bold"
+                className="w-1/2 [&_input]:!bg-white [&_input]:!text-gray-900 [&_input]:!border-gray-300 [&_input]:!placeholder-gray-500 [&_input:focus]:!border-blue-500"
               />
             </div>
             {/* Email */}
@@ -131,40 +141,43 @@ export const CreateFacilityForm: React.FC = () => {
               type="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Enter email"
+              placeholder="Nhập email"
               icon={Mail}
               labelClassName="text-slate-800 text-md font-bold"
+              className="[&_input]:!bg-white [&_input]:!text-gray-900 [&_input]:!border-gray-300 [&_input]:!placeholder-gray-500 [&_input:focus]:!border-blue-500"
             />
             {/* Password */}
             <Input
-              label="Password"
+              label="Mật khẩu"
               name="password"
               type="text"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Enter password"
+              placeholder="Nhập mật khẩu"
+              className="[&_input]:!bg-white [&_input]:!text-gray-900 [&_input]:!border-gray-300 [&_input]:!placeholder-gray-500 [&_input:focus]:!border-blue-500"
               labelClassName="text-slate-800 text-md font-bold"
             />
             {/* Phone */}
             <Input
-              label="Phone Number"
+              label="Số điện thoại"
               name="phone"
               type="tel"
               value={formData.phone}
               onChange={handleChange}
-              placeholder="Enter phone"
+              placeholder="Nhập số điện thoại"
               icon={Phone}
+              className="[&_input]:!bg-white [&_input]:!text-gray-900 [&_input]:!border-gray-300 [&_input]:!placeholder-gray-500 [&_input:focus]:!border-blue-500"
               labelClassName="text-slate-800 text-md font-bold"
             />
             {/* Submit Button */}
             <ErrorMessage message={error} show={!!error} />
-            <SuccessMessage message={successMessage} show={!!successMessage} />
+            <SuccessMessage message={successMessage} show={!!successMessage}/>
             <Button
               type="submit"
               loading={loading}
               className="w-full bg-mint-500 hover:bg-mint-700"
             >
-              Create Facility Owner
+              Tạo chủ cơ sở
             </Button>
           </form>
         </CardContent>

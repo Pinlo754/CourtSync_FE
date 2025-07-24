@@ -16,6 +16,9 @@ import { UserRole } from "../types/role";
 import { FacilityDetailPage } from "../pages/FacilityManagement/FacilityDetailPage";
 import ReportsPage from "../pages/Reports/ReportsPage";
 import { BookingSuccess } from "../pages/BookingResult/BookingResult";
+import { TransactionsPage } from "../pages/Transactions";
+import { BookingsPage } from "../pages/Bookings";
+
 
 const routers = createBrowserRouter([
   {
@@ -77,6 +80,22 @@ const routers = createBrowserRouter([
   {
     path: "/reports/:reportId",
     element: <ReportsPage />,
+  },
+  {
+    path: "/transactions",
+    element: (
+      <AuthGuard requiredRole={UserRole.FACILITY_OWNER}>
+        <TransactionsPage />
+      </AuthGuard>
+    ),
+  },
+  {
+    path: "/bookings",
+    element: (
+      <AuthGuard requiredRole={UserRole.FACILITY_OWNER}>
+        <BookingsPage />
+      </AuthGuard>
+    ),
   },
   {
     path: "/facility-management",

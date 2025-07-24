@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Building2, MapPin, Clock, Mail, Phone, User, Eye, EyeOff, ArrowRight, ArrowLeft } from 'lucide-react';
+import { X, Building2, MapPin, Clock, Mail, Phone, User, Eye, EyeOff, ArrowRight, ArrowLeft, Upload } from 'lucide-react';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { ErrorMessage } from '../../components/ui/ErrorMessage';
 import { createFacility, CreateFacilityRequest } from '../../api/facility/facilityApi';
+import { ImageUploader } from '../../features/uploadImage/components/ImageUploader';
 
 interface CreateFacilityModalProps {
     isOpen: boolean;
@@ -23,13 +24,14 @@ interface FacilityFormData {
     ward: string;
     district: string;
     city: string;
-    latitude: number;
-    longitude: number;
+    latitude: number | null;
+    longitude: number | null;
     email: string;
     password: string;
     firstName: string;
     lastName: string;
     phone: string;
+    imageUrl: string;
 }
 
 type Step = 'facility' | 'location' | 'hours' | 'staff';
@@ -51,13 +53,14 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
         ward: '',
         district: '',
         city: '',
-        latitude: 0,
-        longitude: 0,
+        latitude: null,
+        longitude: null,
         email: '',
         password: '',
         firstName: '',
         lastName: '',
-        phone: ''
+        phone: '',
+        imageUrl: ''
     });
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -75,6 +78,14 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
         setFormData({
             ...formData,
             [name]: processedValue
+        });
+        if (error) setError('');
+    };
+
+    const handleImageUpload = (url: string) => {
+        setFormData({
+            ...formData,
+            imageUrl: url
         });
         if (error) setError('');
     };
@@ -152,7 +163,8 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
                 password: formData.password,
                 firstName: formData.firstName,
                 lastName: formData.lastName,
-                phone: formData.phone
+                phone: formData.phone,
+                imageUrl: formData.imageUrl
             };
 
             // Call API
@@ -174,13 +186,14 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
                     ward: '',
                     district: '',
                     city: '',
-                    latitude: 0,
-                    longitude: 0,
+                    latitude: null,
+                    longitude: null,
                     email: '',
                     password: '',
                     firstName: '',
                     lastName: '',
-                    phone: ''
+                    phone: '',
+                    imageUrl: ''
                 });
                 setCurrentStep('facility');
             } else {
@@ -227,51 +240,116 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
             className="space-y-4"
         >
             <div className="text-center mb-6">
-                <Building2 className="w-12 h-12 text-mint-400 mx-auto mb-3" />
-                <h3 className="text-xl font-bold text-white mb-2">Facility Information</h3>
-                <p className="text-slate-300 text-sm">Enter basic information about your facility</p>
+                <Building2 className="w-12 h-12 mx-auto text-mint-500 mb-2" />
+                <h2 className="text-xl font-bold text-white">Thông tin cơ sở</h2>
+                <p className="text-slate-400">Nhập thông tin cơ sở</p>
             </div>
 
+            <div className="space-y-4">
+                <div>
+                    <label htmlFor="facilityName" className="block text-sm font-medium text-slate-400 mb-1">
+                        Tên cơ sở
+                    </label>
             <Input
-                type="text"
+                        id="facilityName"
                 name="facilityName"
                 value={formData.facilityName}
                 onChange={handleInputChange}
-                placeholder="Enter facility name"
-                label="Facility Name"
-                icon={Building2}
+                placeholder="Nhập tên cơ sở"
+                        required
             />
+                </div>
 
             <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Description</label>
+                    <label htmlFor="description" className="block text-sm font-medium text-slate-400 mb-1">
+                        Mô tả
+                    </label>
                 <textarea
+                        id="description"
                     name="description"
                     value={formData.description}
                     onChange={handleInputChange}
-                    placeholder="Describe your facility..."
-                    className="w-full p-3 bg-slate-800/50 border-2 border-slate-700/50 rounded-xl focus:border-mint-500 focus:outline-none transition-all duration-300 text-white text-sm placeholder-slate-500 resize-none h-24"
+                        placeholder="Nhập mô tả cơ sở"
+                        className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg p-3 text-white focus:border-mint-500 focus:outline-none transition-colors min-h-[100px]"
+                        required
                 />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label htmlFor="contactPhone" className="block text-sm font-medium text-slate-400 mb-1">
+                            Số điện thoại
+                        </label>
                 <Input
-                    type="tel"
+                            id="contactPhone"
                     name="contactPhone"
                     value={formData.contactPhone}
                     onChange={handleInputChange}
-                    placeholder="Contact phone"
-                    label="Contact Phone"
-                    icon={Phone}
+                            placeholder="Nhập số điện thoại"
+                            required
                 />
+                    </div>
+                    <div>
+                        <label htmlFor="contactEmail" className="block text-sm font-medium text-slate-400 mb-1">
+                            Email
+                        </label>
                 <Input
-                    type="email"
+                            id="contactEmail"
                     name="contactEmail"
                     value={formData.contactEmail}
                     onChange={handleInputChange}
-                    placeholder="Contact email"
-                    label="Contact Email"
-                    icon={Mail}
-                />
+                            placeholder="Nhập email"
+                            type="email"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-slate-400 mb-1">
+                        Ảnh cơ sở
+                    </label>
+                    <div className="flex flex-col space-y-3">
+                        <ImageUploader 
+                            onImageUpload={handleImageUpload}
+                            className="mb-2" 
+                        />
+                        
+                        <div className="flex items-center space-x-2">
+                            <div className="flex-grow">
+                                <Input
+                                    id="imageUrl"
+                                    name="imageUrl"
+                                    value={formData.imageUrl}
+                                    onChange={handleInputChange}
+                                    placeholder="Nhập URL ảnh cơ sở"
+                                />
+                            </div>
+                            {formData.imageUrl && (
+                                <button
+                                    type="button"
+                                    onClick={() => setFormData({...formData, imageUrl: ''})}
+                                    className="p-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors"
+                                >
+                                    <X size={16} />
+                                </button>
+                            )}
+                        </div>
+                        
+                        {formData.imageUrl && (
+                            <div className="mt-2 p-2 border border-slate-600/50 rounded-lg">
+                                <img 
+                                    src={formData.imageUrl} 
+                                    alt="Facility preview" 
+                                    className="w-full h-40 object-cover rounded-lg"
+                                    onError={(e) => {
+                                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x200?text=Invalid+Image+URL';
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
         </motion.div>
     );
@@ -285,8 +363,8 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
         >
             <div className="text-center mb-6">
                 <MapPin className="w-12 h-12 text-mint-400 mx-auto mb-3" />
-                <h3 className="text-xl font-bold text-white mb-2">Location Details</h3>
-                <p className="text-slate-300 text-sm">Provide the complete address of your facility</p>
+                <h3 className="text-xl font-bold text-white mb-2">Thông tin vị trí</h3>
+                <p className="text-slate-300 text-sm">Nhập đầy đủ địa chỉ của cơ sở</p>
             </div>
 
             <Input
@@ -294,8 +372,8 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
                 name="address"
                 value={formData.address}
                 onChange={handleInputChange}
-                placeholder="Street address"
-                label="Address"
+                placeholder="Nhập địa chỉ"
+                label="Địa chỉ"
                 icon={MapPin}
             />
 
@@ -305,8 +383,8 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
                     name="ward"
                     value={formData.ward}
                     onChange={handleInputChange}
-                    placeholder="Ward"
-                    label="Ward"
+                    placeholder="Nhập phường"
+                    label="Phường"
                     icon={MapPin}
                 />
                 <Input
@@ -314,8 +392,8 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
                     name="district"
                     value={formData.district}
                     onChange={handleInputChange}
-                    placeholder="District"
-                    label="District"
+                    placeholder="Nhập quận"
+                    label="Quận"
                     icon={MapPin}
                 />
                 <Input
@@ -323,8 +401,8 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
                     name="city"
                     value={formData.city}
                     onChange={handleInputChange}
-                    placeholder="City"
-                    label="City"
+                    placeholder="Nhập thành phố"
+                    label="Thành phố"
                     icon={MapPin}
                 />
             </div>
@@ -333,19 +411,19 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
                 <Input
                     type="number"
                     name="latitude"
-                    value={formData.latitude.toString()}
+                    value={formData.latitude?.toString() || ''}
                     onChange={handleInputChange}
-                    placeholder="Latitude"
-                    label="Latitude (Optional)"
+                    placeholder="Nhập vĩ độ"
+                    label="Vĩ độ (Tùy chọn)"
                     icon={MapPin}
                 />
                 <Input
                     type="number"
                     name="longitude"
-                    value={formData.longitude.toString()}
+                    value={formData.longitude?.toString() || ''}
                     onChange={handleInputChange}
-                    placeholder="Longitude"
-                    label="Longitude (Optional)"
+                    placeholder="Nhập kinh độ"
+                    label="Kinh độ (Tùy chọn)"
                     icon={MapPin}
                 />
             </div>
@@ -361,13 +439,13 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
         >
             <div className="text-center mb-6">
                 <Clock className="w-12 h-12 text-mint-400 mx-auto mb-3" />
-                <h3 className="text-xl font-bold text-white mb-2">Operating Hours</h3>
-                <p className="text-slate-300 text-sm">Set your facility's opening and closing times</p>
+                <h3 className="text-xl font-bold text-white mb-2">Giờ hoạt động</h3>
+                <p className="text-slate-300 text-sm">Nhập giờ hoạt động của cơ sở</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">Opening Time</label>
+                    <label className="block text-xs font-medium text-slate-300 mb-1">Giờ mở cửa</label>
                     <input
                         type="time"
                         name="openingTime"
@@ -377,7 +455,7 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
                     />
                 </div>
                 <div>
-                    <label className="block text-xs font-medium text-slate-300 mb-1">Closing Time</label>
+                    <label className="block text-xs font-medium text-slate-300 mb-1">Giờ đóng cửa</label>
                     <input
                         type="time"
                         name="closingTime"
@@ -389,12 +467,12 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
             </div>
 
             <div className="bg-slate-800/30 rounded-xl p-4 border border-slate-700/50">
-                <h4 className="text-white font-medium mb-2">Operating Hours Preview</h4>
+                <h4 className="text-white font-medium mb-2">Giờ hoạt động</h4>
                 <p className="text-slate-300 text-sm">
-                    Your facility will be open from <span className="text-mint-400 font-medium">{formData.openingTime}</span> to <span className="text-mint-400 font-medium">{formData.closingTime}</span> daily.
+                    Cơ sở của bạn sẽ mở từ <span className="text-mint-400 font-medium">{formData.openingTime}</span> đến <span className="text-mint-400 font-medium">{formData.closingTime}</span> hàng ngày.
                 </p>
                 <p className="text-slate-400 text-xs mt-2">
-                    ⓘ Time format: HH:mm:ss (includes seconds for API compatibility)
+                    ⓘ format thời gian: HH:mm:ss
                 </p>
             </div>
         </motion.div>
@@ -409,8 +487,8 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
         >
             <div className="text-center mb-6">
                 <User className="w-12 h-12 text-mint-400 mx-auto mb-3" />
-                <h3 className="text-xl font-bold text-white mb-2">Create Staff Account</h3>
-                <p className="text-slate-300 text-sm">Create an account for your facility manager</p>
+                <h3 className="text-xl font-bold text-white mb-2">Tạo tài khoản nhân viên</h3>
+                <p className="text-slate-300 text-sm">Tạo tài khoản cho nhân viên của cơ sở</p>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -419,8 +497,8 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleInputChange}
-                    placeholder="First name"
-                    label="First Name"
+                    placeholder="Nhập tên"
+                    label="Tên"
                     icon={User}
                 />
                 <Input
@@ -428,8 +506,8 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleInputChange}
-                    placeholder="Last name"
-                    label="Last Name"
+                    placeholder="Nhập họ"
+                    label="Họ"
                     icon={User}
                 />
             </div>
@@ -439,8 +517,8 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder="Staff email"
-                label="Email Address"
+                placeholder="Nhập email"
+                label="Email"
                 icon={Mail}
             />
 
@@ -449,20 +527,20 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
-                placeholder="Phone number"
-                label="Phone Number"
+                placeholder="Nhập số điện thoại"
+                label="Số điện thoại"
                 icon={Phone}
             />
 
             <div className="relative">
-                <label className="block text-xs font-medium text-slate-300 mb-1">Password</label>
+                <label className="block text-xs font-medium text-slate-300 mb-1">Mật khẩu</label>
                 <div className="relative">
                     <input
                         type={showPassword ? 'text' : 'password'}
                         name="password"
                         value={formData.password}
                         onChange={handleInputChange}
-                        placeholder="Create password"
+                        placeholder="Nhập mật khẩu"
                         className="w-full pl-9 pr-10 py-2.5 bg-slate-800/50 border-2 border-slate-700/50 rounded-xl focus:border-mint-500 focus:outline-none transition-all duration-300 text-white text-sm placeholder-slate-500"
                     />
                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
@@ -505,8 +583,8 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
                 {/* Header */}
                 <div className="flex justify-between items-center mb-6">
                     <div>
-                        <h2 className="text-lg font-semibold text-white">Create New Facility</h2>
-                        <p className="text-slate-400 text-sm">Step {currentStepIndex + 1} of {steps.length}</p>
+                        <h2 className="text-lg font-semibold text-white">Tạo cơ sở mới</h2>
+                        <p className="text-slate-400 text-sm">Bước {currentStepIndex + 1} / {steps.length}</p>
                     </div>
                     <button
                         onClick={onClose}
@@ -546,7 +624,7 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
                             icon={ArrowLeft}
                             className="flex-1"
                         >
-                            Previous
+                            Trước
                         </Button>
                     )}
 
@@ -557,7 +635,7 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
                             icon={ArrowRight}
                             className="flex-1"
                         >
-                            Create Facility
+                            Tạo cơ sở
                         </Button>
                     ) : (
                         <Button

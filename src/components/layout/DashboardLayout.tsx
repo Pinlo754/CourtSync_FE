@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Building2, FileBarChart, LogOut, Bell, Search } from 'lucide-react';
+import { Building2, FileBarChart, LogOut, Bell, Search, DollarSign, Calendar } from 'lucide-react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuthContext } from '../../features/auth/hooks/useAuthContext';
 
@@ -20,8 +20,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
     const location = useLocation();
     
     const sidebarItems: SidebarItem[] = [
-        { icon: Building2, label: 'Facilities', path: '/facility-management' },
-        { icon: FileBarChart, label: 'Reports', path: '/reports' },
+        { icon: Building2, label: 'Cơ sở', path: '/facility-management' },
+        { icon: Calendar, label: 'Đặt sân', path: '/bookings' },
+        { icon: FileBarChart, label: 'Báo cáo', path: '/reports' },
+        { icon: DollarSign, label: 'Giao dịch', path: '/transactions' },
     ];
     
     const handleLogout = () => {
@@ -48,7 +50,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                         </div>
                         <div>
                             <h2 className="text-lg font-bold text-white">CourtSync</h2>
-                            <p className="text-xs text-slate-400">Owner Dashboard</p>
+                            <p className="text-xs text-slate-400">Quản lý cơ sở</p>
                         </div>
                     </div>
                 </div>
@@ -92,7 +94,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                             <p className="text-white font-medium text-sm">
                                 {user ? `${user.firstName} ${user.lastName}` : 'Người dùng'}
                             </p>
-                            <p className="text-slate-400 text-xs">Facility Owner</p>
+                            <p className="text-slate-400 text-xs">Chủ cơ sở</p>
                         </div>
                     </div>
                     <button 
@@ -100,7 +102,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                         onClick={handleLogout}
                     >
                         <LogOut className="w-4 h-4" />
-                        <span className="text-sm">Sign Out</span>
+                        <span className="text-sm">Đăng xuất</span>
                     </button>
                 </div>
             </motion.div>
