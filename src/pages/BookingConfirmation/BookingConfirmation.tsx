@@ -742,20 +742,6 @@ export function BookingConfirmation() {
                 </Button>
               )}
             </div>
-
-            {/* Security Notice */}
-            <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-              <div className="flex items-start space-x-2">
-                <CheckCircle className="h-5 w-5 text-blue-600 mt-0.5" />
-                <div className="text-sm text-blue-800">
-                  <p className="font-medium">Bảo mật thanh toán</p>
-                  <p>
-                    Thông tin thanh toán của bạn được mã hóa và bảo mật tuyệt
-                    đối
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
