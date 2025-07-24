@@ -14,23 +14,19 @@ import { BookingElements } from "../type";
 import { CheckinDetailBox } from "./checkinDetailBox";
 import { ErrorMessage } from "../../../components/ui/ErrorMessage";
 
+
 const PAGE_SIZE = 5;
 
 const CheckinCustomer: React.FC = () => {
   const [selected, setSelected] = useState<number[]>([]);
   const [page, setPage] = useState(1);
   const [listBooking, setListBooking] = useState<BookingElements[]>([]);
-  const [error, setError] = useState("");
-  const [sortConfig, setSortConfig] = useState<{
-    key: string;
-    direction: "asc" | "desc";
-  } | null>(null);
-  const { getAllBookingInFacility, checkinBooking, getFacilityIdByStaffId } =
-    useStaffCheckin();
+  const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
+  const { getAllBookingInFacility, checkinBooking, getFacilityIdByStaffId } = useStaffCheckin();
 
-  const [selectedBooking, setSelectedBooking] =
-    useState<BookingElements | null>(null);
-  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<BookingElements | null>(null)
+  const [showDetailModal, setShowDetailModal] = useState(false)
+  const [error, setError] = useState("");
 
   const fetchData = async () => {
     const facilityId = await getFacilityIdByStaffId();
@@ -38,7 +34,7 @@ const CheckinCustomer: React.FC = () => {
     setListBooking(data.$values || []);
   };
 
-  useEffect(() => {
+  useEffect(() => {    
     fetchData();
   }, []);
 
@@ -66,21 +62,14 @@ const CheckinCustomer: React.FC = () => {
   };
 
   const handleCheckin = async () => {
-    if (
-      window.confirm(
-        `Bạn có chắc chắn muốn check-in cho các đặt sân: ${selected.join(
-          ", "
-        )}?`
-      )
-    ) {
-      const response = await checkinBooking(selected);
-      if (response) {
+    try {
+      if (window.confirm(`Bạn có chắc chắn muốn check-in cho các đặt sân: ${selected.join(", ")}?`)) {
+        await checkinBooking(selected);
         fetchData();
         setSelected([]);
       }
-      else{
-        setError("Check-in thất bại");
-      }
+    } catch (error) {
+      setError("Check-in thất bại");
     }
   };
 
@@ -92,34 +81,26 @@ const CheckinCustomer: React.FC = () => {
     setSortConfig((prev) => {
       if (prev && prev.key === key) {
         // Đảo chiều sort nếu bấm lại cùng 1 cột
-        return { key, direction: prev.direction === "asc" ? "desc" : "asc" };
+        return { key, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
       }
-      return { key, direction: "asc" };
+      return { key, direction: 'asc' };
     });
   };
 
   const handleOpenDetails = (booking: BookingElements) => {
-    setSelectedBooking(booking);
-    setShowDetailModal(true);
-  };
+    setSelectedBooking(booking)
+    setShowDetailModal(true)
+  }
   const handleCloseDetails = () => {
-    setShowDetailModal(false);
-    setSelectedBooking(null);
-  };
+    setShowDetailModal(false)
+    setSelectedBooking(null)
+  }
 
   const sortedBookings = React.useMemo(() => {
     if (!sortConfig) return listBooking;
     const sorted = [...listBooking].sort((a, b) => {
-      if (
-        a[sortConfig.key as keyof BookingElements] <
-        b[sortConfig.key as keyof BookingElements]
-      )
-        return sortConfig.direction === "asc" ? -1 : 1;
-      if (
-        a[sortConfig.key as keyof BookingElements] >
-        b[sortConfig.key as keyof BookingElements]
-      )
-        return sortConfig.direction === "asc" ? 1 : -1;
+      if (a[sortConfig.key as keyof BookingElements] < b[sortConfig.key as keyof BookingElements]) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (a[sortConfig.key as keyof BookingElements] > b[sortConfig.key as keyof BookingElements]) return sortConfig.direction === 'asc' ? 1 : -1;
       return 0;
     });
     return sorted;
@@ -136,7 +117,9 @@ const CheckinCustomer: React.FC = () => {
       <Card className="bg-blue-300/20 shadow-lg">
         <CardContent className="p-8">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-primary">Check-in Sân</h1>
+            <h1 className="text-2xl font-bold text-primary">
+              Check-in Sân
+            </h1>
             <Button
               type="button"
               variant="custom"
@@ -162,30 +145,18 @@ const CheckinCustomer: React.FC = () => {
                       onChange={handleSelectAll}
                     />
                   </TableHead>
-                  <TableHead>Tên người đặt</TableHead>
-                  <TableHead>Sân</TableHead>
-                  <TableHead>Tổng tiền</TableHead>
-                  <TableHead
-                    onClick={() => handleSort("bookingDate")}
-                    className="cursor-pointer"
-                  >
-                    Ngày đặt sân{" "}
-                    {sortConfig?.key === "bookingDate"
-                      ? sortConfig.direction === "asc"
-                        ? "▲"
-                        : "▼"
-                      : ""}
+                  <TableHead >
+                    Tên người đặt
                   </TableHead>
-                  <TableHead
-                    onClick={() => handleSort("checkinStatus")}
-                    className="cursor-pointer"
-                  >
-                    Trạng thái check-in{" "}
-                    {sortConfig?.key === "checkinStatus"
-                      ? sortConfig.direction === "asc"
-                        ? "▲"
-                        : "▼"
-                      : ""}
+                  <TableHead >
+                    Sân
+                  </TableHead>
+                  <TableHead>Tổng tiền</TableHead>
+                  <TableHead onClick={() => handleSort('bookingDate')} className="cursor-pointer">
+                    Ngày đặt sân {sortConfig?.key === 'bookingDate' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
+                  </TableHead>
+                  <TableHead onClick={() => handleSort('checkinStatus')} className="cursor-pointer">
+                    Trạng thái check-in {sortConfig?.key === 'checkinStatus' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
                   </TableHead>
                   <TableHead>Hành động</TableHead>
                 </TableRow>
@@ -213,9 +184,7 @@ const CheckinCustomer: React.FC = () => {
                     <TableCell>
                       {booking.totalPrice.toLocaleString()} đ
                     </TableCell>
-                    <TableCell>
-                      {new Date(booking.bookingDate).toLocaleString()}
-                    </TableCell>
+                    <TableCell>{new Date(booking.bookingDate).toLocaleString()}</TableCell>
                     <TableCell>
                       {booking.checkinStatus === "1" ? (
                         <span className="text-green-600 font-semibold">
@@ -234,11 +203,7 @@ const CheckinCustomer: React.FC = () => {
                         Chi tiết
                       </Button>
                       {selectedBooking && (
-                        <CheckinDetailBox
-                          booking={selectedBooking}
-                          onClose={handleCloseDetails}
-                          open={showDetailModal}
-                        />
+                        <CheckinDetailBox booking={selectedBooking} onClose={handleCloseDetails} open={showDetailModal} />
                       )}
                     </TableCell>
                   </TableRow>
