@@ -140,7 +140,7 @@ export function BookingStaffForm() {
                     <div className="grid grid-cols-[100px_repeat(38,1fr)] gap-1 mb-2">
                       <div></div>
                       {timeSlots.map((time) => (
-                        <div key={time} className="text-xs text-center p-1 font-medium">
+                        <div key={time} className=" w-[35px] mx-1 text-xs text-center p-1 font-medium">
                           {time}
                         </div>
                       ))}
@@ -169,7 +169,7 @@ export function BookingStaffForm() {
                                 handleTimeSlotClick(timeSlot)
                               }}
                               disabled={status === "booked" || loading}
-                              className={`h-8 rounded text-xs transition-colors ${getSlotColor(status)} ${
+                              className={`w-[35px] mx-1 h-8 rounded text-xs transition-colors ${getSlotColor(status)} ${
                                 status === "booked"
                                   ? "cursor-not-allowed opacity-50"
                                   : "hover:opacity-80 cursor-pointer"
