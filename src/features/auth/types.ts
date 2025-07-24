@@ -65,23 +65,6 @@ export interface ResetPasswordByOTPRequest {
   confirmPassword: string;
 }
 
-// Phone Reset Password Types
-export interface ForgotPasswordByPhoneRequest {
-  phoneNumber: string;
-}
-
-export interface VerifyOTPByPhoneRequest {
-  phoneNumber: string;
-  otp: string;
-}
-
-export interface ResetPasswordByPhoneRequest {
-  phoneNumber: string;
-  otp: string;
-  newPassword: string;
-  confirmPassword: string;
-}
-
 // Auth API Response Types
 export interface LoginResponse {
   token: string;
@@ -109,22 +92,6 @@ export interface VerifyOTPResponse {
 }
 
 export interface ResetPasswordResponse {
-  message: string;
-  success: boolean;
-}
-
-// Phone Reset Password Response Types
-export interface ForgotPasswordByPhoneResponse {
-  message: string;
-  success: boolean;
-}
-
-export interface VerifyOTPByPhoneResponse {
-  message: string;
-  success: boolean;
-}
-
-export interface ResetPasswordByPhoneResponse {
   message: string;
   success: boolean;
 }
