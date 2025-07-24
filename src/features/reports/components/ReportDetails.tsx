@@ -424,19 +424,19 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
           {/* Court Info Card */}
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 overflow-hidden">
             <div className="p-4 border-b border-slate-700/50">
-              <h3 className="text-lg font-semibold text-white">Court Information</h3>
+              <h3 className="text-lg font-semibold text-white">Thông tin sân</h3>
             </div>
             <div className="p-4 space-y-4">
               <div>
-                <p className="text-sm font-medium text-slate-400">Court Name</p>
+                <p className="text-sm font-medium text-slate-400">Tên sân</p>
                 <p className="text-white mt-1">{report.courtName || `Court ${report.courtId}`}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-400">Facility</p>
+                <p className="text-sm font-medium text-slate-400">Cơ sở</p>
                 <p className="text-white mt-1">{report.facilityName || 'Not specified'}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-400">Court ID</p>
+                <p className="text-sm font-medium text-slate-400">Mã sân</p>
                 <p className="text-white mt-1">{report.courtId}</p>
               </div>
             </div>
@@ -445,7 +445,7 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
           {/* Reporter Info Card */}
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 overflow-hidden">
             <div className="p-4 border-b border-slate-700/50">
-              <h3 className="text-lg font-semibold text-white">Reporter Information</h3>
+              <h3 className="text-lg font-semibold text-white">Thông tin người báo cáo</h3>
             </div>
             <div className="p-4">
               <div className="flex items-center">
@@ -458,7 +458,7 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
                 </div>
                 <div className="ml-4">
                   <p className="text-white font-medium">{report.creatorName || `User ${report.createdBy}`}</p>
-                  <p className="text-slate-400 text-sm">Staff Member</p>
+                  <p className="text-slate-400 text-sm">Nhân viên</p>
                 </div>
               </div>
             </div>
@@ -475,7 +475,7 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
           {/* Description Card */}
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 overflow-hidden">
             <div className="p-4 border-b border-slate-700/50">
-              <h3 className="text-lg font-semibold text-white">Issue Description</h3>
+              <h3 className="text-lg font-semibold text-white">Mô tả vấn đề</h3>
             </div>
             <div className="p-6">
               <div className="bg-slate-700/30 rounded-lg p-4 text-white">
@@ -488,7 +488,7 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
           {imageUrls.length > 0 && (
             <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 overflow-hidden">
               <div className="p-4 border-b border-slate-700/50">
-                <h3 className="text-lg font-semibold text-white">Report Images ({imageUrls.length})</h3>
+                <h3 className="text-lg font-semibold text-white">Ảnh báo cáo ({imageUrls.length})</h3>
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -508,7 +508,7 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 hover:opacity-100 transition-opacity flex items-end">
                         <div className="p-3 w-full">
-                          <p className="text-white text-sm font-medium">Click to enlarge</p>
+                          <p className="text-white text-sm font-medium">Nhấn để phóng to</p>
                         </div>
                       </div>
                     </motion.div>
@@ -521,16 +521,16 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
           {/* Maintenance Schedule Card */}
           <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 overflow-hidden">
             <div className="p-4 border-b border-slate-700/50">
-              <h3 className="text-lg font-semibold text-white">Maintenance Schedule</h3>
+              <h3 className="text-lg font-semibold text-white">Lịch bảo trì</h3>
             </div>
             <div className="p-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-slate-400">Estimated Time</p>
+                    <p className="text-sm font-medium text-slate-400">Thời gian ước tính</p>
                   <p className="text-white mt-1">{report.estimateTime || 'Not specified'}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-400">Maintain Date</p>
+                  <p className="text-sm font-medium text-slate-400">Ngày bảo trì</p>
                   <p className="text-white mt-1">{formatDate(report.maintainDate)}</p>
                 </div>
               </div>
@@ -547,14 +547,14 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
               transition={{ delay: 0.4, duration: 0.5 }}
             >
               <div className="p-4 border-b border-slate-700/50">
-                <h3 className="text-lg font-semibold text-white">Schedule Maintenance</h3>
+                <h3 className="text-lg font-semibold text-white">Lịch bảo trì</h3>
               </div>
               <div className="p-6">
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                   <div>
                     <label className="block text-sm font-medium text-slate-400 mb-2">
-                      Maintenance Date and Time
+                      Ngày và giờ bảo trì
                     </label>
                     <input
                       type="datetime-local"
@@ -566,7 +566,7 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-400 mb-2">
-                      Estimated Time (hours)
+                      Thời gian ước tính (giờ)
                     </label>
                     <input
                       type="number"
@@ -584,7 +584,7 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <p className="text-blue-400 font-medium">Existing Bookings on {format(new Date(maintainDateTime.split('T')[0]), 'dd/MM/yyyy')}</p>
+                    <p className="text-blue-400 font-medium">Đơn đặt sân hiện tại trên {format(new Date(maintainDateTime.split('T')[0]), 'dd/MM/yyyy')}</p>
                   </div>
                   
                   {isLoadingBookings ? (
@@ -594,13 +594,13 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
                   ) : (
                     <div>
                       {bookingTimes.length === 0 ? (
-                        <p className="text-slate-400 text-center py-2">No booking data available</p>
+                        <p className="text-slate-400 text-center py-2">Không có dữ liệu đơn đặt sân</p>
                       ) : (
                         <div className="space-y-3">
                           <div className="grid grid-cols-3 gap-2 text-sm font-medium text-slate-300 border-b border-slate-600/50 pb-2">
-                            <div>Court</div>
-                            <div>Start Time</div>
-                            <div>End Time</div>
+                            <div>Sân</div>
+                            <div>Thời gian bắt đầu</div>
+                            <div>Thời gian kết thúc</div>
                           </div>
                           
                           {bookingTimes.map((courtBooking) => {
@@ -630,7 +630,7 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
                           }).filter(Boolean)}
                           
                           {bookingTimes.every(court => court.startTimes.$values.length === 0) && (
-                            <p className="text-green-400 text-center py-2">No bookings for this date</p>
+                            <p className="text-green-400 text-center py-2">Không có đơn đặt sân cho ngày này</p>
                           )}
                         </div>
                       )}
@@ -638,8 +638,8 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
                       {currentCourtBookings && currentCourtBookings.startTimes.$values.length > 0 && (
                         <div className="mt-3 p-2 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
                           <p className="text-yellow-400 text-sm">
-                            <span className="font-medium">Note:</span> There are existing bookings for this court. 
-                            Consider scheduling maintenance during non-booked hours.
+                            <span className="font-medium">Lưu ý:</span> Có đơn đặt sân cho sân này. 
+                            Xem xét lịch bảo trì trong giờ không được đặt sân.
                           </p>
                         </div>
                       )}
@@ -652,19 +652,19 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-mint-400 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <p className="text-mint-400 font-medium">Maintenance Summary</p>
+                    <p className="text-mint-400 font-medium">Tổng quan bảo trì</p>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     <div>
-                      <p className="text-slate-400">Start Date:</p>
+                        <p className="text-slate-400">Ngày bắt đầu:</p>
                       <p className="text-white">{format(new Date(maintainDateTime), 'dd/MM/yyyy HH:mm')}</p>
                     </div>
                     <div>
-                      <p className="text-slate-400">Duration:</p>
+                      <p className="text-slate-400">Thời gian:</p>
                       <p className="text-white">{estimatedTime} {estimatedTime === 1 ? 'hour' : 'hours'}</p>
                     </div>
                     <div>
-                      <p className="text-slate-400">Estimated Completion:</p>
+                      <p className="text-slate-400">Thời gian hoàn thành:</p>
                       <p className="text-white">{getEstimatedCompletionDate()}</p>
                     </div>
                   </div>
@@ -682,14 +682,14 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
                       {isUpdating ? (
                         <>
                           <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
-                          <span>Processing...</span>
+                          <span>Đang xử lý...</span>
                         </>
                       ) : (
                         <>
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                           </svg>
-                          <span>Reject Report</span>
+                          <span>Từ chối báo cáo</span>
                         </>
                       )}
                     </motion.button>
@@ -704,14 +704,14 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
                     {isUpdating ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
-                        <span>Processing...</span>
+                        <span>Đang xử lý...</span>
                       </>
                     ) : (
                       <>
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
-                        <span>Approve Maintenance</span>
+                        <span>Phê duyệt bảo trì</span>
                       </>
                     )}
                   </motion.button>
@@ -726,17 +726,17 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
       {showApproveConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
           <div className="bg-slate-800/90 rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-xl font-bold text-white mb-4">Confirm Approval</h3>
+            <h3 className="text-xl font-bold text-white mb-4">Xác nhận phê duyệt</h3>
             <p className="text-slate-300 mb-6">
-              Are you sure you want to approve this report? This action cannot be undone.
-              The maintenance will be scheduled for {format(new Date(maintainDateTime), 'dd/MM/yyyy HH:mm')}.
+              Bạn có chắc chắn muốn phê duyệt báo cáo này không? Hành động này không thể được hoàn tác.
+              Bảo trì sẽ được lập lịch cho {format(new Date(maintainDateTime), 'dd/MM/yyyy HH:mm')}.
             </p>
             <div className="flex justify-end gap-4">
               <button
                 className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
                 onClick={() => setShowApproveConfirm(false)}
               >
-                Cancel
+                Hủy bỏ
               </button>
               <button
                 className="px-6 py-3 bg-mint-500 hover:bg-mint-600 text-white rounded-lg transition-colors"
@@ -746,14 +746,14 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
                 {isUpdating ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
-                    <span>Processing...</span>
+                    <span>Đang xử lý...</span>
                   </>
                 ) : (
                   <>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span>Approve</span>
+                    <span>Phê duyệt</span>
                   </>
                 )}
               </button>
@@ -766,17 +766,17 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
       {showRejectConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
           <div className="bg-slate-800/90 rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-xl font-bold text-white mb-4">Confirm Rejection</h3>
+              <h3 className="text-xl font-bold text-white mb-4">Xác nhận từ chối</h3>
             <p className="text-slate-300 mb-6">
-              Are you sure you want to reject this report? This action cannot be undone.
-              The report will be marked as cancelled.
+              Bạn có chắc chắn muốn từ chối báo cáo này không? Hành động này không thể được hoàn tác.
+              Báo cáo sẽ được đánh dấu là đã hủy.
             </p>
             <div className="flex justify-end gap-4">
               <button
                 className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
                 onClick={() => setShowRejectConfirm(false)}
               >
-                Cancel
+                Hủy bỏ
               </button>
               <button
                 className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
@@ -786,14 +786,14 @@ export const ReportDetails: React.FC<ReportDetailsProps> = ({ report: initialRep
                 {isUpdating ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></div>
-                    <span>Processing...</span>
+                    <span>Đang xử lý...</span>
                   </>
                 ) : (
                   <>
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                    <span>Reject</span>
+                      <span>Từ chối</span>
                   </>
                 )}
               </button>

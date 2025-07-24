@@ -133,8 +133,8 @@ export const ReportsList: React.FC<ReportsListProps> = ({ onSelectReport }) => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-white mb-2">Court Reports</h1>
-        <p className="text-slate-300">Manage and track maintenance reports for your courts</p>
+        <h1 className="text-3xl font-bold text-white mb-2">Báo cáo sân</h1>
+        <p className="text-slate-300">Quản lý và theo dõi báo cáo bảo trì cho các sân</p>
       </div>
       
       {/* Filters */}
@@ -146,7 +146,7 @@ export const ReportsList: React.FC<ReportsListProps> = ({ onSelectReport }) => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mint-400 h-5 w-5" />
                 <input
                   type="text"
-                  placeholder="Search reports..."
+                  placeholder="Tìm kiếm báo cáo..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-slate-700/70 border border-slate-600/50 rounded-lg pl-10 pr-4 py-3 text-white focus:border-mint-500 focus:ring-1 focus:ring-mint-500 focus:outline-none transition-all shadow-inner"
@@ -161,11 +161,11 @@ export const ReportsList: React.FC<ReportsListProps> = ({ onSelectReport }) => {
                 className="bg-slate-700/70 border border-slate-600/50 rounded-lg px-4 py-3 text-white focus:border-mint-500 focus:ring-1 focus:ring-mint-500 focus:outline-none transition-all shadow-inner appearance-none pr-10 relative"
                 style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2380CBC4%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1.5em 1.5em' }}
               >
-                <option value="all">All Statuses</option>
-                <option value={CourtReportStatus.PENDING}>Pending</option>
-                <option value={CourtReportStatus.IN_PROGRESS}>In Progress</option>
-                <option value={CourtReportStatus.COMPLETED}>Completed</option>
-                <option value={CourtReportStatus.CANCELLED}>Cancelled</option>
+                <option value="all">Tất cả trạng thái</option>
+                <option value={CourtReportStatus.PENDING}>Chờ phê duyệt</option>
+                <option value={CourtReportStatus.IN_PROGRESS}>Đang xử lý</option>
+                <option value={CourtReportStatus.COMPLETED}>Đã hoàn thành</option>
+                <option value={CourtReportStatus.CANCELLED}>Đã hủy</option>
               </select>
             </div>
 
@@ -176,7 +176,7 @@ export const ReportsList: React.FC<ReportsListProps> = ({ onSelectReport }) => {
                 className="bg-slate-700/70 border border-slate-600/50 rounded-lg px-4 py-3 text-white focus:border-mint-500 focus:ring-1 focus:ring-mint-500 focus:outline-none transition-all shadow-inner appearance-none pr-10 relative"
                 style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2380CBC4%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1.5em 1.5em' }}
               >
-                <option value="all">All Facilities</option>
+                <option value="all">Tất cả cơ sở</option>
                 {facilities.map((facility) => (
                   <option key={facility.id} value={facility.id}>{facility.name}</option>
                 ))}
@@ -189,28 +189,28 @@ export const ReportsList: React.FC<ReportsListProps> = ({ onSelectReport }) => {
                 className="px-4 py-3 bg-red-500/20 hover:bg-red-500/30 text-red-300 font-medium rounded-lg transition-all flex items-center gap-2 border border-red-500/20 hover:border-red-500/30"
               >
                 <Filter className="h-4 w-4" />
-                Clear Filters
+                Xóa bộ lọc
               </button>
             )}
           </div>
           
           {(!!searchQuery || statusFilter !== 'all' || facilityFilter !== 'all') && (
             <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-              <span className="text-slate-400">Active filters:</span>
+              <span className="text-slate-400">Bộ lọc đang hoạt động:</span>
               {!!searchQuery && (
                 <span className="bg-mint-500/20 text-mint-300 py-1 px-3 rounded-full flex items-center gap-1">
                   <Search className="h-3 w-3" />
-                  Search: {searchQuery}
+                  Tìm kiếm: {searchQuery}
                 </span>
               )}
               {statusFilter !== 'all' && (
                 <span className="bg-mint-500/20 text-mint-300 py-1 px-3 rounded-full flex items-center gap-1">
-                  Status: {statusFilter}
+                  Trạng thái: {statusFilter}
                 </span>
               )}
               {facilityFilter !== 'all' && (
                 <span className="bg-mint-500/20 text-mint-300 py-1 px-3 rounded-full flex items-center gap-1">
-                  Facility: {facilities.find(f => f.id === facilityFilter)?.name || facilityFilter}
+                  Cơ sở: {facilities.find(f => f.id === facilityFilter)?.name || facilityFilter}
                 </span>
               )}
             </div>
@@ -224,11 +224,11 @@ export const ReportsList: React.FC<ReportsListProps> = ({ onSelectReport }) => {
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-slate-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <h3 className="text-xl font-medium text-white mb-2">No Reports Found</h3>
+              <h3 className="text-xl font-medium text-white mb-2">Không tìm thấy báo cáo</h3>
             <p className="text-slate-400 text-lg">
               {(!!searchQuery || statusFilter !== 'all' || facilityFilter !== 'all') 
-                ? 'No reports match your current filters.' 
-                : 'There are no maintenance reports for your courts yet.'}
+                ? 'Không có báo cáo nào phù hợp với các bộ lọc hiện tại.' 
+                : 'Không có báo cáo bảo trì cho các sân của bạn.'}
             </p>
           </div>
         ) : (
@@ -237,12 +237,12 @@ export const ReportsList: React.FC<ReportsListProps> = ({ onSelectReport }) => {
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
                   <TableHead className="text-sm font-medium text-slate-300 w-[80px]">ID</TableHead>
-                  <TableHead className="text-sm font-medium text-slate-300">Court</TableHead>
-                  <TableHead className="text-sm font-medium text-slate-300">Description</TableHead>
-                  <TableHead className="text-sm font-medium text-slate-300">Created</TableHead>
-                  <TableHead className="text-sm font-medium text-slate-300">Maintenance Date</TableHead>
-                  <TableHead className="text-sm font-medium text-slate-300">Status</TableHead>
-                  <TableHead className="text-sm font-medium text-slate-300 text-right">Actions</TableHead>
+                  <TableHead className="text-sm font-medium text-slate-300">Sân</TableHead>
+                  <TableHead className="text-sm font-medium text-slate-300">Mô tả</TableHead>
+                  <TableHead className="text-sm font-medium text-slate-300">Ngày tạo</TableHead>
+                  <TableHead className="text-sm font-medium text-slate-300">Ngày bảo trì</TableHead>
+                  <TableHead className="text-sm font-medium text-slate-300">Trạng thái</TableHead>
+                  <TableHead className="text-sm font-medium text-slate-300 text-right">Hành động</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -281,7 +281,7 @@ export const ReportsList: React.FC<ReportsListProps> = ({ onSelectReport }) => {
                         }}
                         className="text-mint-400 hover:text-mint-500 font-medium text-base"
                       >
-                        View Details
+                        Xem chi tiết
                       </button>
                     </TableCell>
                   </TableRow>

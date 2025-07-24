@@ -122,7 +122,7 @@ export const FacilityCard: React.FC<FacilityCardProps> = ({ facility, index }) =
           >
             <div className="flex items-center justify-center space-x-2">
               <Eye className="w-4 h-4 group-hover/btn:scale-110 transition-transform duration-200" />
-              <span>Manage Courts</span>
+              <span>Quản lý sân</span>
             </div>
           </button>
         </div>
