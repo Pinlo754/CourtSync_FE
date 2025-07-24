@@ -89,31 +89,7 @@ export function BookingStaffForm() {
         </div>
       </div>
 
-      {/* Facility Info */}
-      <div className="bg-white border-b p-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">{facility.facilityName}</h2>
-              <p className="text-gray-600 text-sm mt-1">{facility.description}</p>
-            </div>
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <MapPin className="h-4 w-4" />
-              <span>{facility.address}</span>
-            </div>
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <Phone className="h-4 w-4" />
-              <span>{facility.contactPhone}</span>
-            </div>
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
-              <Clock className="h-4 w-4" />
-              <span>
-                {facility.openingTime} - {facility.closingTime}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
+    
 
       {/* Legend */}
       <div className="bg-white border-b p-4">
