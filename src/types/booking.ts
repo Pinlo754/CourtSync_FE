@@ -1,6 +1,7 @@
 import { CheckCircle, Clock, XCircle, AlertCircle } from "lucide-react"
 export interface BookingTime {
   courtId: number
+  courtName: string
   startTimes: {
     $values: string[]
   }

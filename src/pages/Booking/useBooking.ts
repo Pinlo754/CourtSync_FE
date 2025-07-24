@@ -67,11 +67,8 @@ export function useBooking() {
         `/Facilities/GetFacilityDetail?facilityId=${facilityId}`,
         {}
       );
-      if (!response.ok) {
-        throw new Error("Không tìm thấy thông tin sân");
-      }
 
-      const data = await response.json();
+      const data = await response;
       console.log(data);
       if (!data) {
         throw new Error("Không nhận được dữ liệu từ API.");
@@ -121,15 +118,14 @@ export function useBooking() {
         `https://localhost:7255/api/Facilities/GetBookingTime`,
         {
           facilityId: facilityId,
-        bookingDate: selectedDate,
+          bookingDate: selectedDate,
         }
       );
       if (!response.ok) throw new Error("Failed to load booking data");
-      const data: BookingResponse = await response.json();
+      const data: BookingResponse = await response;
+      console.log("response booking data", data)
       setBookingData(data);
-
       const ids = data.$values.map((court) => court.courtId);
-      const name = data.$values.map((court) => court.courtId);
       setCourtIds(ids);
 
       if (ids.length > 0 && !selectedCourt) {
@@ -156,7 +152,7 @@ export function useBooking() {
       const response = await postData(
         "https://localhost:7255/api/CourtPrice/GetTotalPriceBooking",
         {
-          courtId: selectedCourt,
+      courtId: selectedCourt,
       startTimes: startTimes,
       endTimes: endTimes,
         }

@@ -171,7 +171,7 @@ export function BookingDetailModal({ booking, onClose, open }: BookingDetailModa
                   </div>
                   <div>
                     <label className="text-sm font-medium text-gray-600">Loại giao dịch</label>
-                    <Badge variant="outline">{booking.transactionType === "1" ? "Thanh toán" : "Khác"}</Badge>
+                    <Badge variant="outline">{booking.transactionType === "1" ? "Thanh toán" : "Hoàn tiền"}</Badge>
                   </div>
                 </div>
 
