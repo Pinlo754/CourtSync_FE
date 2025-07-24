@@ -17,11 +17,15 @@ export interface BackendFacility {
     ward: string;
     district: string;
     city: string;
-    latitude: number;
-    longtitude: number;
+    latitude: number | null;
+    longtitude: number | null;
     facilityStatus: string;
     ownerId: number;
     staffId: number;
+    facilityImageUrl?: {
+        $id: string;
+        $values: string[];
+    };
 }
 
 export interface GetMyFacilitiesResponse {
@@ -44,6 +48,7 @@ export interface Facility {
     closingTime: string;
     ward: string;
     district: string;
+    imageUrls: string[];
 }
 
 // Create Facility Request Interface
@@ -99,6 +104,9 @@ export const getMyFacilities = async (): Promise<Facility[]> => {
             const district = backendFacility.district?.trim();
             const city = backendFacility.city?.trim();
 
+            // Handle facilityImageUrl
+            const imageUrls = backendFacility.facilityImageUrl?.$values || [];
+
             return {
                 id: backendFacility.facilityId.toString(),
                 facilityName: facilityName || `Facility ${index + 1}`,
@@ -113,6 +121,7 @@ export const getMyFacilities = async (): Promise<Facility[]> => {
                 closingTime: backendFacility.closingTime || '22:00:00',
                 ward: ward || '',
                 district: district || '',
+                imageUrls: imageUrls.length > 0 ? imageUrls : ['/src/assets/facility.jpg'], // Fallback image
             };
         });
     } catch (error) {

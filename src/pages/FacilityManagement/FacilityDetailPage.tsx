@@ -47,8 +47,8 @@ interface FacilityDetail {
     ward: string;
     district: string;
     city: string;
-    latitude: number;
-    longtitude: number;
+    latitude: number | null;
+    longtitude: number | null;
     facilityStatus: string;
     ownerId: number;
     staffId: number;
@@ -56,6 +56,10 @@ interface FacilityDetail {
     totalCourts?: number;
     minPrice?: number;
     maxPrice?: number;
+    facilityImageUrl?: {
+        $id: string;
+        $values: string[];
+    };
 }
 
 export const FacilityDetailPage: React.FC = () => {
@@ -74,8 +78,8 @@ export const FacilityDetailPage: React.FC = () => {
         ward: "",
         district: "",
         city: "",
-        latitude: 0,
-        longtitude: 0,
+        latitude: null,
+        longtitude: null,
         facilityStatus: "",
         ownerId: 0,
         staffId: 0
@@ -286,6 +290,21 @@ export const FacilityDetailPage: React.FC = () => {
                     {/* Background Pattern */}
                     <div className="absolute inset-0 bg-gradient-to-r from-mint-500/5 via-transparent to-blue-500/5"></div>
                     <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-radial from-mint-400/10 to-transparent rounded-full blur-3xl"></div>
+                    
+                    {/* Facility Image as Background */}
+                    {facility.facilityImageUrl && facility.facilityImageUrl.$values && facility.facilityImageUrl.$values.length > 0 && (
+                        <div className="absolute inset-0 opacity-20">
+                            <img 
+                                src={facility.facilityImageUrl.$values[0]} 
+                                alt={facility.facilityName}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                    (e.target as HTMLImageElement).style.display = 'none';
+                                }}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-slate-900/60"></div>
+                        </div>
+                    )}
 
                     <div className="relative p-6">
                         {facilityLoading ? (
@@ -307,8 +326,20 @@ export const FacilityDetailPage: React.FC = () => {
                                     <div className="flex items-center space-x-8">
                                         {/* Facility Name and Status - Redesigned */}
                                         <div className="flex items-center space-x-4">
-                                            <div className="w-14 h-14 bg-gradient-to-br from-mint-500/30 to-blue-500/20 rounded-2xl flex items-center justify-center">
-                                                <Building2 className="w-7 h-7 text-mint-400" />
+                                            <div className="w-14 h-14 bg-gradient-to-br from-mint-500/30 to-blue-500/20 rounded-2xl flex items-center justify-center overflow-hidden">
+                                                {facility.facilityImageUrl && facility.facilityImageUrl.$values && facility.facilityImageUrl.$values.length > 0 ? (
+                                                    <img 
+                                                        src={facility.facilityImageUrl.$values[0]} 
+                                                        alt={facility.facilityName}
+                                                        className="w-full h-full object-cover"
+                                                        onError={(e) => {
+                                                            (e.target as HTMLImageElement).style.display = 'none';
+                                                            (e.target as HTMLImageElement).parentElement!.innerHTML = '<div class="w-7 h-7 text-mint-400"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg></div>';
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <Building2 className="w-7 h-7 text-mint-400" />
+                                                )}
                                             </div>
                                             <div className="space-y-1">
                                                 <div className="flex items-center space-x-3">

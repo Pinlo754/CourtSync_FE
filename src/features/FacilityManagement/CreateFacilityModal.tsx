@@ -250,54 +250,54 @@ export const CreateFacilityModal: React.FC<CreateFacilityModalProps> = ({ isOpen
                     <label htmlFor="facilityName" className="block text-sm font-medium text-slate-400 mb-1">
                         Facility Name
                     </label>
-                    <Input
+            <Input
                         id="facilityName"
-                        name="facilityName"
-                        value={formData.facilityName}
-                        onChange={handleInputChange}
-                        placeholder="Enter facility name"
+                name="facilityName"
+                value={formData.facilityName}
+                onChange={handleInputChange}
+                placeholder="Enter facility name"
                         required
-                    />
+            />
                 </div>
 
-                <div>
+            <div>
                     <label htmlFor="description" className="block text-sm font-medium text-slate-400 mb-1">
                         Description
                     </label>
-                    <textarea
+                <textarea
                         id="description"
-                        name="description"
-                        value={formData.description}
-                        onChange={handleInputChange}
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
                         placeholder="Enter facility description"
                         className="w-full bg-slate-700/50 border border-slate-600/50 rounded-lg p-3 text-white focus:border-mint-500 focus:outline-none transition-colors min-h-[100px]"
                         required
-                    />
-                </div>
+                />
+            </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label htmlFor="contactPhone" className="block text-sm font-medium text-slate-400 mb-1">
                             Contact Phone
                         </label>
-                        <Input
+                <Input
                             id="contactPhone"
-                            name="contactPhone"
-                            value={formData.contactPhone}
-                            onChange={handleInputChange}
+                    name="contactPhone"
+                    value={formData.contactPhone}
+                    onChange={handleInputChange}
                             placeholder="Enter contact phone"
                             required
-                        />
+                />
                     </div>
                     <div>
                         <label htmlFor="contactEmail" className="block text-sm font-medium text-slate-400 mb-1">
                             Contact Email
                         </label>
-                        <Input
+                <Input
                             id="contactEmail"
-                            name="contactEmail"
-                            value={formData.contactEmail}
-                            onChange={handleInputChange}
+                    name="contactEmail"
+                    value={formData.contactEmail}
+                    onChange={handleInputChange}
                             placeholder="Enter contact email"
                             type="email"
                             required
