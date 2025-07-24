@@ -11,6 +11,7 @@ import {
 } from "../../../components/ui/Table";
 import { useStaffCheckin } from "../hooks/useStaffCheckin";
 import { BookingElements } from "../type";
+import { CheckinDetailBox } from "./checkinDetailBox";
 
 
 
@@ -21,12 +22,19 @@ const CheckinCustomer: React.FC = () => {
   const [page, setPage] = useState(1);
   const [listBooking, setListBooking] = useState<BookingElements[]>([]);
   const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
-  const { getAllBookingInFacility, checkinBooking } = useStaffCheckin();
+  const { getAllBookingInFacility, checkinBooking, getFacilityIdByStaffId } = useStaffCheckin();
 
-  useEffect(() => {
-    getAllBookingInFacility().then((data) => {
-      setListBooking(data.$values || []);
-    });
+  const [selectedBooking, setSelectedBooking] = useState<BookingElements | null>(null)
+  const [showDetailModal, setShowDetailModal] = useState(false)
+
+  const fetchData = async () => {
+    const facilityId = await getFacilityIdByStaffId();
+    const data = await getAllBookingInFacility(facilityId);
+    setListBooking(data.$values || []);
+  };
+
+  useEffect(() => {    
+    fetchData();
   }, []);
 
   const totalPages = Math.ceil(listBooking.length / PAGE_SIZE || 0);
@@ -53,16 +61,11 @@ const CheckinCustomer: React.FC = () => {
   };
 
   const handleCheckin = async () => {
-    if (window.confirm(`Are you sure you want to check in for bookings: ${selected.join(", ")}?`)) {
+    if (window.confirm(`Bạn có chắc chắn muốn check-in cho các đặt sân: ${selected.join(", ")}?`)) {
       await checkinBooking(selected);
-      const data = await getAllBookingInFacility();
-      setListBooking(data.$values || []);
+      fetchData();
       setSelected([]);
     }
-  };
-
-  const handleViewDetail = (bookingId: number) => {
-    alert(`View detail for booking ${bookingId}`);
   };
 
   const handlePageChange = (newPage: number) => {
@@ -78,6 +81,15 @@ const CheckinCustomer: React.FC = () => {
       return { key, direction: 'asc' };
     });
   };
+
+  const handleOpenDetails = (booking: BookingElements) => {
+    setSelectedBooking(booking)
+    setShowDetailModal(true)
+  }
+  const handleCloseDetails = () => {
+    setShowDetailModal(false)
+    setSelectedBooking(null)
+  }
 
   const sortedBookings = React.useMemo(() => {
     if (!sortConfig) return listBooking;
@@ -100,7 +112,7 @@ const CheckinCustomer: React.FC = () => {
         <CardContent className="p-8">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-primary">
-              Check-in Customer
+              Check-in Sân
             </h1>
             <Button
               type="button"
@@ -109,7 +121,7 @@ const CheckinCustomer: React.FC = () => {
               disabled={selected.length === 0}
               className="bg-gradient-to-r from-blue-300 to-mint-400 text-slate-800 px-6 py-2 rounded-lg shadow-lg text-base font-bold hover:from-mint-400 hover:to-blue-700 hover:text-white transition-all duration-300 w-56 h-auto min-h-0"
             >
-              Check-in Selected
+              Check-in đã chọn
             </Button>
           </div>
           <div className="overflow-x-auto">
@@ -127,20 +139,20 @@ const CheckinCustomer: React.FC = () => {
                       onChange={handleSelectAll}
                     />
                   </TableHead>
-                  <TableHead onClick={() => handleSort('bookingId')} className="cursor-pointer">
-                    Booking ID {sortConfig?.key === 'bookingId' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
+                  <TableHead >
+                    Tên người đặt
                   </TableHead>
-                  <TableHead onClick={() => handleSort('courtId')} className="cursor-pointer">
-                    Court ID {sortConfig?.key === 'courtId' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
+                  <TableHead >
+                    Sân
                   </TableHead>
-                  <TableHead>Total Price</TableHead>
+                  <TableHead>Tổng tiền</TableHead>
                   <TableHead onClick={() => handleSort('bookingDate')} className="cursor-pointer">
-                    Booking Date {sortConfig?.key === 'bookingDate' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
+                    Ngày đặt sân {sortConfig?.key === 'bookingDate' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
                   </TableHead>
                   <TableHead onClick={() => handleSort('checkinStatus')} className="cursor-pointer">
-                    Check-in Status {sortConfig?.key === 'checkinStatus' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
+                    Trạng thái check-in {sortConfig?.key === 'checkinStatus' ? (sortConfig.direction === 'asc' ? '▲' : '▼') : ''}
                   </TableHead>
-                  <TableHead>Action</TableHead>
+                  <TableHead>Hành động</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -161,8 +173,8 @@ const CheckinCustomer: React.FC = () => {
                         disabled={booking.checkinStatus === "1"}
                       />
                     </TableCell>
-                    <TableCell>{booking.bookingId}</TableCell>
-                    <TableCell>{booking.courtId}</TableCell>
+                    <TableCell>{booking.userName}</TableCell>
+                    <TableCell>{booking.courtName}</TableCell>
                     <TableCell>
                       {booking.totalPrice.toLocaleString()} đ
                     </TableCell>
@@ -170,20 +182,23 @@ const CheckinCustomer: React.FC = () => {
                     <TableCell>
                       {booking.checkinStatus === "1" ? (
                         <span className="text-green-600 font-semibold">
-                          Checked-in
+                          Đã check-in
                         </span>
                       ) : (
-                        <span className="text-gray-500">Not yet</span>
+                        <span className="text-gray-500">Chưa check-in</span>
                       )}
                     </TableCell>
                     <TableCell>
                       <Button
                         type="button"
                         variant="detail"
-                        onClick={() => handleViewDetail(booking.bookingId)}
+                        onClick={() => handleOpenDetails(booking)}
                       >
-                        Detail
+                        Chi tiết
                       </Button>
+                      {selectedBooking && (
+                        <CheckinDetailBox booking={selectedBooking} onClose={handleCloseDetails} open={showDetailModal} />
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -198,10 +213,10 @@ const CheckinCustomer: React.FC = () => {
               disabled={page === 1}
               onClick={() => handlePageChange(page - 1)}
             >
-              Prev
+              Trang trước
             </Button>
             <span className="text-md font-medium w-96 text-center">
-              Page {page} / {totalPages}
+              Trang {page} / {totalPages}
             </span>
             <Button
               type="button"
@@ -209,7 +224,7 @@ const CheckinCustomer: React.FC = () => {
               disabled={page === totalPages}
               onClick={() => handlePageChange(page + 1)}
             >
-              Next
+              Trang tiếp
             </Button>
           </div>
         </CardContent>

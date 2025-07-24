@@ -12,7 +12,7 @@ export interface Facility {
     contactPhone: string;
     contactEmail: string;
     totalCourt: number;
-    status: string;
+    status: number;
 }
 export interface ApproveRejectFacility {
     facilityId: number;

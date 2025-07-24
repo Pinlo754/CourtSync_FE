@@ -1,12 +1,12 @@
 export type AdminSidebarOption =
-  | 'create-facility-owner'
-  | 'manage-facility'
-  | 'manage-user';
+  | 'Tạo chủ cơ sở'
+  | 'Quản lý cơ sở'
+  | 'Quản lý người dùng';
 
 export const ADMIN_SIDEBAR_OPTIONS: { key: AdminSidebarOption; label: string }[] = [
-  { key: 'create-facility-owner', label: 'Create Facility Owner' },
-  { key: 'manage-facility', label: 'Manage Facility' },
-  { key: 'manage-user', label: 'Manage User' },
+  { key: 'Tạo chủ cơ sở', label: 'Tạo chủ cơ sở' },
+  { key: 'Quản lý cơ sở', label: 'Quản lý cơ sở' },
+  { key: 'Quản lý người dùng', label: 'Quản lý người dùng' },
 ];
 
 export interface AdminSidebarProps {
