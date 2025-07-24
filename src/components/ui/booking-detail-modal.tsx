@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Button } from "../..//components/ui/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card"
 import { Badge } from "../../components/ui/badge"
@@ -11,6 +11,7 @@ import { BookingHistoryItem,  getBookingStatus,
   calculateDuration, } from "../../types/booking"
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { QRCodeCanvas } from "qrcode.react";
 interface BookingDetailModalProps {
   booking: BookingHistoryItem
   onClose: () => void
@@ -22,7 +23,7 @@ export function BookingDetailModal({ booking, onClose, open }: BookingDetailModa
   const transactionStatus = getTransactionStatus(booking.transactionStatus)
   const checkinStatus = getCheckinStatus(booking.checkinStatus)
   const StatusIcon = bookingStatus.icon
-
+  const [qrId, setQrId] = useState<number | null>(null);
   const duration = calculateDuration(booking.startTime.$values, booking.endTime.$values)
 
   if (!open) return null
@@ -60,6 +61,23 @@ const downloadDivAsPdf = async (elementId: string) => {
 
   pdf.save("download.pdf");
 };
+
+const QRGenerator = (id: number) => {
+  const number = `${id}`;
+
+  return (
+    <div>
+      <h2>QR Code</h2>
+      <QRCodeCanvas value={number} size={200} />
+    </div>
+  );
+};
+
+
+
+  const handleShowQR = (id: number) => {
+    setQrId(id);
+  };
 
 
   return (
@@ -293,10 +311,21 @@ const downloadDivAsPdf = async (elementId: string) => {
               Tải hóa đơn
             </Button>
 
+            <Button variant="outline" className="flex-1 bg-transparent" onClick={() => handleShowQR(booking.bookingId)}>
+              <FileText className="h-4 w-4 mr-2" />
+              Checkin
+            </Button>
+
             <Button variant="outline" onClick={onClose} className="flex-1 bg-transparent">
               Đóng
             </Button>
           </div>
+          {qrId && (
+        <div className="mt-4">
+          <h2 className="text-lg font-bold mb-2">QR Code</h2>
+          <QRCodeCanvas value={`${qrId}`} size={200} />
+        </div>
+      )}
         </div>
       </div>
     </div>
