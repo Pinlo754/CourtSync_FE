@@ -44,4 +44,8 @@ export const verifyOTP = (request: VerifyOTPRequest): Promise<VerifyOTPResponse>
     axiosInstance.post('/Users/VerifyOTP', request).then((res) => res.data);
 
 export const resetPasswordByOTP = (request: ResetPasswordByOTPRequest): Promise<ResetPasswordResponse> =>
-    axiosInstance.post('/Users/ResetPasswordByOTPEmail', request).then((res) => res.data); 
+    axiosInstance.post('/Users/ResetPasswordByOTPEmail', request).then((res) => res.data);
+
+// User balance API function
+export const getUserBalance = (): Promise<number> =>
+    axiosInstance.get('/Users/GetUserBalance').then((res) => res.data); 
