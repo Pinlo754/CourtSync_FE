@@ -15,7 +15,7 @@ export interface Facility {
   MinPrice: number     
   MaxPrice: number      
   Distance?: number
-  image: string
+  facilityImageUrl: string
 }
 
 export interface FilterState {

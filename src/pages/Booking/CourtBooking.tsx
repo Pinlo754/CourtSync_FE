@@ -168,14 +168,14 @@ export function CourtBooking() {
                     <div className="grid grid-cols-[100px_repeat(38,1fr)] gap-1 mb-2">
                       <div></div>
                       {timeSlots.map((time) => (
-                        <div key={time} className="text-xs text-center p-1 font-medium">
+                        <div key={time} className="w-[38px] ml-[3.4px] mr-[5px] text-xs  p-1 font-medium">
                           {time}
                         </div>
                       ))}
                     </div>
 
                     {/* Courts Grid */}
-                    {courts.map((courtId) => (
+                    {courts.map((courtId, courtName) => (
                       <div key={courtId} className="grid grid-cols-[100px_repeat(38,1fr)] gap-1 mb-1">
                         <div
                           className={`flex items-center justify-center p-2 rounded text-sm font-medium cursor-pointer transition-colors ${
@@ -185,7 +185,7 @@ export function CourtBooking() {
                           }`}
                           onClick={() => handleCourtChange(courtId)}
                         >
-                          Sân {courtId}
+                          Sân {courtName}
                         </div>
                         {timeSlots.map((timeSlot) => {
                           const status = getSlotStatus(courtId, timeSlot)
@@ -197,7 +197,7 @@ export function CourtBooking() {
                                 handleTimeSlotClick(timeSlot)
                               }}
                               disabled={status === "booked" || loading}
-                              className={`h-8 rounded text-xs transition-colors ${getSlotColor(status)} ${
+                              className={`h-8 w-[38px] ml-[3.4px] mr-[5px] rounded text-xs transition-colors ${getSlotColor(status)} ${
                                 status === "booked"
                                   ? "cursor-not-allowed opacity-50"
                                   : "hover:opacity-80 cursor-pointer"
@@ -222,10 +222,10 @@ export function CourtBooking() {
                 <CardTitle>Thông tin đặt sân</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
+                {/* <div>
                   <Label>Sân đã chọn</Label>
                   <p className="text-lg font-semibold text-green-600">Sân {selectedCourt}</p>
-                </div>
+                </div> */}
 
                 <div>
                   <Label>Ngày đặt</Label>

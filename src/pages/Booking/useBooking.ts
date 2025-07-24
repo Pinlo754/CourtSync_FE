@@ -99,7 +99,7 @@ export function useBooking() {
           MinPrice: apiData.minPrice,
           MaxPrice: apiData.maxPrice,
           Distance: apiData.distance ?? 0,
-          image: "",
+          facilityImageUrl: apiData.facilityImageUrl,
         };
       };
       const mappedFacility = mapApiToFacility(data);
@@ -142,6 +142,7 @@ export function useBooking() {
       setBookingData(data);
 
       const ids = data.$values.map((court) => court.courtId);
+      const name = data.$values.map((court) => court.courtId);
       setCourtIds(ids);
 
       if (ids.length > 0 && !selectedCourt) {
@@ -187,69 +188,80 @@ export function useBooking() {
   };
 
   const getCourtBookedSlots = (courtId: number) => {
-  if (!bookingData) return [];
+    if (!bookingData) return [];
 
-  const courtData = bookingData.$values.find(
-    (court) => court.courtId === courtId
-  );
-  if (!courtData || !courtData.startTimes?.$values?.length) return [];
+    const courtData = bookingData.$values.find(
+      (court) => court.courtId === courtId
+    );
+    if (!courtData || !courtData.startTimes?.$values?.length) return [];
 
-  console.log("courtId:", courtId);
-  console.log("courtData.startTimes:", courtData.startTimes.$values);
-  console.log("courtData.endTimes:", courtData.endTimes.$values);
+    console.log("courtId:", courtId);
+    console.log("courtData.startTimes:", courtData.startTimes.$values);
+    console.log("courtData.endTimes:", courtData.endTimes.$values);
 
-  return courtData.startTimes.$values.map((start, index) => ({
-    start,
-    end: courtData.endTimes.$values[index],
-  }));
+    return courtData.startTimes.$values.map((start, index) => ({
+      start,
+      end: courtData.endTimes.$values[index],
+    }));
+  };
+
+  const handleTimeSlotClick = (timeSlot: string) => {
+  const bookedSlots = getCourtBookedSlots(selectedCourt);
+
+  if (isTimeSlotBooked(timeSlot, bookedSlots, selectedDate)) return;
+
+  const status = getSlotStatus(selectedCourt, timeSlot);
+  if (status === "locked" || status === "booked") return;
+
+  if (!isSelecting) {
+    setIsSelecting(true);
+    setSelectionStart(timeSlot);
+    setSelectedSlots([timeSlot]);
+  } else {
+    if (selectionStart) {
+      const startIndex = timeSlots.indexOf(selectionStart);
+      const endIndex = timeSlots.indexOf(timeSlot);
+      const minIndex = Math.min(startIndex, endIndex);
+      const maxIndex = Math.max(startIndex, endIndex);
+
+      const newSelection = timeSlots.slice(minIndex, maxIndex + 1);
+
+      const hasInvalidSlot = newSelection.some((slot) => {
+        const slotStatus = getSlotStatus(selectedCourt, slot);
+        return slotStatus === "booked" || slotStatus === "locked";
+      });
+
+      if (!hasInvalidSlot) {
+        setSelectedSlots(newSelection);
+      }
+    }
+
+    setIsSelecting(false);
+    setSelectionStart(null);
+  }
 };
 
 
-  const handleTimeSlotClick = (timeSlot: string) => {
-    const bookedSlots = getCourtBookedSlots(selectedCourt);
-    if (isTimeSlotBooked(timeSlot, bookedSlots, selectedDate)) return;
-
-    if (!isSelecting) {
-      setIsSelecting(true);
-      setSelectionStart(timeSlot);
-      setSelectedSlots([timeSlot]);
-    } else {
-      if (selectionStart) {
-        const startIndex = timeSlots.indexOf(selectionStart);
-        const endIndex = timeSlots.indexOf(timeSlot);
-        const minIndex = Math.min(startIndex, endIndex);
-        const maxIndex = Math.max(startIndex, endIndex);
-
-        const newSelection = timeSlots.slice(minIndex, maxIndex + 1);
-
-        const hasBookedSlot = newSelection.some((slot) =>
-          isTimeSlotBooked(timeSlot, bookedSlots, selectedDate)
-        );
-
-        if (!hasBookedSlot) {
-          setSelectedSlots(newSelection);
-        }
-      }
-      setIsSelecting(false);
-      setSelectionStart(null);
-    }
-  };
-
   const getSlotStatus = (courtId: number, timeSlot: string) => {
-  const bookedSlots = getCourtBookedSlots(courtId);
+    const bookedSlots = getCourtBookedSlots(courtId);
 
-  if (isTimeSlotBooked(timeSlot, bookedSlots, selectedDate)) {
-    return "booked";
-  }
+    if (isTimeSlotBooked(timeSlot, bookedSlots, selectedDate)) {
+      return "booked";
+    }
 
-  if (courtId === selectedCourt && selectedSlots.includes(timeSlot)) {
-    return "selected";
-  }
+    const slotDateTime = new Date(`${selectedDate} ${timeSlot}`);
+    const now = new Date();
+    const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
+    if (slotDateTime < oneHourLater) {
+      return "locked";
+    }
 
-  return "available";
-}
+    if (courtId === selectedCourt && selectedSlots.includes(timeSlot)) {
+      return "selected";
+    }
 
-
+    return "available";
+  };
 
   const getSlotColor = (status: string) => {
     switch (status) {
@@ -259,6 +271,8 @@ export function useBooking() {
         return "bg-green-500";
       case "available":
         return "bg-white border border-gray-300";
+      case "locked":
+        return "bg-gray-300"
       default:
         return "bg-gray-300";
     }
@@ -266,7 +280,7 @@ export function useBooking() {
 
   const handleBooking = () => {
     if (
-      selectedSlots.length < 2 ||
+      selectedSlots.length < 3 ||
       totalPrice === 0 ||
       !facilityId ||
       !facility
@@ -294,7 +308,6 @@ export function useBooking() {
       totalPrice,
       note,
     };
-
     navigate("/bookingConfirmation", { state: bookingInfo });
   };
 
@@ -312,7 +325,7 @@ export function useBooking() {
     setTotalPrice(0);
   };
 
-  const totalHours = selectedSlots.length * 0.5;
+  const totalHours = Math.max(0, selectedSlots.length * 0.5 - 0.5);
 
   return {
     facility,

@@ -15,7 +15,7 @@ export function FacilityCard({ facility }: FacilityCardProps) {
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       <div className="relative">
         <img
-          src={facility.image || "/placeholder.svg"}
+          src={facility.facilityImageUrl || "/placeholder.svg"}
           alt={facility.FacilityName}
           className="w-full h-48 object-cover"
         />
