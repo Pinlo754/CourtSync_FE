@@ -104,7 +104,7 @@ export const CourtCard: React.FC<CourtCardProps> = ({ court, index }) => {
                 {/* Court ID Badge */}
                 <div className="absolute top-4 left-4">
                     <div className="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800/80 backdrop-blur-sm border border-slate-600/50 text-white">
-                        Court #{court.id}
+                        Sân #{court.id}
                     </div>
                 </div>
             </div>
@@ -119,7 +119,7 @@ export const CourtCard: React.FC<CourtCardProps> = ({ court, index }) => {
                 <div className="space-y-3">
                     <h4 className="text-sm font-medium text-slate-300 flex items-center space-x-2">
                         <DollarSign className="w-4 h-4 text-mint-400" />
-                        <span>Pricing</span>
+                        <span>Giá</span>
                     </h4>
                     <div className="space-y-2">
                         {court.pricing.length > 0 ? court.pricing.map((pricing, idx) => {
@@ -149,7 +149,7 @@ export const CourtCard: React.FC<CourtCardProps> = ({ court, index }) => {
                             );
                         }) : (
                             <div className="p-4 bg-slate-700/20 rounded-xl border border-slate-600/30 text-center">
-                                <p className="text-slate-400 text-sm">No pricing available</p>
+                                <p className="text-slate-400 text-sm">Không có giá</p>
                             </div>
                         )}
                     </div>

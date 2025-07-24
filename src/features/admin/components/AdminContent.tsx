@@ -6,16 +6,16 @@ import { ManageFacility } from '../../manageFacility/components/ManageFacility';
 
 
 export const AdminContent: React.FC = () => {
-  // Lấy giá trị từ localStorage nếu có, nếu không thì dùng mặc định
+  // Lấy giá trị từ sessionStorage nếu có, nếu không thì dùng mặc định
   const getInitialOption = () => {
-    const saved = localStorage.getItem('admin-selected-option');
-    return (saved as AdminSidebarOption) || 'create-facility-owner';
+    const saved = sessionStorage.getItem('admin-selected-option');
+    return (saved as AdminSidebarOption) || 'Tạo chủ cơ sở';
   };
   const [selectedOption, setSelectedOption] = useState<AdminSidebarOption>(getInitialOption);
 
-  // Lưu vào localStorage mỗi khi selectedOption thay đổi
+  // Lưu vào sessionStorage mỗi khi selectedOption thay đổi
   useEffect(() => {
-    localStorage.setItem('admin-selected-option', selectedOption);
+    sessionStorage.setItem('admin-selected-option', selectedOption);
   }, [selectedOption]);
 
   return (
@@ -23,9 +23,9 @@ export const AdminContent: React.FC = () => {
       <AdminSidebar selectedOption={selectedOption} onSelect={setSelectedOption} />
       <div className="flex-1 p-8">
         {/* Hiển thị nội dung tương ứng với lựa chọn */}
-        {selectedOption === 'create-facility-owner' && <CreateFacilityForm />}
-        {selectedOption === 'manage-facility' && <ManageFacility />}
-        {selectedOption === 'manage-user' && <div>Quản lý User</div>}
+        {selectedOption === 'Tạo chủ cơ sở' && <CreateFacilityForm />}
+        {selectedOption === 'Quản lý cơ sở' && <ManageFacility />}
+        {selectedOption === 'Quản lý người dùng' && <div>Quản lý User</div>}
       </div>
     </div>
   );

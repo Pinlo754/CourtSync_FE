@@ -17,11 +17,15 @@ export interface BackendFacility {
     ward: string;
     district: string;
     city: string;
-    latitude: number;
-    longtitude: number;
+    latitude: number | null;
+    longtitude: number | null;
     facilityStatus: string;
     ownerId: number;
     staffId: number;
+    facilityImageUrl?: {
+        $id: string;
+        $values: string[];
+    };
 }
 
 export interface GetMyFacilitiesResponse {
@@ -44,6 +48,7 @@ export interface Facility {
     closingTime: string;
     ward: string;
     district: string;
+    imageUrls: string[];
 }
 
 // Create Facility Request Interface
@@ -58,14 +63,15 @@ export interface CreateFacilityRequest {
     ward: string;
     district: string;
     city: string;
-    latitude: number;
-    longtitude: number;
+    latitude?: number | null;
+    longtitude?: number | null;
     // Staff account info
     email: string;
     password: string;
     firstName: string;
     lastName: string;
     phone: string;
+    imageUrl?: string;
 }
 
 export interface CreateFacilityResponse {
@@ -98,6 +104,9 @@ export const getMyFacilities = async (): Promise<Facility[]> => {
             const district = backendFacility.district?.trim();
             const city = backendFacility.city?.trim();
 
+            // Handle facilityImageUrl
+            const imageUrls = backendFacility.facilityImageUrl?.$values || [];
+
             return {
                 id: backendFacility.facilityId.toString(),
                 facilityName: facilityName || `Facility ${index + 1}`,
@@ -112,6 +121,7 @@ export const getMyFacilities = async (): Promise<Facility[]> => {
                 closingTime: backendFacility.closingTime || '22:00:00',
                 ward: ward || '',
                 district: district || '',
+                imageUrls: imageUrls.length > 0 ? imageUrls : ['/src/assets/facility.jpg'], // Fallback image
             };
         });
     } catch (error) {
@@ -414,6 +424,17 @@ export const approveCourtReport = async (data: ApproveCourtReportRequest): Promi
   }
 }; 
 
+// Function to reject court report
+export const rejectCourtReport = async (courtReportId: number): Promise<any> => {
+  try {
+    const response = await axiosInstance.get(`/CourtReport/RejectCourtReport?courtReportId=${courtReportId}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error as AxiosError);
+    throw error;
+  }
+};
+
 // Interface for booking time request
 export interface GetBookingTimeRequest {
   facilityId: number;
@@ -456,6 +477,52 @@ export const getBookingTimesByDate = async (request: GetBookingTimeRequest): Pro
     }));
   } catch (error) {
     console.error('Error fetching booking times:', error);
+    handleApiError(error as AxiosError);
+    throw error;
+  }
+}; 
+
+// Interface for owner booking
+export interface OwnerBooking {
+  bookingId: number;
+  courtId: number;
+  courtName: string;
+  facilityId: number;
+  facilityName: string;
+  userId: number;
+  userName: string;
+  bookingStatus: string;
+  checkinStatus: string;
+  cHeckinDate: string | null;
+  startTime: {
+    $id: string;
+    $values: string[];
+  };
+  endTime: {
+    $id: string;
+    $values: string[];
+  };
+  totalPrice: number;
+  note: string;
+  bookingDate: string;
+  transactionId: number;
+  transactionStatus: string;
+  transactionType: string;
+  transactionDate: string;
+}
+
+// Function to get all owner bookings
+export const getAllOwnerBookings = async (): Promise<OwnerBooking[]> => {
+  try {
+    const response = await axiosInstance.get('/Booking/GetAllOwnerBookings');
+    
+    if (response.data && response.data.$values) {
+      return response.data.$values;
+    }
+    
+    return [];
+  } catch (error) {
+    console.error('Error fetching owner bookings:', error);
     handleApiError(error as AxiosError);
     throw error;
   }

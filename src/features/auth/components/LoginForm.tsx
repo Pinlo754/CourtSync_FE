@@ -207,10 +207,10 @@ export const LoginForm: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.7 }}
           >
             <h3 className="text-xl font-bold text-white mb-2">
-              {isSignUp ? 'Create Account' : 'Welcome Back'}
+              {isSignUp ? 'Tạo tài khoản' : 'Chào mừng'}
             </h3>
             <p className="text-slate-300 text-sm">
-              {isSignUp ? 'Join CourtSync to book your courts' : 'Access your account'}
+              {isSignUp ? 'Tham gia CourtSync để đặt sân' : 'Truy cập tài khoản của bạn'}
             </p>
           </motion.div>
 
@@ -247,8 +247,8 @@ export const LoginForm: React.FC = () => {
                 name="email"
                 value={isSignUp ? signupData.email : loginData.email}
                 onChange={handleInputChange}
-                placeholder="Enter your email"
-                label="Email Address"
+                placeholder="Nhập Email"
+                label="Email"
                 icon={Mail}
               />
             </motion.div>
@@ -263,8 +263,8 @@ export const LoginForm: React.FC = () => {
                 name="password"
                 value={isSignUp ? signupData.password : loginData.password}
                 onChange={handleInputChange}
-                placeholder="Enter your password"
-                label="Password"
+                placeholder="Nhập Mật khẩu"
+                label="Mật khẩu"
               />
             </motion.div>
             {isSignUp && (
@@ -277,8 +277,8 @@ export const LoginForm: React.FC = () => {
                   name="confirmPassword"
                   value={signupData.confirmPassword}
                   onChange={handleInputChange}
-                  placeholder="Confirm your password"
-                  label="Confirm Password"
+                  placeholder="Nhập lại mật khẩu"
+                  label="Nhập lại mật khẩu"
                 />
               </motion.div>
             )}
@@ -295,7 +295,7 @@ export const LoginForm: React.FC = () => {
                   onClick={() => setShowForgotPassword(true)}
                   className="text-xs text-mint-400 hover:text-mint-300 transition-colors hover:cursor-pointer underline"
                 >
-                  Forgot password?
+                  Quên mật khẩu?
                 </a>
               </motion.div>
             )}
@@ -311,7 +311,7 @@ export const LoginForm: React.FC = () => {
                 loading={isSignUp ? signupLoading : isLoading}
                 icon={ArrowRight}
               >
-                {isSignUp ? 'Sign Up' : 'Sign In'}
+                {isSignUp ? 'Đăng ký' : 'Đăng nhập'}
               </Button>
             </motion.div>
           </form>
@@ -324,7 +324,7 @@ export const LoginForm: React.FC = () => {
             transition={{ duration: 0.4, delay: isSignUp ? 1.5 : 1.3 }}
           >
             <p className="text-slate-400 text-xs">
-              {isSignUp ? 'Already have an account?' : "Don't have an account?"}
+              {isSignUp ? 'Đã có tài khoản?' : "Chưa có tài khoản?"}
             </p>
             <button
               onClick={() => {
@@ -334,7 +334,7 @@ export const LoginForm: React.FC = () => {
               }}
               className="text-mint-400 hover:text-mint-300 transition-colors font-medium text-xs hover:underline"
             >
-              {isSignUp ? 'Sign in here' : 'Create an account'}
+              {isSignUp ? 'Đăng nhập ở đây' : 'Tạo tài khoản'}
             </button>
           </motion.div>
         </motion.div>

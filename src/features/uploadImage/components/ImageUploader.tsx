@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Upload, Loader2 } from 'lucide-react';
 import { UseUploadFirebase } from '../hooks/useUploadFirebase';
 import { ImageUploaderProps } from '../types';
 
@@ -6,10 +7,8 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
   onImageUpload, 
   className = "" 
 }) => {
-  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
- 
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -20,7 +19,10 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
     setIsUploading(true);
 
     try {
-      const url = await UseUploadFirebase(file, setUploadedImages);
+      const url = await UseUploadFirebase(file, (newImages) => {
+        // We don't need to manage images state here as we're passing the URL to parent
+      });
+      
       if (url && onImageUpload) {
         onImageUpload(url);
       }
@@ -37,7 +39,6 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   return (
     <div className={`image-uploader ${className}`}>
-
       <input
         type="file"
         accept="image/*"
@@ -48,41 +49,27 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
       />
       <label 
         htmlFor="image-upload" 
-        className={`cursor-pointer inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${
-          'bg-blue-600 hover:bg-blue-700' 
-        } disabled:opacity-50 disabled:cursor-not-allowed`}
+        className={`cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2 border border-slate-600/50 
+          rounded-lg text-white bg-slate-700/50 hover:bg-slate-600/50 transition-colors
+          ${isUploading ? 'opacity-70 cursor-not-allowed' : ''}`}
       >
-        {isUploading ? 'Đang tải lên...' : 'Chọn hình ảnh'}
+        {isUploading ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin text-mint-400" />
+            <span>Uploading...</span>
+          </>
+        ) : (
+          <>
+            <Upload className="h-4 w-4 text-mint-400" />
+            <span>Upload Image</span>
+          </>
+        )}
       </label>
 
       {/* Error message */}
       {error && (
-        <div className="mt-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+        <div className="mt-2 p-2 bg-red-500/20 border border-red-500/30 text-red-400 rounded-lg">
           <p className="text-sm">{error}</p>
-        </div>
-      )}
-      
-      {/* Uploaded images */}
-      {uploadedImages.length > 0 && (
-        <div className="mt-4">
-          <h4 className="text-sm font-medium text-gray-700 mb-2">Hình ảnh đã tải:</h4>
-          <div className="flex flex-wrap gap-2">
-            {uploadedImages.map((url, index) => (
-              <div key={index} className="relative">
-                <img
-                  src={url}
-                  alt={`Uploaded ${index + 1}`}
-                  className="w-20 h-20 object-cover rounded border"
-                />
-                <button
-                  onClick={() => setUploadedImages(prev => prev.filter((_, i) => i !== index))}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
         </div>
       )}
     </div>

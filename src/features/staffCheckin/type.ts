@@ -1,7 +1,11 @@
 export interface BookingElements {
+  $id: string;
   bookingId: number;
   courtId: number;
+  courtName: string;
   facilityId: number;
+  userId: number;
+  userName: string;
   bookingStatus: string;
   checkinStatus: string;
   cHeckinDate: string;

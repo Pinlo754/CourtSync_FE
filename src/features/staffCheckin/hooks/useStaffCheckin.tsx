@@ -1,9 +1,9 @@
 import { fetcher, postData } from "../../../api/fetchers";
 
 export const useStaffCheckin = () => {
-    const getAllBookingInFacility = async () => {
+    const getAllBookingInFacility = async (facilityId: number) => {
         try {
-            const response = await fetcher("/Booking/GetBookingListInFacility");
+            const response = await fetcher(`/Booking/GetBookingListInFacility?facilityId=${facilityId}`);
             return response || [];
           } catch (error) {
             console.error(error);
@@ -21,5 +21,15 @@ export const useStaffCheckin = () => {
           }
     }
 
-    return { getAllBookingInFacility, checkinBooking };
+    const getFacilityIdByStaffId = async () => {
+    try {
+      const response = await fetcher("/Facilities/GetFacilityByStaffId");
+      return Number(response) || 0;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+    return { getAllBookingInFacility, checkinBooking, getFacilityIdByStaffId };
 }

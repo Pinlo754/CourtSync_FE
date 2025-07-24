@@ -10,12 +10,6 @@ import {
     VerifyOTPResponse,
     ResetPasswordByOTPRequest,
     ResetPasswordResponse,
-    ForgotPasswordByPhoneRequest,
-    ForgotPasswordByPhoneResponse,
-    VerifyOTPByPhoneRequest,
-    VerifyOTPByPhoneResponse,
-    ResetPasswordByPhoneRequest,
-    ResetPasswordByPhoneResponse,
     SendRegistrationOTPRequest,
     SendRegistrationOTPResponse,
     VerifyRegistrationOTPRequest,
@@ -50,14 +44,4 @@ export const verifyOTP = (request: VerifyOTPRequest): Promise<VerifyOTPResponse>
     axiosInstance.post('/Users/VerifyOTP', request).then((res) => res.data);
 
 export const resetPasswordByOTP = (request: ResetPasswordByOTPRequest): Promise<ResetPasswordResponse> =>
-    axiosInstance.post('/Users/ResetPasswordByOTPEmail', request).then((res) => res.data);
-
-// Reset Password API functions (Phone)
-export const forgotPasswordByPhone = (request: ForgotPasswordByPhoneRequest): Promise<ForgotPasswordByPhoneResponse> =>
-    axiosInstance.post('/Users/ForgotPasswordByPhone', request).then((res) => res.data);
-
-export const verifyOTPByPhone = (request: VerifyOTPByPhoneRequest): Promise<VerifyOTPByPhoneResponse> =>
-    axiosInstance.post('/Users/VerifyOTPByPhone', request).then((res) => res.data);
-
-export const resetPasswordByPhone = (request: ResetPasswordByPhoneRequest): Promise<ResetPasswordByPhoneResponse> =>
-    axiosInstance.post('/Users/ResetPasswordByPhone', request).then((res) => res.data); 
+    axiosInstance.post('/Users/ResetPasswordByOTPEmail', request).then((res) => res.data); 
