@@ -4,7 +4,7 @@ import { Button } from "../../components/ui/Button"
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card"
 import { Input } from "../../components/ui/Input"
 import { Label } from "../../components/ui/label"
-import { ArrowLeft, Calendar, MapPin, Phone, Clock } from "lucide-react"
+import { ArrowLeft, Calendar, MapPin, Phone, Clock, BookA } from "lucide-react"
 import { useBooking } from "./useBooking"
 import { Facility, FilterState, filterFacilities, sortFacilities } from "../../types/Facility"
 
@@ -76,10 +76,10 @@ export function CourtBooking() {
       <div className="bg-green-600 text-white p-4">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center space-x-4">
-            <Button className="text-white hover:bg-green-700" onClick={() => window.history.back()}>
+            <Button className="text-white hover:bg-green-700 w-[100px]" onClick={() => window.history.back()}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-xl font-semibold">Đặt lịch ngày trực quan</h1>
+            <h1 className="text-xl font-semibold w-[500px]">Đặt lịch ngày trực quan</h1>
           </div>
           <div className="flex items-center space-x-2">
             <Calendar className="h-5 w-5" />
@@ -87,7 +87,7 @@ export function CourtBooking() {
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="bg-white text-gray-900"
+              className="bg-transparent text-gray-900"
             />
           </div>
         </div>
@@ -99,11 +99,15 @@ export function CourtBooking() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <h2 className="text-xl font-bold text-gray-900">{facility.FacilityName}</h2>
-              <p className="text-gray-600 text-sm mt-1">{facility.Description}</p>
-            </div>
-            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <div className="flex items-center space-x-2 text-sm text-gray-600 mt-1">
               <MapPin className="h-4 w-4" />
               <span>{facility.Address}</span>
+              </div>
+              
+            </div>
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <BookA className="h-4 w-4"/>
+              <p>{facility.Description}</p>
             </div>
             <div className="flex items-center space-x-2 text-sm text-gray-600">
               <Phone className="h-4 w-4" />

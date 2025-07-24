@@ -141,13 +141,13 @@ export function WalletSection({ balance }: WalletSectionProps) {
           {/* Quick Amount Buttons */}
           <div className="space-y-2">
             <Label>Chọn nhanh</Label>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 w-[15%]">
               {quickAmounts.map((amount) => (
                 <Button
                   key={amount}
                   variant="outline"
                   onClick={() => setDepositAmount(amount.toString())}
-                  className="bg-transparent w-[15%]"
+                  className="bg-transparent w-[10%]"
                 >
                   {amount.toLocaleString("vi-VN")} đ
                 </Button>
