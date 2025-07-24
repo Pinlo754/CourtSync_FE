@@ -64,9 +64,6 @@ export function FacilityCard({ facility }: FacilityCardProps) {
         </div>
 
         <div className="flex space-x-2">
-          <Button variant="outline" className="flex-1 bg-transparent">
-            Xem chi tiết
-          </Button>
           <Button className="w-[120px]" onClick={() => navigate(`/facility/${facility.FacilityID}`)}>Đặt sân</Button>
         </div>
       </CardContent>
