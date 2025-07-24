@@ -16,6 +16,8 @@ interface Transaction {
   amount: number;
   updateDate: string;
   description: string;
+  courtName: string;
+  facilityName: string;
 }
 
 const TransactionsPage: React.FC = () => {
@@ -24,8 +26,17 @@ const TransactionsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | '0' | '1' | '2'>('all');
+  const [facilityFilter, setFacilityFilter] = useState<string>('all');
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
+  
+  // Get unique facilities for filter
+  const facilities = transactions.reduce<{ name: string }[]>((acc, transaction) => {
+    if (!acc.some(item => item.name === transaction.facilityName)) {
+      acc.push({ name: transaction.facilityName });
+    }
+    return acc;
+  }, []);
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -150,6 +161,7 @@ const TransactionsPage: React.FC = () => {
   const resetFilters = () => {
     setSearchQuery('');
     setStatusFilter('all');
+    setFacilityFilter('all');
     setStartDate('');
     setEndDate('');
   };
@@ -158,6 +170,11 @@ const TransactionsPage: React.FC = () => {
   const filteredTransactions = transactions.filter(transaction => {
     // Filter by status
     if (statusFilter !== 'all' && transaction.transactionStatus !== statusFilter) {
+      return false;
+    }
+    
+    // Filter by facility
+    if (facilityFilter !== 'all' && transaction.facilityName !== facilityFilter) {
       return false;
     }
     
@@ -182,13 +199,15 @@ const TransactionsPage: React.FC = () => {
       }
     }
     
-    // Filter by search query (transaction ID, description)
+    // Filter by search query (transaction ID, description, court name, facility name)
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       return (
         transaction.transactionId.toString().includes(query) ||
         transaction.description.toLowerCase().includes(query) ||
-        transaction.amount.toString().includes(query)
+        transaction.amount.toString().includes(query) ||
+        transaction.courtName.toLowerCase().includes(query) ||
+        transaction.facilityName.toLowerCase().includes(query)
       );
     }
     
@@ -264,8 +283,22 @@ const TransactionsPage: React.FC = () => {
                     <option value="2">Cancelled</option>
                   </select>
                 </div>
+
+                <div>
+                  <select
+                    value={facilityFilter}
+                    onChange={(e) => setFacilityFilter(e.target.value)}
+                    className="bg-slate-700/70 border border-slate-600/50 rounded-lg px-4 py-3 text-white focus:border-mint-500 focus:ring-1 focus:ring-mint-500 focus:outline-none transition-all shadow-inner appearance-none pr-10 relative"
+                    style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2380CBC4%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1.5em 1.5em' }}
+                  >
+                    <option value="all">All Facilities</option>
+                    {facilities.map((facility, index) => (
+                      <option key={index} value={facility.name}>{facility.name}</option>
+                    ))}
+                  </select>
+                </div>
                 
-                {(!!searchQuery || statusFilter !== 'all' || !!startDate || !!endDate) && (
+                {(!!searchQuery || statusFilter !== 'all' || facilityFilter !== 'all' || !!startDate || !!endDate) && (
                   <button
                     onClick={resetFilters}
                     className="px-4 py-3 bg-red-500/20 hover:bg-red-500/30 text-red-300 font-medium rounded-lg transition-all flex items-center gap-2 border border-red-500/20 hover:border-red-500/30"
@@ -276,7 +309,7 @@ const TransactionsPage: React.FC = () => {
                 )}
               </div>
               
-              {(!!searchQuery || statusFilter !== 'all' || !!startDate || !!endDate) && (
+              {(!!searchQuery || statusFilter !== 'all' || facilityFilter !== 'all' || !!startDate || !!endDate) && (
                 <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
                   <span className="text-slate-400">Active filters:</span>
                   {!!searchQuery && (
@@ -288,6 +321,11 @@ const TransactionsPage: React.FC = () => {
                   {statusFilter !== 'all' && (
                     <span className="bg-mint-500/20 text-mint-300 py-1 px-3 rounded-full flex items-center gap-1">
                       Status: {getTransactionStatusLabel(statusFilter)}
+                    </span>
+                  )}
+                  {facilityFilter !== 'all' && (
+                    <span className="bg-mint-500/20 text-mint-300 py-1 px-3 rounded-full flex items-center gap-1">
+                      Facility: {facilityFilter}
                     </span>
                   )}
                   {(!!startDate || !!endDate) && (
@@ -327,6 +365,8 @@ const TransactionsPage: React.FC = () => {
                       <tr className="bg-slate-700/30">
                         <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">ID</th>
                         <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Description</th>
+                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Facility</th>
+                        <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Court</th>
                         <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Amount</th>
                         <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Date</th>
                         <th className="px-6 py-4 text-left text-sm font-medium text-slate-300 uppercase tracking-wider">Status</th>
@@ -341,6 +381,12 @@ const TransactionsPage: React.FC = () => {
                           <td className="px-6 py-5 whitespace-nowrap text-base text-white">#{transaction.transactionId}</td>
                           <td className="px-6 py-5 whitespace-nowrap text-base text-slate-300 max-w-xs truncate">
                             {transaction.description}
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap text-base text-slate-300">
+                            {transaction.facilityName}
+                          </td>
+                          <td className="px-6 py-5 whitespace-nowrap text-base text-slate-300">
+                            {transaction.courtName}
                           </td>
                           <td className="px-6 py-5 whitespace-nowrap text-base font-medium text-mint-400">
                             {formatAmount(transaction.amount)}

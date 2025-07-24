@@ -11,6 +11,7 @@ import { Badge } from '../../../components/ui/badge';
 import { getCourtReports } from '../../../api/facility/facilityApi';
 import { CourtReport, CourtReportStatus } from '../../staffReport/types';
 import { format } from 'date-fns';
+import { Search, Filter, Calendar } from 'lucide-react';
 
 interface ReportsListProps {
   onSelectReport?: (report: CourtReport) => void;
@@ -21,6 +22,17 @@ export const ReportsList: React.FC<ReportsListProps> = ({ onSelectReport }) => {
   const [reports, setReports] = useState<CourtReport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<CourtReportStatus | 'all'>('all');
+  const [facilityFilter, setFacilityFilter] = useState<string>('all');
+
+  // Get unique facilities for filter
+  const facilities = reports.reduce<{ id: string; name: string }[]>((acc, report) => {
+    if (report.facilityId && report.facilityName && !acc.some(item => item.id === report.facilityId)) {
+      acc.push({ id: report.facilityId, name: report.facilityName });
+    }
+    return acc;
+  }, []);
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -64,6 +76,38 @@ export const ReportsList: React.FC<ReportsListProps> = ({ onSelectReport }) => {
     }
   };
 
+  const resetFilters = () => {
+    setSearchQuery('');
+    setStatusFilter('all');
+    setFacilityFilter('all');
+  };
+
+  // Filter reports based on selected filters
+  const filteredReports = reports.filter(report => {
+    // Filter by status
+    if (statusFilter !== 'all' && report.courtReportStatus !== statusFilter) {
+      return false;
+    }
+    
+    // Filter by facility
+    if (facilityFilter !== 'all' && report.facilityId !== facilityFilter) {
+      return false;
+    }
+    
+    // Filter by search query (ID, description, court name, facility name)
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      return (
+        report.courtReportId.toString().includes(query) ||
+        report.description.toLowerCase().includes(query) ||
+        (report.courtName?.toLowerCase() || '').includes(query) ||
+        (report.facilityName?.toLowerCase() || '').includes(query)
+      );
+    }
+    
+    return true;
+  });
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -86,10 +130,6 @@ export const ReportsList: React.FC<ReportsListProps> = ({ onSelectReport }) => {
     );
   }
 
-
-
-  const displayReports = reports.length > 0 ? reports : [];
-
   return (
     <div className="space-y-6">
       <div>
@@ -97,14 +137,99 @@ export const ReportsList: React.FC<ReportsListProps> = ({ onSelectReport }) => {
         <p className="text-slate-300">Manage and track maintenance reports for your courts</p>
       </div>
       
+      {/* Filters */}
+      <div className="mb-6">
+        <div className="bg-slate-800/70 backdrop-blur-sm rounded-xl border border-slate-700/50 p-4 shadow-lg">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex-1 min-w-[220px]">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-mint-400 h-5 w-5" />
+                <input
+                  type="text"
+                  placeholder="Search reports..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-slate-700/70 border border-slate-600/50 rounded-lg pl-10 pr-4 py-3 text-white focus:border-mint-500 focus:ring-1 focus:ring-mint-500 focus:outline-none transition-all shadow-inner"
+                />
+              </div>
+            </div>
+            
+            <div>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as CourtReportStatus | 'all')}
+                className="bg-slate-700/70 border border-slate-600/50 rounded-lg px-4 py-3 text-white focus:border-mint-500 focus:ring-1 focus:ring-mint-500 focus:outline-none transition-all shadow-inner appearance-none pr-10 relative"
+                style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2380CBC4%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1.5em 1.5em' }}
+              >
+                <option value="all">All Statuses</option>
+                <option value={CourtReportStatus.PENDING}>Pending</option>
+                <option value={CourtReportStatus.IN_PROGRESS}>In Progress</option>
+                <option value={CourtReportStatus.COMPLETED}>Completed</option>
+                <option value={CourtReportStatus.CANCELLED}>Cancelled</option>
+              </select>
+            </div>
+
+            <div>
+              <select
+                value={facilityFilter}
+                onChange={(e) => setFacilityFilter(e.target.value)}
+                className="bg-slate-700/70 border border-slate-600/50 rounded-lg px-4 py-3 text-white focus:border-mint-500 focus:ring-1 focus:ring-mint-500 focus:outline-none transition-all shadow-inner appearance-none pr-10 relative"
+                style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2380CBC4%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1.5em 1.5em' }}
+              >
+                <option value="all">All Facilities</option>
+                {facilities.map((facility) => (
+                  <option key={facility.id} value={facility.id}>{facility.name}</option>
+                ))}
+              </select>
+            </div>
+            
+            {(!!searchQuery || statusFilter !== 'all' || facilityFilter !== 'all') && (
+              <button
+                onClick={resetFilters}
+                className="px-4 py-3 bg-red-500/20 hover:bg-red-500/30 text-red-300 font-medium rounded-lg transition-all flex items-center gap-2 border border-red-500/20 hover:border-red-500/30"
+              >
+                <Filter className="h-4 w-4" />
+                Clear Filters
+              </button>
+            )}
+          </div>
+          
+          {(!!searchQuery || statusFilter !== 'all' || facilityFilter !== 'all') && (
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+              <span className="text-slate-400">Active filters:</span>
+              {!!searchQuery && (
+                <span className="bg-mint-500/20 text-mint-300 py-1 px-3 rounded-full flex items-center gap-1">
+                  <Search className="h-3 w-3" />
+                  Search: {searchQuery}
+                </span>
+              )}
+              {statusFilter !== 'all' && (
+                <span className="bg-mint-500/20 text-mint-300 py-1 px-3 rounded-full flex items-center gap-1">
+                  Status: {statusFilter}
+                </span>
+              )}
+              {facilityFilter !== 'all' && (
+                <span className="bg-mint-500/20 text-mint-300 py-1 px-3 rounded-full flex items-center gap-1">
+                  Facility: {facilities.find(f => f.id === facilityFilter)?.name || facilityFilter}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+      
       <div className="bg-slate-800/50 rounded-xl border border-slate-700/50 overflow-hidden">
-        {displayReports.length === 0 ? (
+        {filteredReports.length === 0 ? (
           <div className="p-8 text-center">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-slate-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             <h3 className="text-xl font-medium text-white mb-2">No Reports Found</h3>
-            <p className="text-slate-400 text-lg">There are no maintenance reports for your courts yet.</p>
+            <p className="text-slate-400 text-lg">
+              {(!!searchQuery || statusFilter !== 'all' || facilityFilter !== 'all') 
+                ? 'No reports match your current filters.' 
+                : 'There are no maintenance reports for your courts yet.'}
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -121,7 +246,7 @@ export const ReportsList: React.FC<ReportsListProps> = ({ onSelectReport }) => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {displayReports.map((report) => (
+                {filteredReports.map((report) => (
                   <TableRow 
                     key={report.courtReportId} 
                     className="hover:bg-slate-700/30 cursor-pointer border-slate-700/50"
