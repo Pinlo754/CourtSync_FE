@@ -16,7 +16,6 @@ export const useStaffCheckin = () => {
             const response = await postData("/Booking/StaffCheckin", bookingId);
             return response;
           } catch (error) {
-            console.error(error);
             throw error;
           }
     }
