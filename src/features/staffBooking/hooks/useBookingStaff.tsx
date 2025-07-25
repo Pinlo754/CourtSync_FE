@@ -180,7 +180,11 @@ export function useBookingStaff() {
 
   const handleTimeSlotClick = (timeSlot: string) => {
     const bookedSlots = getCourtBookedSlots(selectedCourt);
+
     if (isTimeSlotBooked(timeSlot, bookedSlots, selectedDate)) return;
+
+    const status = getSlotStatus(selectedCourt, timeSlot);
+    if (status === "locked" || status === "booked") return;
 
     if (!isSelecting) {
       setIsSelecting(true);
@@ -195,14 +199,16 @@ export function useBookingStaff() {
 
         const newSelection = timeSlots.slice(minIndex, maxIndex + 1);
 
-        const hasBookedSlot = newSelection.some((slot) =>
-          isTimeSlotBooked(timeSlot, bookedSlots, selectedDate)
-        );
+        const hasInvalidSlot = newSelection.some((slot) => {
+          const slotStatus = getSlotStatus(selectedCourt, slot);
+          return slotStatus === "booked" || slotStatus === "locked";
+        });
 
-        if (!hasBookedSlot) {
+        if (!hasInvalidSlot) {
           setSelectedSlots(newSelection);
         }
       }
+
       setIsSelecting(false);
       setSelectionStart(null);
     }
@@ -215,6 +221,12 @@ export function useBookingStaff() {
       return "booked";
     }
 
+    const slotDateTime = new Date(`${selectedDate} ${timeSlot}`);
+    const now = new Date();
+    const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
+    if (slotDateTime < oneHourLater) {
+      return "locked";
+    }
     if (courtId === selectedCourt && selectedSlots.includes(timeSlot)) {
       return "selected";
     }
@@ -290,7 +302,7 @@ export function useBookingStaff() {
     setTotalPrice(0);
   };
 
-  const totalHours = selectedSlots.length * 0.5;
+  const totalHours = (selectedSlots.length-1) * 0.5;
 
   return {
     facility,

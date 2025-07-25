@@ -100,13 +100,13 @@ const TransactionsPage: React.FC = () => {
   const getTransactionStatusLabel = (status: string) => {
     switch (status) {
       case '0':
-        return 'Pending';
+        return 'Chờ thanh toán';
       case '1':
-        return 'Paid';
+        return 'Đã thanh toán';
       case '2':
-        return 'Cancelled';
+        return 'Đã hủy';
       default:
-        return 'Unknown';
+        return 'Không xác định';
     }
   };
 

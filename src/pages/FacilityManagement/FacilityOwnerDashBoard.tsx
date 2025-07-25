@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Building2, Users, Settings, BarChart3, Loader2 } from 'lucide-react';
+import { Plus, Building2, Users, Settings, BarChart3, Loader2, Wallet } from 'lucide-react';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { CreateFacilityModal } from '../../features/FacilityManagement/CreateFacilityModal';
 import { FacilityCard } from '../../features/FacilityManagement/FacilityCard';
 import { SuccessMessage } from '../../components/ui/SuccessMessage';
 import { getMyFacilities, Facility } from '../../api/facility/facilityApi';
+import { getUserBalance } from '../../api/auth/authApi';
 
 export const FacilityOwnerDashboard: React.FC = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -13,6 +14,8 @@ export const FacilityOwnerDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [userBalance, setUserBalance] = useState<number>(0);
+  const [isLoadingBalance, setIsLoadingBalance] = useState(true);
 
   // Fetch facilities from API
   useEffect(() => {
@@ -32,6 +35,27 @@ export const FacilityOwnerDashboard: React.FC = () => {
 
     fetchFacilities();
   }, []);
+
+  // Fetch user balance
+  useEffect(() => {
+    const fetchUserBalance = async () => {
+      try {
+        setIsLoadingBalance(true);
+        const balance = await getUserBalance();
+        setUserBalance(balance);
+      } catch (err: any) {
+        console.error('Error loading user balance:', err);
+      } finally {
+        setIsLoadingBalance(false);
+      }
+    };
+
+    fetchUserBalance();
+  }, []);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+  };
 
   const stats = [
     { label: 'Total Facilities', value: facilities.length, icon: Building2, color: 'mint' },
@@ -75,15 +99,32 @@ export const FacilityOwnerDashboard: React.FC = () => {
             <h1 className="text-3xl font-bold text-white mb-2">Quản lý cơ sở</h1>
             <p className="text-slate-300">Quản lý cơ sở và nhân viên</p>
           </div>
-          <motion.button
-            onClick={() => setShowCreateModal(true)}
-            className="bg-gradient-to-r from-mint-500 to-blue-500 text-white px-6 py-3 rounded-xl font-semibold flex items-center space-x-2 shadow-lg hover:shadow-xl transition-all duration-300"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Plus className="w-5 h-5" />
-            <span>Tạo cơ sở</span>
-          </motion.button>
+          <div className="flex items-center gap-4">
+            {/* User Balance */}
+            <motion.div
+              className="bg-slate-800/80 backdrop-blur-sm rounded-xl px-4 py-3 flex items-center gap-2"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Wallet className="text-mint-500 w-5 h-5" />
+              {isLoadingBalance ? (
+                <span className="text-slate-400 text-sm">Đang tải...</span>
+              ) : (
+                <span className="text-white font-semibold">{formatCurrency(userBalance)}</span>
+              )}
+            </motion.div>
+
+            <motion.button
+              onClick={() => setShowCreateModal(true)}
+              className="bg-gradient-to-r from-mint-500 to-blue-500 text-white px-6 py-3 rounded-xl font-semibold flex items-center space-x-2 shadow-lg hover:shadow-xl transition-all duration-300"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Plus className="w-5 h-5" />
+              <span>Tạo cơ sở</span>
+            </motion.button>
+          </div>
         </div>
 
 
