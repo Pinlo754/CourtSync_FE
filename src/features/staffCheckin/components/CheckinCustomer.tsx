@@ -80,10 +80,14 @@ const CheckinCustomer: React.FC = () => {
     }
   };
   const handleCheckinCamera = async (qrData: string) => {
+    try {
     if (window.confirm(`Bạn có chắc chắn muốn check-in cho sân: ${qrData}?`)) {
       await checkinBooking([Number(qrData)])
       fetchData();
       setSelected([]);
+    }
+    } catch (error) {
+      setError("Check-in thất bại");
     }
   };
 
