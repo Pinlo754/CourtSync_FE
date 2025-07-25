@@ -26,16 +26,16 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
     if (district === "Tất cả") {
       onFiltersChange({
         ...filters,
-        selectedDistricts: checked ? ["Tất cả"] : [],
+        districts: checked ? ["Tất cả"] : [],
       })
     } else {
       const newDistricts = checked
-        ? [...filters.selectedDistricts.filter((d) => d !== "Tất cả"), district]
-        : filters.selectedDistricts.filter((d) => d !== district)
+        ? [...filters.districts.filter((d) => d !== "Tất cả"), district]
+        : filters.districts.filter((d) => d !== district)
 
       onFiltersChange({
         ...filters,
-        selectedDistricts: newDistricts,
+        districts: newDistricts,
       })
     }
   }
@@ -50,16 +50,10 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
   const handleCourtsRangeChange = (value: [number, number]) => {
     onFiltersChange({
       ...filters,
-      numberOfCourts: value,
+      courtRange: value,
     })
   }
 
-  const handleOpeningTimeChange = (value: string) => {
-    onFiltersChange({
-      ...filters,
-      openingTime: value,
-    })
-  }
 
   return (
     <div className="w-80 space-y-6">
@@ -91,7 +85,7 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
         </CardHeader>
         <CardContent className="space-y-4">
           <Slider
-            value={filters.numberOfCourts}
+            value={filters.courtRange}
             onValueChange={handleCourtsRangeChange}
             max={20}
             min={1}
@@ -99,8 +93,8 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
             className="w-full"
           />
           <div className="flex items-center justify-between text-sm">
-            <span>{filters.numberOfCourts[0]} sân</span>
-            <span>{filters.numberOfCourts[1]} sân</span>
+            <span>{filters.courtRange[0]} sân</span>
+            <span>{filters.courtRange[1]} sân</span>
           </div>
         </CardContent>
       </Card>
@@ -115,7 +109,7 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
             <div key={district} className="flex items-center space-x-2">
               <Checkbox
                 id={district}
-                checked={filters.selectedDistricts.includes(district)}
+                checked={filters.districts.includes(district)}
                 onCheckedChange={(checked) => handleDistrictChange(district, checked as boolean)}
               />
               <Label htmlFor={district} className="text-sm">
@@ -126,26 +120,7 @@ export function FilterSidebar({ filters, onFiltersChange }: FilterSidebarProps) 
         </CardContent>
       </Card>
 
-      {/* Opening Time Filter */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Giờ mở cửa</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Select value={filters.openingTime} onValueChange={handleOpeningTimeChange}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {openingTimeOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </CardContent>
-      </Card>
     </div>
   )
 }
+

@@ -83,13 +83,13 @@ export default function HomePage() {
 
           {hasActiveFilters && (
             <div className="flex flex-wrap gap-2 mb-4">
-              {filters.selectedDistricts.map((district) => (
+              {filters.districts.map((district) => (
                 <Badge key={district} variant="secondary" className="px-3 py-1">
                   {district}
                   <button
                     onClick={() => {
-                      const newDistricts = filters.selectedDistricts.filter((d) => d !== district)
-                      setFilters({ ...filters, selectedDistricts: newDistricts })
+                      const newDistricts = filters.districts.filter((d) => d !== district)
+                      setFilters({ ...filters, districts: newDistricts })
                     }}
                     className="ml-2 hover:text-red-500"
                   >
@@ -97,21 +97,6 @@ export default function HomePage() {
                   </button>
                 </Badge>
               ))}
-              {filters.openingTime !== "all" && (
-                <Badge variant="secondary" className="px-3 py-1">
-                  {{
-                    early: "Mở cửa sớm",
-                    normal: "Mở cửa bình thường",
-                    late: "Mở cửa muộn",
-                  }[filters.openingTime]}
-                  <button
-                    onClick={() => setFilters({ ...filters, openingTime: "all" })}
-                    className="ml-2 hover:text-red-500"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </Badge>
-              )}
             </div>
           )}
         </div>
@@ -128,3 +113,4 @@ export default function HomePage() {
     </div>
   )
 }
+

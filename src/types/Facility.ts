@@ -20,9 +20,8 @@ export interface Facility {
 
 export interface FilterState {
   priceRange: [number, number]
-  numberOfCourts: [number, number]
-  selectedDistricts: string[]
-  openingTime: string
+  courtRange: [number, number]
+  districts: string[]
 }
 
 export const filterFacilities = (facilities: Facility[], filters: any): Facility[] => {

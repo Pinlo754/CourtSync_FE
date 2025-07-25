@@ -74,6 +74,7 @@ const CheckinCustomer: React.FC = () => {
         await checkinBooking(selected);
         fetchData();
         setSelected([]);
+        setError("")
       }
     } catch (error) {
       setError("Check-in thất bại");
@@ -85,6 +86,7 @@ const CheckinCustomer: React.FC = () => {
       await checkinBooking([Number(qrData)])
       fetchData();
       setSelected([]);
+      setError("")
     }
     } catch (error) {
       setError("Check-in thất bại");
