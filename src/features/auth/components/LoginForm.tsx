@@ -110,15 +110,29 @@ export const LoginForm: React.FC = () => {
       setShowRegistrationOTP(false);
       
       // More specific error handling
-      if (error.message?.includes('Network Error')) {
-        setError('Unable to connect to server. Please check your internet connection and try again.');
-      } else if (error.response?.status === 409) {
-        setError('This email is already registered. Please use a different email address.');
-      } else if (error.response?.data?.message) {
-        setError(error.response.data.message);
+      if (error.response?.status === 400) {
+      const data = error.response.data;
+
+      if (data?.errors && typeof data.errors === 'object') {
+        // Lấy lỗi đầu tiên từ object errors
+        const errorValues = Object.values(data.errors);
+
+        if (errorValues.length > 0 && Array.isArray(errorValues[1])) {
+          setError(errorValues[1][0]);
+        } else {
+          setError('Invalid input'); // fallback
+        }
+      } else if (data?.message) {
+        // Trường hợp backend trả về message riêng
+        setError(data.message);
       } else {
-        setError('Registration failed. Please try again later.');
+        setError('Invalid request');
       }
+    } else if (error.message?.includes('Network Error')) {
+      setError('Unable to connect to server. Please try again later.');
+    } else {
+      setError(isSignUp ? 'Signup failed. Please try again.' : 'Login failed. Please try again.');
+    }
     }
   };
 

@@ -15,6 +15,7 @@ import type {
 } from "../../types/booking";
 import { Facility } from "../../types/Facility";
 import { postData } from "../../api/fetchers";
+import { User } from "../../types/user";
 
 export function useBooking() {
   const { facilityId } = useParams<{ facilityId: string }>();
@@ -253,6 +254,13 @@ export function useBooking() {
     }
   };
 
+    const [user, setUser] = useState<User | null>(null);
+    useEffect(() => {
+    const userString = sessionStorage.getItem('loggedUser');
+    const loggedUser = userString ? JSON.parse(userString) : null;
+      setUser(loggedUser);
+  }, []);
+  
   const handleBooking = () => {
     if (
       selectedSlots.length < 3 ||
@@ -261,6 +269,13 @@ export function useBooking() {
       !facility
     )
       return;
+
+    if(!user) {
+      sessionStorage.removeItem("facilityId")
+      sessionStorage.setItem("facilityId", facilityId)
+      navigate("/login")
+      return;
+    }
 
     const sortedSlots = [...selectedSlots].sort();
 

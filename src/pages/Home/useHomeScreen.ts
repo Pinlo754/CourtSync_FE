@@ -5,6 +5,7 @@ import {
   filterFacilities,
   sortFacilities,
 } from "../../types/Facility";
+import { useNavigate } from "react-router-dom";
 
 export default function useHomeScreen() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -12,14 +13,21 @@ export default function useHomeScreen() {
   const [showFilters, setShowFilters] = useState(false);
 
   const [filters, setFilters] = useState<FilterState>({
-    priceRange: [0, 200000],
-    numberOfCourts: [1, 20],
-    selectedDistricts: [],
-    openingTime: "all",
+    priceRange: [0, 600000], // giá từ 0 -> 200k
+    courtRange: [1, 20], // số sân từ 1 -> 20
+    districts: [], // mặc định không chọn quận
   });
 
   const [facilities, setFacilities] = useState<Facility[]>([]);
-
+  const navigate = useNavigate();
+  useEffect(() =>
+  {
+    const reloadId = sessionStorage.getItem("facilityId")
+    sessionStorage.removeItem("facilityId")
+    if(reloadId) {
+      navigate(`/facility/${reloadId}`)
+    }
+  })
   useEffect(() => {
     const fetchFacilities = async () => {
       const requestBody = {
@@ -70,43 +78,72 @@ export default function useHomeScreen() {
   }, []);
 
   const scrollToSection = () => {
-  const element = document.getElementById("targetDiv");
-  if (element) {
-    element.scrollIntoView({ behavior: "smooth" }); 
-  }
-};
+    const element = document.getElementById("targetDiv");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
   const filteredFacilities = useMemo(() => {
+    // 1. Lọc theo searchTerm (FacilityName)
+    const search = searchTerm.trim().toLowerCase();
     const searchFiltered = facilities.filter((facility) => {
-      const search = searchTerm.toLowerCase();
-      return (
-        facility.FacilityName.toLowerCase().includes(search) ||
-        facility.Address.toLowerCase().includes(search) ||
-        facility.Description.toLowerCase().includes(search)
-      );
+      const name = facility.FacilityName?.toLowerCase() || "";
+      return name.includes(search);
     });
-    const filtered = filterFacilities(searchFiltered, filters);
-    console.log("non-filter:", facilities)
-    console.log("filtered:", filtered)
+
+    // 2. Lọc theo các filters: price range, số sân, quận
+    const filtered = searchFiltered.filter((facility) => {
+      let isValid = true;
+
+      // Lọc theo khoảng giá (giá max hoặc min của sân)
+      if (filters.priceRange !== undefined) {
+        isValid = isValid && facility.MinPrice >= filters.priceRange[0];
+      }
+      if (filters.priceRange !== undefined) {
+        isValid = isValid && facility.MaxPrice <= filters.priceRange[1];
+      }
+
+      // Lọc theo số lượng sân
+      if (filters.courtRange !== undefined) {
+        isValid =
+          isValid &&
+          facility.NumberOfCourts >= filters.courtRange[0] &&
+          facility.NumberOfCourts <= filters.courtRange[1];
+      }
+
+      // Lọc theo quận
+      if (filters.districts.length > 0) {
+        isValid =
+          isValid &&
+          facility.District?.toLowerCase() ===
+            filters.districts[0]?.toLowerCase();
+      }
+
+      return isValid;
+    });
+
+    console.log("non-filter:", facilities);
+    console.log("filtered:", filtered);
+
+    // 3. Trả về danh sách đã sort
     return sortFacilities(filtered, sortBy);
   }, [facilities, searchTerm, sortBy, filters]);
 
   const clearAllFilters = () => {
     setFilters({
-      priceRange: [0, 200000],
-      numberOfCourts: [1, 20],
-      selectedDistricts: [],
-      openingTime: "all",
+      priceRange: [0, 600000],
+      courtRange: [1, 20],
+      districts: [],
     });
     setSearchTerm("");
   };
 
   const hasActiveFilters =
-    filters.selectedDistricts.length > 0 ||
-    filters.openingTime !== "all" ||
+    filters.districts.length > 0 ||
     filters.priceRange[0] > 0 ||
-    filters.priceRange[1] < 200000 ||
-    filters.numberOfCourts[0] > 1 ||
-    filters.numberOfCourts[1] < 20;
+    filters.priceRange[1] < 600000 ||
+    filters.courtRange[0] > 1 ||
+    filters.courtRange[1] < 20;
 
   return {
     searchTerm,
@@ -120,6 +157,7 @@ export default function useHomeScreen() {
     filteredFacilities,
     clearAllFilters,
     hasActiveFilters,
-    scrollToSection
+    scrollToSection,
   };
 }
+
